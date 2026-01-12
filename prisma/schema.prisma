@@ -1,0 +1,278 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum WaybillStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String    // hashed with bcryptjs
+  name          String?
+  role          Role      @default(USER)
+  emailVerified DateTime?
+  image         String?
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  // Relations - all user-owned resources
+  layouts       Layout[]
+  stations      Station[]
+  industries    Industry[]
+  rollingStock  RollingStock[]
+  engines       Engine[]
+  routes        Route[]
+  waybills      Waybill[]
+  sessions      OperatingSession[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Layout {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  scale       String?  // HO, N, O, etc.
+  imageUrl    String?
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  stations    Station[]
+  rollingStock RollingStock[]
+  engines     Engine[]
+  routes      Route[]
+  sessions    OperatingSession[]
+
+  @@index([userId])
+}
+
+model Station {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   // Short code like "NYC", "BOS"
+  location    String?
+  population  Int?
+  imageUrl    String?
+  latitude    Float?
+  longitude   Float?
+
+  layoutId    String
+  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  industries  Industry[]
+  homeOfStock RollingStock[]
+  routeStops  RouteStop[]
+  waybillOrigins Waybill[] @relation("WaybillOrigin")
+  waybillDestinations Waybill[] @relation("WaybillDestination")
+
+  @@index([userId, layoutId])
+  @@index([code])
+}
+
+model Industry {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // Manufacturer, Warehouse, Coal Mine, etc.
+  capacity    Int?
+  spotCount   Int?     // Number of car spots
+  trackLength Float?   // In feet
+
+  stationId   String
+  station     Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, stationId])
+}
+
+model RollingStock {
+  id              String   @id @default(cuid())
+  reportingMarks  String   // e.g., "UP", "ATSF"
+  number          String
+  carType         String   // Boxcar, Hopper, Tank, etc.
+  subtype         String?
+  length          Float?   // In feet
+  commodities     String[] // Array of commodities this car can carry
+  imageUrl        String?
+
+  homeStationId   String?
+  homeStation     Station? @relation(fields: [homeStationId], references: [id], onDelete: SetNull)
+  layoutId        String
+  layout          Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  waybills        Waybill[]
+
+  @@unique([reportingMarks, number, userId])
+  @@index([userId, layoutId])
+}
+
+model Engine {
+  id          String   @id @default(cuid())
+  road        String   // Railroad company
+  number      String
+  model       String
+  type        String   // Diesel, Steam, Electric
+  horsepower  Int?
+  fuelType    String?
+  canPull     Int?     // Number of cars
+  imageUrl    String?
+
+  layoutId    String
+  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  routes      Route[]
+
+  @@unique([road, number, userId])
+  @@index([userId, layoutId])
+}
+
+model Route {
+  id            String   @id @default(cuid())
+  name          String
+  number        String?
+  symbol        String?  // Route symbol/logo
+  departureTime String?
+  isActive      Boolean  @default(true)
+
+  engineId      String?
+  engine        Engine?  @relation(fields: [engineId], references: [id], onDelete: SetNull)
+  layoutId      String
+  layout        Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  stops         RouteStop[]
+  waybills      Waybill[]
+  sessions      SessionRoute[]
+
+  @@index([userId, layoutId])
+}
+
+model RouteStop {
+  id             String   @id @default(cuid())
+  order          Int      // Stop sequence number
+  arrivalTime    String?
+  departureTime  String?
+
+  routeId        String
+  route          Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  stationId      String
+  station        Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+
+  @@unique([routeId, order])
+  @@index([routeId])
+}
+
+model Waybill {
+  id               String        @id @default(cuid())
+  commodity        String
+  weight           Float?
+  pickupLocation   String?
+  setoutLocation   String?
+  status           WaybillStatus @default(PENDING)
+
+  carId            String
+  car              RollingStock  @relation(fields: [carId], references: [id], onDelete: Cascade)
+  routeId          String
+  route            Route         @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  originId         String
+  origin           Station       @relation("WaybillOrigin", fields: [originId], references: [id], onDelete: Cascade)
+  destinationId    String
+  destination      Station       @relation("WaybillDestination", fields: [destinationId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([userId, routeId])
+  @@index([status])
+}
+
+model OperatingSession {
+  id          String   @id @default(cuid())
+  name        String
+  date        DateTime
+  notes       String?
+
+  layoutId    String
+  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  routes      SessionRoute[]
+
+  @@index([userId, layoutId])
+  @@index([date])
+}
+
+model SessionRoute {
+  id        String           @id @default(cuid())
+
+  sessionId String
+  session   OperatingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  routeId   String
+  route     Route            @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime         @default(now())
+
+  @@unique([sessionId, routeId])
+}

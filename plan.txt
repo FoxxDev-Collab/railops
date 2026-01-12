@@ -1,0 +1,649 @@
+# RailOps: Fresh Implementation Plan
+
+## Project Overview
+
+**Vision:** Cloud-native model railroad operations platform that modernizes waybill/manifest generation and eliminates the tedious paperwork that hobbyists currently manage with spreadsheets, JMRI, or physical car cards.
+
+**Target Users:** Model railroad enthusiasts (HO/N scale primarily), clubs, and solo operators who want realistic operations without the admin burden.
+
+**Core Value Prop:** "Spend less time on paperwork, more time running trains"
+
+---
+
+## Technical Stack (Confirmed)
+
+```
+Frontend:     Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
+Backend:      Next.js Server Actions
+Database:     Vercel Postgres (Hobby: 256MB, 60 hours compute/month)
+ORM:          Prisma
+Auth:         NextAuth.js v5
+File Storage: Vercel Blob (Hobby: 1GB storage, 1GB bandwidth/month)
+Deployment:   Vercel Hobby (1 project, serverless functions)
+Email:        Resend (optional, 100 emails/day free tier)
+Analytics:    Vercel Analytics (included in hobby)
+```
+
+---
+
+## Vercel Hobby Tier Considerations
+
+**Limits:**
+- ✅ 1GB Blob storage (sufficient for 200-500 user images at ~2-5MB each)
+- ✅ 256MB Postgres (can handle ~50-100 active users with full layouts)
+- ✅ 60 hours compute/month (serverless, plenty for MVP)
+- ✅ 100GB bandwidth/month
+- ⚠️ No team collaboration (you'll be solo dev)
+- ⚠️ No commercial use restrictions (check ToS when monetizing)
+
+**Strategy:** Build MVP on hobby tier, migrate to Pro ($20/mo) when you hit 50+ active users or need team features.
+
+---
+
+## 8-Week MVP Implementation Plan
+
+### **Week 0: Project Setup & Foundation** (Jan 12-18)
+
+**Goal:** Get local development environment running with auth + database
+
+**Tasks:**
+```bash
+# Day 1: Project initialization
+□ Create Next.js 15 project: npx create-next-app@latest railops
+  - App Router ✓
+  - TypeScript ✓
+  - Tailwind ✓
+  - ESLint ✓
+□ Initialize Git repo
+□ Create Vercel project (link to GitHub)
+□ Install dependencies:
+  - @prisma/client, prisma
+  - next-auth@beta
+  - @vercel/blob, @vercel/postgres
+  - zod
+  - shadcn/ui components
+
+# Day 2-3: Database setup
+□ Create Vercel Postgres database (hobby tier)
+□ Copy DATABASE_URL and DIRECT_URL to .env.local
+□ Create Prisma schema (use the one from our previous conversation)
+□ Run: npx prisma db push
+□ Run: npx prisma generate
+□ Test connection: npx prisma studio
+
+# Day 4-5: Authentication
+□ Set up NextAuth.js v5 with credentials provider
+□ Create auth.ts config file
+□ Add login/signup pages
+□ Create middleware.ts for protected routes
+□ Test: Can create account and sign in
+
+# Day 6-7: Base UI components
+□ Install shadcn/ui: npx shadcn-ui@latest init
+□ Add components: button, input, label, card, dialog, dropdown
+□ Create app layout with sidebar navigation
+□ Create dashboard page skeleton
+□ Deploy to Vercel and test production build
+```
+
+**Deliverable:** Working auth system, database connected, deployed to production
+
+---
+
+### **Week 1: Layout Management** (Jan 19-25)
+
+**Goal:** Users can create and manage model railroad layouts
+
+**Tasks:**
+```bash
+# Day 1-2: Layout CRUD actions
+□ Create app/actions/layouts.ts
+  - createLayout()
+  - getLayouts()
+  - getLayout(id)
+  - updateLayout()
+  - deleteLayout()
+□ Add Zod validation schemas
+□ Test actions in console
+
+# Day 3-4: Layout UI
+□ Create app/(dashboard)/layouts/page.tsx (list view)
+□ Create app/(dashboard)/layouts/[id]/page.tsx (detail view)
+□ Create app/(dashboard)/layouts/new/page.tsx (create form)
+□ Add "Create Layout" dialog with form
+□ Show layout cards with stats (stations, cars, engines)
+
+# Day 5: Image uploads
+□ Set up Vercel Blob (create store in Vercel dashboard)
+□ Create app/actions/uploads.ts
+□ Add uploadLayoutImage() action
+□ Create image upload component with preview
+□ Test: Upload layout diagram/photo
+
+# Day 6-7: Polish & testing
+□ Add loading states (Suspense)
+□ Add error handling
+□ Add empty states ("Create your first layout")
+□ Test: Create, view, edit, delete layout
+□ Deploy and verify in production
+```
+
+**Deliverable:** Fully functional layout management with image uploads
+
+---
+
+### **Week 2: Stations & Industries** (Jan 26-Feb 1)
+
+**Goal:** Users can add stations and industries to their layouts
+
+**Tasks:**
+```bash
+# Day 1-2: Station CRUD
+□ Create app/actions/stations.ts
+□ Add station form with fields:
+  - Name, code, location, population
+  - Goods served (multi-select)
+□ Create station list page
+□ Add station detail view
+□ Test CRUD operations
+
+# Day 3-4: Industries
+□ Create app/actions/industries.ts
+□ Add industry form:
+  - Name, type, capacity
+  - Ships/receives goods
+  - Spot count, track length
+□ Nest industries under stations
+□ Create industry list/form components
+
+# Day 5: Station images & map
+□ Add station image upload
+□ Add optional lat/lng fields
+□ Create simple station map view (optional)
+□ Test image uploads
+
+# Day 6-7: UI polish
+□ Add search/filter to station list
+□ Add station count to layout overview
+□ Create station quick-add from layout page
+□ Test: Add 10+ stations to a layout
+□ Deploy
+```
+
+**Deliverable:** Stations and industries fully functional
+
+---
+
+### **Week 3: Rolling Stock & Engines** (Feb 2-8)
+
+**Goal:** Users can inventory their model railroad equipment
+
+**Tasks:**
+```bash
+# Day 1-2: Rolling stock CRUD
+□ Create app/actions/rolling-stock.ts
+□ Add car form:
+  - Reporting marks, number
+  - Type (dropdown), subtype, length
+  - Commodities (multi-select)
+  - Home station
+□ Create car list with filtering by type
+□ Add car detail view with image
+
+# Day 3-4: Engines
+□ Create app/actions/engines.ts
+□ Add engine form:
+  - Road, number, model
+  - Type, horsepower, fuel type
+  - Can pull (# of cars)
+□ Create engine list
+□ Add engine detail view
+
+# Day 5: Bulk import (optional)
+□ Create CSV import for rolling stock
+□ Parse CSV and validate
+□ Show import preview
+□ Batch create in database
+
+# Day 6-7: Polish
+□ Add car/engine quick stats to dashboard
+□ Add search functionality
+□ Test: Add 20+ cars and 3+ engines
+□ Deploy
+```
+
+**Deliverable:** Complete equipment inventory system
+
+---
+
+### **Week 4: Routes & Route Builder** (Feb 9-15)
+
+**Goal:** Users can create routes with multiple stops
+
+**Tasks:**
+```bash
+# Day 1-2: Route data model
+□ Create app/actions/routes.ts
+□ Test creating routes with stops in database
+□ Verify cascade deletes work
+
+# Day 3-5: Route builder UI
+□ Create route form:
+  - Name, number, symbol
+  - Assign engine (dropdown)
+  - Departure time
+□ Create stop builder:
+  - Add/remove stops
+  - Drag-and-drop ordering (dnd-kit)
+  - Station selector for each stop
+  - Arrival/departure times
+□ Show route on map (stations connected)
+
+# Day 6-7: Route management
+□ Create route list page
+□ Add route detail view
+□ Add "Activate/Deactivate" toggle
+□ Test: Create 3-stop route
+□ Deploy
+```
+
+**Deliverable:** Route creation with visual builder
+
+---
+
+### **Week 5: Waybills & Manifest Generation** (Feb 16-22)
+
+**Goal:** Generate printable manifests for operations sessions
+
+**Tasks:**
+```bash
+# Day 1-2: Waybill CRUD
+□ Create app/actions/waybills.ts
+□ Add waybill form:
+  - Assign to route
+  - Select car from dropdown
+  - Commodity, weight
+  - Origin/destination stations
+  - Pickup/setout locations
+□ Create waybill list for route
+
+# Day 3-4: Manifest generation
+□ Create app/actions/manifests.ts
+□ Build generateManifest(routeId) action
+□ Create manifest view page:
+  - Route header (name, engine, date)
+  - Stops listed in order
+  - Waybills grouped by pickup/setout
+□ Add "Print Manifest" button
+
+# Day 5: PDF export
+□ Install @react-pdf/renderer or jsPDF
+□ Create PDF template for manifest
+□ Add downloadManifestPDF() action
+□ Test PDF generation
+
+# Day 6-7: Waybill workflow
+□ Add status updates (Pending → In Transit → Delivered)
+□ Create waybill status board
+□ Test complete workflow:
+  1. Create route
+  2. Add waybills
+  3. Generate manifest
+  4. Print/download
+□ Deploy
+```
+
+**Deliverable:** End-to-end operations workflow
+
+---
+
+### **Week 6: Operating Sessions (Optional)** (Feb 23-Mar 1)
+
+**Goal:** Track sessions and log events
+
+**Tasks:**
+```bash
+# Day 1-2: Session management
+□ Create app/actions/sessions.ts
+□ Add "New Session" form
+□ Link routes to session
+□ Add session detail view
+
+# Day 3-4: Session board
+□ Create real-time session view
+□ Show active routes
+□ Display waybill status
+□ Add simple event logging
+
+# Day 5-7: Session history
+□ Create session list
+□ Add session summary stats
+□ Test: Run complete session
+□ Deploy
+
+# OR skip this week and focus on polish
+```
+
+**Deliverable:** Session tracking (optional for MVP)
+
+---
+
+### **Week 7: Polish, Testing & Docs** (Mar 2-8)
+
+**Goal:** Production-ready application
+
+**Tasks:**
+```bash
+# Day 1-2: UI/UX polish
+□ Consistent spacing, colors, typography
+□ Add loading skeletons everywhere
+□ Improve error messages
+□ Add success toasts
+□ Mobile responsive testing
+□ Dark mode (if using shadcn/ui)
+
+# Day 3: Performance optimization
+□ Add React.Suspense boundaries
+□ Optimize images (next/image)
+□ Add database indexes for common queries
+□ Test page load speeds
+
+# Day 4-5: Testing
+□ Write tests for critical Server Actions
+□ Test all forms with validation errors
+□ Test file uploads (edge cases)
+□ Cross-browser testing
+□ Mobile device testing
+
+# Day 6-7: Documentation
+□ Write README with setup instructions
+□ Create user guide (basic "Getting Started")
+□ Add help tooltips in UI
+□ Create demo video (Loom)
+□ Deploy final version
+```
+
+**Deliverable:** Polished, tested application
+
+---
+
+### **Week 8: Beta Launch** (Mar 9-15)
+
+**Goal:** Get first 10 users and gather feedback
+
+**Tasks:**
+```bash
+# Day 1: Landing page
+□ Create marketing site (can be same Next.js app)
+□ Add waitlist form
+□ Write compelling copy
+□ Add demo screenshots/video
+
+# Day 2: Analytics setup
+□ Enable Vercel Analytics
+□ Add PostHog (optional, free tier)
+□ Set up error tracking (Sentry free tier)
+□ Create feedback form (Typeform)
+
+# Day 3-4: Community outreach
+□ Post on Model Railroad Hobbyist forum
+□ Post on r/modeltrains
+□ Post on TrainBoard.com
+□ Email NMRA division contacts
+□ Share on Twitter/LinkedIn
+
+# Day 5-7: Support & iteration
+□ Respond to feedback within 24h
+□ Fix critical bugs immediately
+□ Log feature requests
+□ Schedule 1:1 calls with interested users
+□ Iterate based on feedback
+```
+
+**Deliverable:** 10+ beta users testing the app
+
+---
+
+## Initial Project Setup Checklist
+
+**Before you write any code:**
+
+```bash
+# 1. Create Vercel account & project
+□ Sign up at vercel.com (use GitHub OAuth)
+□ Create new project → Import Git repository
+□ Connect to GitHub (auto-deploy on push)
+
+# 2. Create Vercel Postgres database
+□ Go to project → Storage → Create Database
+□ Choose Postgres
+□ Copy DATABASE_URL
+□ Copy DIRECT_URL (for migrations)
+
+# 3. Create Vercel Blob store
+□ Go to project → Storage → Create Blob Store
+□ Name it "railops-uploads"
+□ Copy BLOB_READ_WRITE_TOKEN
+
+# 4. Set environment variables
+□ Add to .env.local (local dev):
+  - DATABASE_URL
+  - DIRECT_URL
+  - BLOB_READ_WRITE_TOKEN
+  - NEXTAUTH_SECRET (generate with: openssl rand -base64 32)
+  - NEXTAUTH_URL=http://localhost:3000
+
+□ Add same vars to Vercel project settings
+  (Settings → Environment Variables)
+
+# 5. Initialize project
+□ npx create-next-app@latest railops --typescript --tailwind --app
+□ cd railops
+□ npm install @prisma/client prisma next-auth@beta @vercel/blob zod bcryptjs
+□ npm install -D @types/bcryptjs
+
+# 6. Initialize Prisma
+□ npx prisma init
+□ Copy the schema from our previous conversation
+□ npx prisma generate
+□ npx prisma db push
+
+# 7. Initialize shadcn/ui
+□ npx shadcn-ui@latest init
+□ npx shadcn-ui@latest add button input label card
+
+# 8. First commit
+□ git add .
+□ git commit -m "Initial setup"
+□ git push origin main
+□ Verify Vercel auto-deploys
+```
+
+---
+
+## Feature Prioritization (MVP vs. Future)
+
+### **MVP (Must Have - Week 0-7)**
+✅ Authentication (email/password)
+✅ Layout CRUD with images
+✅ Station CRUD with industries
+✅ Rolling stock inventory
+✅ Engine inventory
+✅ Route creation with stops
+✅ Waybill generation
+✅ Manifest printing/PDF export
+
+### **Post-MVP (Week 8+)**
+🔄 Operating sessions tracking
+🔄 OAuth providers (Google)
+🔄 Payment integration (Stripe)
+🔄 Multi-user organizations
+🔄 CSV bulk import
+🔄 Advanced analytics
+🔄 Mobile app (React Native)
+🔄 Real-time collaboration
+🔄 Automated traffic generation
+
+### **Nice to Have (Future)**
+💡 DCC hardware integration API
+💡 Layout designer (visual track planning)
+💡 Weather/time-of-day simulation
+💡 Financial tracking (revenue/expenses)
+💡 Historical performance analytics
+💡 Public layout sharing
+
+---
+
+## Cost Breakdown (Monthly)
+
+**Development (Hobby Tier - FREE):**
+- Vercel Hobby: $0
+- Vercel Postgres: $0 (256MB included)
+- Vercel Blob: $0 (1GB included)
+- GitHub: $0
+- Domain (optional): ~$12/year
+
+**Post-Launch (When you hit limits):**
+- Vercel Pro: $20/month (first paid tier)
+  - 1TB bandwidth
+  - Unlimited team members
+  - Commercial use allowed
+- Vercel Postgres Pro: $10/month (starts at 512MB)
+- Vercel Blob: $0.15/GB storage + $0.20/GB bandwidth
+
+**Estimate for 50 active users:**
+- Vercel Pro: $20
+- Postgres (2GB): ~$20
+- Blob (5GB storage): ~$1
+- **Total: ~$41/month**
+
+**Break-even at 50 users:**
+- Charge $10/month per user
+- 5 paying users = $50/month = profitable
+
+---
+
+## Success Metrics
+
+**Week 4 (Alpha):**
+- [ ] 5 layouts created
+- [ ] 50+ stations added
+- [ ] 100+ cars inventoried
+- [ ] 3+ routes created
+
+**Week 8 (Beta):**
+- [ ] 10 active users
+- [ ] 5+ users generate 2nd manifest (retention)
+- [ ] <5% error rate
+- [ ] 3+ testimonials collected
+
+**Month 3:**
+- [ ] 50 active users
+- [ ] 5 paying customers ($10/mo)
+- [ ] $50 MRR
+- [ ] 10+ user-submitted feature requests
+
+**Month 6:**
+- [ ] 200 users
+- [ ] 25 paying customers
+- [ ] $250 MRR
+- [ ] First club customer ($30/mo)
+- [ ] Featured in Model Railroader magazine/forum
+
+---
+
+## Risk Mitigation
+
+**Technical Risks:**
+1. **Vercel hobby limits hit early**
+   - Mitigation: Monitor usage in dashboard, have $20 ready to upgrade
+2. **Database migrations in production**
+   - Mitigation: Always test migrations locally first, use `prisma migrate deploy`
+3. **File storage costs exceed budget**
+   - Mitigation: Compress images on upload, set max file sizes, use CDN
+
+**Product Risks:**
+1. **Users prefer free JMRI**
+   - Mitigation: Focus on UX, collaboration, cloud backup as differentiators
+2. **Aging demographic resists cloud**
+   - Mitigation: Offer white-glove onboarding, video tutorials, phone support
+3. **Market too small**
+   - Mitigation: Expand to train simulation gamers, expand to European market
+
+---
+
+## Quick Start Commands
+
+```bash
+# Create project
+npx create-next-app@latest railops --typescript --tailwind --app
+cd railops
+
+# Install dependencies
+npm install @prisma/client prisma next-auth@beta @vercel/blob @vercel/postgres zod bcryptjs
+npm install -D @types/bcryptjs tsx
+
+# Initialize Prisma
+npx prisma init
+
+# Copy schema (paste the Prisma schema from earlier)
+# Then:
+npx prisma generate
+npx prisma db push
+
+# Initialize shadcn/ui
+npx shadcn-ui@latest init
+npx shadcn-ui@latest add button input label card form dialog
+
+# Run dev server
+npm run dev
+
+# Open browser
+open http://localhost:3000
+```
+
+---
+
+## Daily Development Workflow
+
+```bash
+# Morning
+1. Pull latest: git pull origin main
+2. Check Vercel dashboard for errors
+3. Review user feedback (if any)
+4. Pick today's task from week plan
+
+# During dev
+1. Work in feature branch: git checkout -b feature/add-stations
+2. Make small, frequent commits
+3. Test locally before pushing
+4. Use Prisma Studio to verify data: npx prisma studio
+
+# End of day
+1. Push to GitHub: git push origin feature/add-stations
+2. Create PR, merge to main
+3. Verify Vercel auto-deploys
+4. Test in production
+5. Update progress in README
+```
+
+---
+
+## Next Steps (Right Now)
+
+**To start TODAY:**
+
+1. **Create Vercel account** (5 min)
+2. **Initialize Next.js project** (10 min)
+3. **Set up Postgres + Blob** (15 min)
+4. **Copy Prisma schema** (5 min)
+5. **Push first commit** (5 min)
+6. **Verify deployment** (5 min)
+
+**Total: ~45 minutes to first deploy**
+
+Then start Week 0 tasks tomorrow.
+
+---
+
+**Ready to start?** Let me know when you've completed the "Quick Start Commands" and I'll help you with the authentication setup (NextAuth.js v5 configuration) as your next step!
