@@ -6,7 +6,7 @@ const db = new PrismaClient({});
 
 async function main() {
   const email = "admin@railops.com";
-  const password = "admin123"; // CHANGE THIS IN PRODUCTION!
+  const password = "RAILops@@22";
 
   console.log("Creating admin user...");
 
@@ -25,7 +25,7 @@ async function main() {
 
   console.log("✅ Admin user created successfully!");
   console.log("Email:", admin.email);
-  console.log("Password: admin123 (CHANGE THIS!)");
+  console.log("Password: RAILops@@22");
 }
 
 main()
