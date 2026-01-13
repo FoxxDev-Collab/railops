@@ -2,6 +2,14 @@ import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  LayoutGrid,
+  Train,
+  FileText,
+  Route,
+  Clock,
+  Printer,
+} from "lucide-react";
 
 export default async function Home() {
   const session = await auth();
@@ -67,7 +75,9 @@ export default async function Home() {
               </h2>
               <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <LayoutGrid className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Layout Management</h3>
                   <p className="mt-2 text-muted-foreground">
                     Design and manage your railroad layouts with stations,
@@ -75,7 +85,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Train className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Rolling Stock</h3>
                   <p className="mt-2 text-muted-foreground">
                     Track your entire fleet of freight cars and locomotives
@@ -83,7 +95,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Waybill System</h3>
                   <p className="mt-2 text-muted-foreground">
                     Generate realistic waybills and car cards for authentic
@@ -91,7 +105,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Route className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Route Builder</h3>
                   <p className="mt-2 text-muted-foreground">
                     Create train routes with multiple stops and optimize
@@ -99,7 +115,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Clock className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Session Tracking</h3>
                   <p className="mt-2 text-muted-foreground">
                     Record and track operating sessions with detailed logs and
@@ -107,7 +125,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="rounded-lg border bg-card p-6">
-                  <div className="mb-4 h-10 w-10 rounded-lg bg-primary/10" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Printer className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="text-xl font-semibold">Print & Export</h3>
                   <p className="mt-2 text-muted-foreground">
                     Generate professional manifests and export data for your

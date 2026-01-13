@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(New-Item -Path \"D:\\\\Dev Projects\\\\railops\\\\app\\\\\\(admin\\)\\\\layout.tsx\" -ItemType File -Force)"
+    ]
+  }
+}
