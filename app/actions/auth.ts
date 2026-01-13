@@ -53,7 +53,13 @@ export async function login(values: { email: string; password: string }) {
       redirect: false,
     });
 
-    return { success: true };
+    // Get the user's role to determine redirect
+    const user = await db.user.findUnique({
+      where: { email: values.email },
+      select: { role: true },
+    });
+
+    return { success: true, role: user?.role };
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

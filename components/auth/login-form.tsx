@@ -45,7 +45,9 @@ export function LoginForm() {
       toast.error(result.error);
     } else {
       toast.success("Signed in successfully");
-      router.push("/dashboard");
+      // Redirect based on user role
+      const redirectUrl = result.role === "ADMIN" ? "/admin" : "/dashboard";
+      router.push(redirectUrl);
       router.refresh();
     }
 

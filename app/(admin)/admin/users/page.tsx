@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getAllUsers } from "@/app/actions/admin/users";
 import { UserManagementTable } from "@/components/admin/user-management-table";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function UsersManagementPage() {
   const session = await auth();
@@ -21,7 +22,9 @@ export default async function UsersManagementPage() {
             Manage all users and their permissions
           </p>
         </div>
-        <Button>Create User</Button>
+        <Button asChild>
+          <Link href="/admin/users/new">Create User</Link>
+        </Button>
       </div>
 
       <UserManagementTable users={users} />
