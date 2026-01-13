@@ -1,16 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import { Pool, neonConfig } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
-import ws from "ws";
 import "dotenv/config";
 
-// Configure WebSocket for Node.js environment
-neonConfig.webSocketConstructor = ws;
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaNeon(pool);
-const db = new PrismaClient({ adapter });
+const db = new PrismaClient({});
 
 async function main() {
   const email = "admin@railops.com";

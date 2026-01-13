@@ -4,7 +4,8 @@
       "Bash(npx tsx:*)",
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(timeout /t 5)"
+      "Bash(timeout /t 5)",
+      "Bash(npm run build:*)"
     ]
   }
 }
