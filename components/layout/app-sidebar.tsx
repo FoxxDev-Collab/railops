@@ -22,6 +22,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 interface AppSidebarProps {
   variant?: "user" | "admin";
@@ -76,14 +77,17 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={handleSignOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
-        </Button>
+        <div className="flex items-center gap-2 px-2">
+          <Button
+            variant="ghost"
+            className="flex-1 justify-start"
+            onClick={handleSignOut}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+          <ThemeToggle />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
