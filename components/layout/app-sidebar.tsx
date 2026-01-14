@@ -48,7 +48,7 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
   async function handleSignOut() {
     // Use next-auth signOut
     const { signOut } = await import("next-auth/react");
-    signOut({ callbackUrl: "/" });
+    signOut({ callbackUrl: "/auth/login" });
   }
 
   return (

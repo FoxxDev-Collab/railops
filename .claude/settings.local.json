@@ -5,7 +5,12 @@
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
       "Bash(timeout /t 5)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(cat:*)",
+      "Bash(npx shadcn@latest add:*)"
+    ],
+    "additionalDirectories": [
+      "D:\\Dev Projects\\railops\\app\\(dashboard)\\dashboard\\layouts"
     ]
   }
 }
