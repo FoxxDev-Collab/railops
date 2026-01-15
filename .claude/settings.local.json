@@ -7,7 +7,11 @@
       "Bash(timeout /t 5)",
       "Bash(npm run build:*)",
       "Bash(cat:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(set -a)",
+      "Bash(source .env.local)",
+      "Bash(set +a)",
+      "Bash(npx prisma migrate reset:*)"
     ],
     "additionalDirectories": [
       "D:\\Dev Projects\\railops\\app\\(dashboard)\\dashboard\\layouts"
