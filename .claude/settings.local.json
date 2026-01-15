@@ -7,7 +7,9 @@
       "Bash(timeout /t 5)",
       "Bash(npm run build:*)",
       "Bash(cat:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(New-Item -Path \"C:\\\\Users\\\\jerem\\\\.claude-worktrees\\\\railops\\\\relaxed-chaum\\\\app\\\\api\\\\layouts\\\\select\" -ItemType Directory -Force)",
+      "Bash(npx prisma migrate:*)"
     ],
     "additionalDirectories": [
       "D:\\Dev Projects\\railops\\app\\(dashboard)\\dashboard\\layouts"

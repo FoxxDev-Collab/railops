@@ -31,13 +31,17 @@ model User {
   emailVerified DateTime?
   image         String?
 
+  // Selected layout for context
+  selectedLayoutId String?
+  selectedLayout   Layout?   @relation("SelectedLayout", fields: [selectedLayoutId], references: [id], onDelete: SetNull)
+
   // Timestamps
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   lastLoginAt   DateTime?
 
   // Relations - all user-owned resources
-  layouts       Layout[]
+  layouts       Layout[]  @relation("UserLayouts")
   stations      Station[]
   industries    Industry[]
   rollingStock  RollingStock[]
@@ -58,7 +62,7 @@ model Layout {
   imageUrl    String?
 
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation("UserLayouts", fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -69,6 +73,7 @@ model Layout {
   engines     Engine[]
   routes      Route[]
   sessions    OperatingSession[]
+  selectedByUsers User[] @relation("SelectedLayout")
 
   @@index([userId])
 }
