@@ -161,13 +161,19 @@ export async function getLayout(layoutId: string) {
       userId: session.user.id, // Ensures user owns this layout
     },
     include: {
-      locations: true,
+      locations: {
+        include: { industries: true, yardTracks: true },
+        orderBy: { sortOrder: "asc" },
+      },
       locomotives: true,
       freightCars: true,
       passengerCars: true,
       cabooses: true,
       mowEquipment: true,
-      trains: true,
+      trains: {
+        include: { origin: true, destination: true },
+        orderBy: { trainNumber: "asc" },
+      },
     },
   });
 

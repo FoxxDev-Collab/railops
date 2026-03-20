@@ -1,11 +1,52 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Factory,
+  Building2,
+  Layers,
+  ArrowLeftRight,
+  GitFork,
+  Users,
+  Fence,
+  MapPin,
+} from "lucide-react";
+import { LocationType } from "@prisma/client";
+import { LocationFormDialog } from "@/components/locations/location-form-dialog";
+import { IndustryFormDialog } from "@/components/locations/industry-form-dialog";
+import { DeleteLocationButton } from "@/components/locations/delete-location-button";
+import { LocationCardList } from "@/components/locations/location-card-list";
+
+const typeIcons: Record<LocationType, React.ElementType> = {
+  PASSENGER_STATION: Building2,
+  YARD: Layers,
+  INTERCHANGE: ArrowLeftRight,
+  JUNCTION: GitFork,
+  STAGING: Layers,
+  TEAM_TRACK: Users,
+  SIDING: Fence,
+};
+
+const typeLabels: Record<LocationType, string> = {
+  PASSENGER_STATION: "Station",
+  YARD: "Yard",
+  INTERCHANGE: "Interchange",
+  JUNCTION: "Junction",
+  STAGING: "Staging",
+  TEAM_TRACK: "Team Track",
+  SIDING: "Siding",
+};
 
 export default async function LocationsPage({
   params,
@@ -28,53 +69,53 @@ export default async function LocationsPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Locations</h1>
-            <p className="text-muted-foreground">{layout.name}</p>
+            <h1 className="text-3xl font-bold tracking-tight">Locations</h1>
+            <p className="text-sm text-muted-foreground tracking-wide">
+              {layout.name} — {layout.locations.length} location
+              {layout.locations.length !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Location
-        </Button>
+        <LocationFormDialog
+          layoutId={id}
+          trigger={
+            <Button className="transition-all duration-150 hover:shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Location
+            </Button>
+          }
+        />
       </div>
 
       {layout.locations.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No locations yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Add stations, yards, interchanges, and sidings to build your
-              railroad network.
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted/60">
+            <MapPin className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-semibold">No locations yet</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Locations are the backbone of your railroad — stations, yards,
+              interchanges, and sidings where trains stop and cars are spotted.
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.locations.map((location) => (
-            <Card key={location.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{location.name}</span>
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {location.code}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Badge variant="outline">
-                  {location.locationType.replace("_", " ")}
-                </Badge>
-                {location.description && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {location.description}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          </div>
+          <LocationFormDialog
+            layoutId={id}
+            trigger={
+              <Button variant="outline" className="mt-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Your First Location
+              </Button>
+            }
+          />
         </div>
+      ) : (
+        <LocationCardList
+          locations={layout.locations}
+          layoutId={id}
+          typeIcons={typeIcons}
+          typeLabels={typeLabels}
+        />
       )}
     </div>
   );

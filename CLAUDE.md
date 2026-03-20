@@ -57,6 +57,33 @@ All user-owned resources cascade delete from User. Layout is the top-level railr
 - `components/auth/` — Login/register forms
 - `components/theme/` — Theme provider (next-themes)
 
+## Required Skills
+
+Always proactively apply the following skills when working on this project — do NOT wait for the user to ask:
+
+- **`/frontend-design`** — Use on ALL UI work. Every component, page, or layout change must produce polished, production-grade design. No generic AI aesthetics.
+- **`/ui-ux-pro-max`** — Use alongside frontend-design for color systems, typography, spacing, interaction states, and responsive design decisions.
+- **`/nextjs-app-router-patterns`** — Use for ALL route, page, layout, data fetching, and Server Component work. This is a Next.js App Router project.
+- **`/nextjs-best-practices`** — Use for Server Components, data fetching patterns, and routing decisions.
+- **`/react-best-practices`** — Use when writing or modifying any React component for performance patterns.
+- **`/composition-patterns`** — Use when building reusable components or refactoring component APIs.
+- **`/clean-code`** — Use when writing or reviewing any code for readability and maintainability.
+- **`/database-design`** — Use when modifying Prisma schema, writing queries, or designing data models.
+- **`/error-handling-patterns`** — Use when implementing server actions, API routes, or form handling.
+- **`/performance-optimizer`** — Use when there are opportunities to optimize queries, rendering, or bundle size.
+- **`/accessibility (accesslint-refactor, contrast-checker, link-purpose, use-of-color)`** — Use on all UI work to ensure WCAG compliance.
+- **`/simplify`** — Run after completing any feature to review for reuse, quality, and efficiency.
+- **`/web-design-guidelines`** — Use when building or reviewing UI pages.
+- **`/api-design-principles`** — Use when designing server actions or API routes.
+
+### When to apply skills
+
+- **Building UI:** frontend-design + ui-ux-pro-max + accessibility skills + web-design-guidelines + composition-patterns
+- **Building pages/routes:** nextjs-app-router-patterns + nextjs-best-practices + react-best-practices
+- **Data layer work:** database-design + error-handling-patterns + clean-code
+- **Server actions/APIs:** api-design-principles + error-handling-patterns + nextjs-best-practices
+- **After completing any task:** simplify + performance-optimizer
+
 ## Environment Variables
 
 Required in `.env.local`:

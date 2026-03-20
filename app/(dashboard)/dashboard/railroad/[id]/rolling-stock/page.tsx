@@ -2,10 +2,10 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Train } from "lucide-react";
+import { FreightCarFormDialog } from "@/components/freight-cars/freight-car-form-dialog";
+import { FreightCarCardList } from "@/components/freight-cars/freight-car-card-list";
 
 export default async function RollingStockPage({
   params,
@@ -28,54 +28,48 @@ export default async function RollingStockPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Freight Cars</h1>
-            <p className="text-muted-foreground">{layout.name}</p>
+            <h1 className="text-3xl font-bold tracking-tight">Freight Cars</h1>
+            <p className="text-sm text-muted-foreground tracking-wide">
+              {layout.name} — {layout.freightCars.length} car
+              {layout.freightCars.length !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Car
-        </Button>
+        <FreightCarFormDialog
+          layoutId={id}
+          trigger={
+            <Button className="transition-all duration-150 hover:shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Car
+            </Button>
+          }
+        />
       </div>
 
       {layout.freightCars.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No freight cars yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Add your first car to start building your inventory.
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted/60">
+            <Train className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-semibold">No freight cars yet</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Add boxcars, hoppers, tankers, gondolas, and flats to your car
+              inventory. Cars can be assigned commodities for waybill generation.
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.freightCars.map((car) => (
-            <Card key={car.id}>
-              <CardHeader>
-                <CardTitle>
-                  {car.reportingMarks} {car.number}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">{car.carType}</p>
-                <div className="flex gap-2">
-                  {car.aarTypeCode && (
-                    <Badge variant="outline">{car.aarTypeCode}</Badge>
-                  )}
-                  <Badge
-                    variant={
-                      car.status === "SERVICEABLE" ? "default" : "secondary"
-                    }
-                  >
-                    {car.status}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          </div>
+          <FreightCarFormDialog
+            layoutId={id}
+            trigger={
+              <Button variant="outline" className="mt-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Your First Car
+              </Button>
+            }
+          />
         </div>
+      ) : (
+        <FreightCarCardList freightCars={layout.freightCars} layoutId={id} />
       )}
     </div>
   );

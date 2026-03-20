@@ -2,10 +2,10 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Route } from "lucide-react";
+import { TrainFormDialog } from "@/components/trains/train-form-dialog";
+import { TrainCardList } from "@/components/trains/train-card-list";
 
 export default async function TrainsPage({
   params,
@@ -18,6 +18,12 @@ export default async function TrainsPage({
   const { id } = await params;
   const layout = await getLayout(id);
 
+  const locationOptions = layout.locations.map((l) => ({
+    id: l.id,
+    name: l.name,
+    code: l.code,
+  }));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -28,53 +34,55 @@ export default async function TrainsPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Trains</h1>
-            <p className="text-muted-foreground">{layout.name}</p>
+            <h1 className="text-3xl font-bold tracking-tight">Trains</h1>
+            <p className="text-sm text-muted-foreground tracking-wide">
+              {layout.name} — {layout.trains.length} train
+              {layout.trains.length !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Train
-        </Button>
+        <TrainFormDialog
+          layoutId={id}
+          locations={locationOptions}
+          trigger={
+            <Button className="transition-all duration-150 hover:shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Train
+            </Button>
+          }
+        />
       </div>
 
       {layout.trains.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No trains yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Create your first train to define consists, schedules, and stops.
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted/60">
+            <Route className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-semibold">No trains yet</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Define train services with numbers, classes, origin/destination,
+              and schedules. Trains are assigned consists during operating
+              sessions.
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.trains.map((train) => (
-            <Card key={train.id}>
-              <CardHeader>
-                <CardTitle>
-                  {train.trainName || `Train ${train.trainNumber}`}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  #{train.trainNumber}
-                  {train.departureTime && ` — Departs ${train.departureTime}`}
-                </p>
-                <div className="flex gap-2">
-                  <Badge variant="outline">{train.trainClass}</Badge>
-                  <Badge
-                    variant={train.isActive ? "default" : "secondary"}
-                  >
-                    {train.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          </div>
+          <TrainFormDialog
+            layoutId={id}
+            locations={locationOptions}
+            trigger={
+              <Button variant="outline" className="mt-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Your First Train
+              </Button>
+            }
+          />
         </div>
+      ) : (
+        <TrainCardList
+          trains={layout.trains}
+          locations={locationOptions}
+          layoutId={id}
+        />
       )}
     </div>
   );

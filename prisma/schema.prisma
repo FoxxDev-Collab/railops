@@ -163,6 +163,18 @@ enum AssetType {
   CABOOSE
 }
 
+enum Plan {
+  FREE
+  OPERATOR
+}
+
+enum CrewRole {
+  DISPATCHER
+  YARDMASTER
+  CONDUCTOR
+  VIEWER
+}
+
 // ─────────────────────────────────────────────
 // AUTH / SYSTEM
 // ─────────────────────────────────────────────
@@ -199,6 +211,12 @@ model User {
   updatedAt     DateTime  @updatedAt
   lastLoginAt   DateTime?
 
+  // Subscription
+  plan             Plan      @default(FREE)
+  stripeCustomerId String?   @unique
+  stripeSubId      String?   @unique
+  planExpiresAt    DateTime?
+
   // All user-owned resources
   layouts          Layout[]           @relation("UserLayouts")
   locations        Location[]
@@ -215,6 +233,7 @@ model User {
   sessions         OperatingSession[]
   maintenanceTasks MaintenanceTask[]
   badOrders        BadOrder[]
+  crewMemberships  CrewMember[]       @relation("CrewUser")
 
   @@index([email])
   @@index([role])
@@ -243,8 +262,30 @@ model Layout {
   trains          Train[]
   sessions        OperatingSession[]
   selectedByUsers User[]   @relation("SelectedLayout")
+  crewMembers     CrewMember[]
 
   @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// CREW (per-railroad role-based access)
+// ─────────────────────────────────────────────
+
+model CrewMember {
+  id        String   @id @default(cuid())
+  role      CrewRole @default(VIEWER)
+
+  userId    String
+  user      User     @relation("CrewUser", fields: [userId], references: [id], onDelete: Cascade)
+  layoutId  String
+  layout    Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+
+  invitedAt DateTime @default(now())
+  acceptedAt DateTime?
+
+  @@unique([userId, layoutId])
+  @@index([userId])
+  @@index([layoutId])
 }
 
 // ─────────────────────────────────────────────

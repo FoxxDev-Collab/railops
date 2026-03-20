@@ -2,10 +2,10 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, TrainFront } from "lucide-react";
+import { LocomotiveFormDialog } from "@/components/locomotives/locomotive-form-dialog";
+import { LocomotiveCardList } from "@/components/locomotives/locomotive-card-list";
 
 export default async function LocomotivesPage({
   params,
@@ -28,60 +28,48 @@ export default async function LocomotivesPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Locomotives</h1>
-            <p className="text-muted-foreground">{layout.name}</p>
+            <h1 className="text-3xl font-bold tracking-tight">Locomotives</h1>
+            <p className="text-sm text-muted-foreground tracking-wide">
+              {layout.name} — {layout.locomotives.length} unit
+              {layout.locomotives.length !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Locomotive
-        </Button>
+        <LocomotiveFormDialog
+          layoutId={id}
+          trigger={
+            <Button className="transition-all duration-150 hover:shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Locomotive
+            </Button>
+          }
+        />
       </div>
 
       {layout.locomotives.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No locomotives yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Add your first locomotive to start building your motive power
-              roster.
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted/60">
+            <TrainFront className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-semibold">No locomotives yet</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Add your first locomotive to build your roster. Include DCC
+              addressing and decoder details for operations.
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.locomotives.map((loco) => (
-            <Card key={loco.id}>
-              <CardHeader>
-                <CardTitle>
-                  {loco.road} {loco.number}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">{loco.model}</p>
-                <div className="flex gap-2">
-                  <Badge variant="outline">
-                    {loco.locomotiveType.replace("_", " ")}
-                  </Badge>
-                  <Badge
-                    variant={
-                      loco.status === "SERVICEABLE" ? "default" : "secondary"
-                    }
-                  >
-                    {loco.status}
-                  </Badge>
-                </div>
-                {loco.dccAddress && (
-                  <p className="text-xs text-muted-foreground">
-                    DCC: {loco.dccAddress}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          </div>
+          <LocomotiveFormDialog
+            layoutId={id}
+            trigger={
+              <Button variant="outline" className="mt-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Your First Locomotive
+              </Button>
+            }
+          />
         </div>
+      ) : (
+        <LocomotiveCardList locomotives={layout.locomotives} layoutId={id} />
       )}
     </div>
   );
