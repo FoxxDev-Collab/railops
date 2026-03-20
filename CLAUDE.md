@@ -35,7 +35,19 @@ npx tsx scripts/create-admin.ts  # Create admin user
 
 ### Domain Models (Prisma)
 
-All user-owned resources cascade delete from User. Layout is the top-level container. Hierarchy: **User → Layout → Station → Industry**. Rolling stock and engines belong to a layout. Routes have ordered stops (RouteStop). Waybills link a car to a route with origin/destination stations. OperatingSession groups routes via SessionRoute join table.
+All user-owned resources cascade delete from User. Layout is the top-level railroad container.
+
+**Locations:** Unified `Location` model with `locationType` enum (PASSENGER_STATION, YARD, INTERCHANGE, JUNCTION, STAGING, TEAM_TRACK, SIDING). `Industry` is a child of Location. `YardTrack` models internal yard tracks (ARRIVAL, CLASSIFICATION, DEPARTURE, RIP, etc.).
+
+**Rolling Stock:** Separate tables per type — `Locomotive` (with DCC fields), `FreightCar` (with AAR codes), `PassengerCar`, `MOWEquipment`, `Caboose`. All share `RollingStockStatus` enum and `currentLocationId`.
+
+**Trains:** `Train` replaces Route (with trainClass, serviceType, origin/destination). `TrainStop` for ordered stops. `TrainConsist` composes a train for a session. `ConsistPosition` uses polymorphic nullable FKs to reference any rolling stock type.
+
+**Waybills:** Four-panel system. `Waybill` → `WaybillPanel` (1-4 panels, each with load status, commodity, origin/destination, shipper/consignee industry). `CarCard` links a FreightCar to its current Waybill and physical location.
+
+**Operations:** `OperatingSession` → `SessionTrain`. `SwitchList` → `SwitchListEntry` (denormalized for printing).
+
+**Maintenance:** `MaintenanceTask` and `BadOrder` use polymorphic FKs + `AssetType` discriminator to reference any rolling stock type.
 
 ### UI Components
 

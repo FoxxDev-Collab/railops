@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 
-export default async function StationsPage({
+export default async function LocationsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -27,46 +28,50 @@ export default async function StationsPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Stations & Yards</h1>
+            <h1 className="text-3xl font-bold">Locations</h1>
             <p className="text-muted-foreground">{layout.name}</p>
           </div>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Station
+          Add Location
         </Button>
       </div>
 
-      {layout.stations.length === 0 ? (
+      {layout.locations.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>No stations yet</CardTitle>
+            <CardTitle>No locations yet</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Add your first station to start building your railroad network.
+              Add stations, yards, interchanges, and sidings to build your
+              railroad network.
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.stations.map((station) => (
-            <Card key={station.id}>
+          {layout.locations.map((location) => (
+            <Card key={location.id}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>{station.name}</span>
+                  <span>{location.name}</span>
                   <span className="text-xs font-mono text-muted-foreground">
-                    {station.code}
+                    {location.code}
                   </span>
                 </CardTitle>
               </CardHeader>
-              {station.location && (
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {station.location}
+              <CardContent>
+                <Badge variant="outline">
+                  {location.locationType.replace("_", " ")}
+                </Badge>
+                {location.description && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {location.description}
                   </p>
-                </CardContent>
-              )}
+                )}
+              </CardContent>
             </Card>
           ))}
         </div>

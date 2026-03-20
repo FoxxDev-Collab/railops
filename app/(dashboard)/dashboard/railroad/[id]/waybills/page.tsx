@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 import { db } from "@/lib/db";
@@ -19,14 +20,10 @@ export default async function WaybillsPage({
   const layout = await getLayout(id);
 
   const waybills = await db.waybill.findMany({
-    where: {
-      userId: session.user.id,
-      route: { layoutId: id },
-    },
+    where: { userId: session.user.id },
     include: {
-      car: true,
-      origin: true,
-      destination: true,
+      panels: { orderBy: { panelNumber: "asc" } },
+      carCard: { include: { freightCar: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -47,7 +44,7 @@ export default async function WaybillsPage({
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Generate Waybill
+          Create Waybill
         </Button>
       </div>
 
@@ -58,40 +55,51 @@ export default async function WaybillsPage({
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Generate your first waybill once you have stations, rolling stock,
-              and routes configured.
+              Create waybills to route freight cars between locations and
+              industries on your railroad.
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {waybills.map((waybill) => (
-            <Card key={waybill.id}>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  {waybill.car.reportingMarks} {waybill.car.number}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1 text-sm">
-                <p>
-                  <span className="text-muted-foreground">Commodity:</span>{" "}
-                  {waybill.commodity}
-                </p>
-                <p>
-                  <span className="text-muted-foreground">From:</span>{" "}
-                  {waybill.origin.name}
-                </p>
-                <p>
-                  <span className="text-muted-foreground">To:</span>{" "}
-                  {waybill.destination.name}
-                </p>
-                <p>
-                  <span className="text-muted-foreground">Status:</span>{" "}
-                  {waybill.status}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          {waybills.map((waybill) => {
+            const activePanel = waybill.panels.find(
+              (p) => p.panelNumber === waybill.currentPanel
+            );
+            return (
+              <Card key={waybill.id}>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span>
+                      {waybill.carCard?.freightCar
+                        ? `${waybill.carCard.freightCar.reportingMarks} ${waybill.carCard.freightCar.number}`
+                        : "Unassigned"}
+                    </span>
+                    <Badge variant="outline">{waybill.status}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  {activePanel && (
+                    <>
+                      <p>
+                        <span className="text-muted-foreground">Panel:</span>{" "}
+                        {activePanel.panelNumber} of {waybill.panels.length}
+                      </p>
+                      {activePanel.commodity && (
+                        <p>
+                          <span className="text-muted-foreground">
+                            Commodity:
+                          </span>{" "}
+                          {activePanel.commodity}
+                        </p>
+                      )}
+                      <Badge variant="secondary">{activePanel.loadStatus}</Badge>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

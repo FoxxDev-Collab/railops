@@ -24,33 +24,33 @@ import { Button } from "@/components/ui/button";
 
 const sections = [
   {
-    href: "stations",
-    label: "Stations & Yards",
-    description: "Manage stations, yards, and their industries",
+    href: "locations",
+    label: "Locations",
+    description: "Stations, yards, interchanges, sidings, and industries",
     icon: MapPin,
   },
   {
-    href: "rolling-stock",
-    label: "Rolling Stock",
-    description: "Car inventory — boxcars, hoppers, tankers, and more",
-    icon: Train,
-  },
-  {
-    href: "engines",
-    label: "Engines",
-    description: "Locomotive roster and assignments",
+    href: "locomotives",
+    label: "Locomotives",
+    description: "Locomotive roster, DCC settings, and assignments",
     icon: TrainFront,
   },
   {
-    href: "routes",
-    label: "Routes",
-    description: "Train routes, schedules, and stop sequences",
+    href: "rolling-stock",
+    label: "Freight Cars",
+    description: "Boxcars, hoppers, tankers, gondolas, and flats",
+    icon: Train,
+  },
+  {
+    href: "trains",
+    label: "Trains",
+    description: "Train consists, schedules, and stop sequences",
     icon: Route,
   },
   {
     href: "waybills",
     label: "Waybills",
-    description: "Generate and manage shipping waybills",
+    description: "Four-panel waybill system and car cards",
     icon: FileText,
   },
   {
@@ -105,11 +105,11 @@ export default async function RailroadPage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Stations
+              Locations
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{layout.stations.length}</div>
+            <div className="text-2xl font-bold">{layout.locations.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -120,18 +120,18 @@ export default async function RailroadPage({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {layout.rollingStock.length}
+              {layout.locomotives.length + layout.freightCars.length}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Routes
+              Trains
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{layout.routes.length}</div>
+            <div className="text-2xl font-bold">{layout.trains.length}</div>
           </CardContent>
         </Card>
       </div>

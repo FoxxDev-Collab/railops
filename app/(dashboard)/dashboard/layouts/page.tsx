@@ -72,18 +72,18 @@ export default async function LayoutsPage() {
                     </p>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Stations:</span>
-                    <span className="font-medium">{layout._count.stations}</span>
+                    <span className="text-muted-foreground">Locations:</span>
+                    <span className="font-medium">{layout._count.locations}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Rolling Stock:</span>
                     <span className="font-medium">
-                      {layout._count.rollingStock}
+                      {layout._count.freightCars + layout._count.locomotives}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Routes:</span>
-                    <span className="font-medium">{layout._count.routes}</span>
+                    <span className="text-muted-foreground">Trains:</span>
+                    <span className="font-medium">{layout._count.trains}</span>
                   </div>
                 </div>
               </CardContent>

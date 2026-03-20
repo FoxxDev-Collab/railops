@@ -27,9 +27,10 @@ import { toast } from "sonner";
 type UserWithCounts = User & {
   _count: {
     layouts: number;
-    stations: number;
-    rollingStock: number;
-    routes: number;
+    locations: number;
+    freightCars: number;
+    locomotives: number;
+    trains: number;
   };
 };
 
@@ -68,8 +69,8 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
             <TableHead>Role</TableHead>
             <TableHead>Verified</TableHead>
             <TableHead>Layouts</TableHead>
-            <TableHead>Stations</TableHead>
-            <TableHead>Rolling Stock</TableHead>
+            <TableHead>Locations</TableHead>
+            <TableHead>Stock</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -90,8 +91,8 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
                 </Badge>
               </TableCell>
               <TableCell>{user._count.layouts}</TableCell>
-              <TableCell>{user._count.stations}</TableCell>
-              <TableCell>{user._count.rollingStock}</TableCell>
+              <TableCell>{user._count.locations}</TableCell>
+              <TableCell>{user._count.freightCars + user._count.locomotives}</TableCell>
               <TableCell>
                 {new Date(user.createdAt).toLocaleDateString()}
               </TableCell>

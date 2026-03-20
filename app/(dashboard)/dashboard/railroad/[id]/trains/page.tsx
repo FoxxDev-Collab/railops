@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 
-export default async function RoutesPage({
+export default async function TrainsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -27,39 +28,49 @@ export default async function RoutesPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Routes</h1>
+            <h1 className="text-3xl font-bold">Trains</h1>
             <p className="text-muted-foreground">{layout.name}</p>
           </div>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Route
+          Add Train
         </Button>
       </div>
 
-      {layout.routes.length === 0 ? (
+      {layout.trains.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>No routes yet</CardTitle>
+            <CardTitle>No trains yet</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Create your first route to define train schedules and stops.
+              Create your first train to define consists, schedules, and stops.
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.routes.map((route) => (
-            <Card key={route.id}>
+          {layout.trains.map((train) => (
+            <Card key={train.id}>
               <CardHeader>
-                <CardTitle>{route.name}</CardTitle>
+                <CardTitle>
+                  {train.trainName || `Train ${train.trainNumber}`}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  {route.number && `#${route.number} — `}
-                  {route.isActive ? "Active" : "Inactive"}
+                  #{train.trainNumber}
+                  {train.departureTime && ` — Departs ${train.departureTime}`}
                 </p>
+                <div className="flex gap-2">
+                  <Badge variant="outline">{train.trainClass}</Badge>
+                  <Badge
+                    variant={train.isActive ? "default" : "secondary"}
+                  >
+                    {train.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
               </CardContent>
             </Card>
           ))}

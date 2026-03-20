@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,15 +8,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
 enum Role {
   USER
   ADMIN
-}
-
-enum WaybillStatus {
-  PENDING
-  IN_TRANSIT
-  DELIVERED
 }
 
 enum TokenType {
@@ -27,9 +22,154 @@ enum TokenType {
   PASSWORD_RESET
 }
 
+enum LocationType {
+  PASSENGER_STATION
+  YARD
+  INTERCHANGE
+  JUNCTION
+  STAGING
+  TEAM_TRACK
+  SIDING
+}
+
+enum YardTrackType {
+  ARRIVAL
+  CLASSIFICATION
+  DEPARTURE
+  LEAD
+  RIP
+  ENGINE_SERVICE
+  CABOOSE
+  RUNAROUND
+  SWITCHER_POCKET
+}
+
+enum LocomotiveType {
+  STEAM
+  DIESEL_SWITCHER
+  DIESEL_ROAD
+  DIESEL_CAB
+  ELECTRIC
+}
+
+enum LocomotiveService {
+  ROAD_FREIGHT
+  PASSENGER
+  YARD_SWITCHER
+  HELPER
+}
+
+enum RollingStockStatus {
+  SERVICEABLE
+  BAD_ORDER
+  STORED
+  RETIRED
+}
+
+enum PassengerCarType {
+  COACH
+  SLEEPER
+  DINER
+  LOUNGE
+  BAGGAGE
+  RPO
+  COMBINE
+  OBSERVATION
+}
+
+enum ClassOfService {
+  FIRST
+  BUSINESS
+  COACH
+}
+
+enum CabooseType {
+  STANDARD
+  EXTENDED_VISION
+  BAY_WINDOW
+  TRANSFER
+  BOBBER
+}
+
+enum MOWEquipmentType {
+  BALLAST_CAR
+  CRANE
+  TOOL_CAR
+  TAMPER
+  SPREADER
+  FLAT_WITH_RAILS
+  WEED_SPRAYER
+  SCALE_TEST
+  OTHER
+}
+
+enum TrainClass {
+  MANIFEST
+  UNIT
+  INTERMODAL
+  LOCAL
+  PASSENGER
+  WORK
+  LIGHT_ENGINE
+}
+
+enum TrainServiceType {
+  FREIGHT
+  PASSENGER
+  MIXED
+  MOW
+}
+
+enum WaybillStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  RETURNED_EMPTY
+}
+
+enum LoadStatus {
+  LOADED
+  EMPTY
+}
+
+enum SessionStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum MaintenanceType {
+  ROUTINE
+  REPAIR
+  INSPECTION
+  CLEANING
+  WEATHERING
+  DCC_PROGRAMMING
+}
+
+enum MaintenanceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  DEFERRED
+}
+
+enum AssetType {
+  LOCOMOTIVE
+  FREIGHT_CAR
+  PASSENGER_CAR
+  MOW_EQUIPMENT
+  CABOOSE
+}
+
+// ─────────────────────────────────────────────
+// AUTH / SYSTEM
+// ─────────────────────────────────────────────
+
 model VerificationToken {
   id      String    @id @default(cuid())
-  token   String    @unique // SHA-256 hash of the actual token
+  token   String    @unique
   email   String
   type    TokenType
   expires DateTime
@@ -39,33 +179,42 @@ model VerificationToken {
   @@index([email, type])
 }
 
+// ─────────────────────────────────────────────
+// USER & LAYOUT
+// ─────────────────────────────────────────────
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  password      String    // hashed with bcryptjs
+  password      String
   name          String?
   role          Role      @default(USER)
   emailVerified DateTime?
   image         String?
 
-  // Selected layout for context
   selectedLayoutId String?
   selectedLayout   Layout?   @relation("SelectedLayout", fields: [selectedLayoutId], references: [id], onDelete: SetNull)
 
-  // Timestamps
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   lastLoginAt   DateTime?
 
-  // Relations - all user-owned resources
-  layouts       Layout[]  @relation("UserLayouts")
-  stations      Station[]
-  industries    Industry[]
-  rollingStock  RollingStock[]
-  engines       Engine[]
-  routes        Route[]
-  waybills      Waybill[]
-  sessions      OperatingSession[]
+  // All user-owned resources
+  layouts          Layout[]           @relation("UserLayouts")
+  locations        Location[]
+  industries       Industry[]
+  yardTracks       YardTrack[]
+  locomotives      Locomotive[]
+  freightCars      FreightCar[]
+  passengerCars    PassengerCar[]
+  mowEquipment     MOWEquipment[]
+  cabooses         Caboose[]
+  trains           Train[]
+  waybills         Waybill[]
+  carCards         CarCard[]
+  sessions         OperatingSession[]
+  maintenanceTasks MaintenanceTask[]
+  badOrders        BadOrder[]
 
   @@index([email])
   @@index([role])
@@ -75,7 +224,8 @@ model Layout {
   id          String   @id @default(cuid())
   name        String
   description String?
-  scale       String?  // HO, N, O, etc.
+  scale       String?  // HO, N, O, G, Z, S
+  era         String?  // "1950s", "Modern", "Transition"
   imageUrl    String?
 
   userId      String
@@ -84,217 +234,605 @@ model Layout {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  stations    Station[]
-  rollingStock RollingStock[]
-  engines     Engine[]
-  routes      Route[]
-  sessions    OperatingSession[]
-  selectedByUsers User[] @relation("SelectedLayout")
+  locations       Location[]
+  locomotives     Locomotive[]
+  freightCars     FreightCar[]
+  passengerCars   PassengerCar[]
+  mowEquipment    MOWEquipment[]
+  cabooses        Caboose[]
+  trains          Train[]
+  sessions        OperatingSession[]
+  selectedByUsers User[]   @relation("SelectedLayout")
 
   @@index([userId])
 }
 
-model Station {
-  id          String   @id @default(cuid())
-  name        String
-  code        String   // Short code like "NYC", "BOS"
-  location    String?
-  population  Int?
-  imageUrl    String?
-  latitude    Float?
-  longitude   Float?
+// ─────────────────────────────────────────────
+// LOCATIONS (replaces Station)
+// ─────────────────────────────────────────────
 
-  layoutId    String
-  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Location {
+  id           String       @id @default(cuid())
+  name         String
+  code         String
+  locationType LocationType
+  description  String?
+  latitude     Float?
+  longitude    Float?
+  population   Int?
+  imageUrl     String?
+  sortOrder    Int          @default(0)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  layoutId     String
+  layout       Layout       @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  industries  Industry[]
-  homeOfStock RollingStock[]
-  routeStops  RouteStop[]
-  waybillOrigins Waybill[] @relation("WaybillOrigin")
-  waybillDestinations Waybill[] @relation("WaybillDestination")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
+  industries          Industry[]
+  yardTracks          YardTrack[]
+  trainStops          TrainStop[]
+
+  // Current location of rolling stock
+  locomotivesHere     Locomotive[]   @relation("LocomotiveCurrentLocation")
+  freightCarsHere     FreightCar[]   @relation("FreightCarCurrentLocation")
+  passengerCarsHere   PassengerCar[] @relation("PassengerCarCurrentLocation")
+  mowEquipmentHere    MOWEquipment[] @relation("MOWCurrentLocation")
+  caboosesHere        Caboose[]      @relation("CabooseCurrentLocation")
+
+  // Train origin/destination
+  trainsOriginating   Train[]        @relation("TrainOrigin")
+  trainsTerminating   Train[]        @relation("TrainDestination")
+
+  // Waybill panels
+  waybillPanelOrigins      WaybillPanel[] @relation("PanelOrigin")
+  waybillPanelDestinations WaybillPanel[] @relation("PanelDestination")
+
+  carCardsHere        CarCard[]
+  badOrdersHere       BadOrder[]
+
+  @@unique([code, layoutId])
   @@index([userId, layoutId])
-  @@index([code])
+  @@index([locationType])
 }
 
 model Industry {
-  id          String   @id @default(cuid())
-  name        String
-  type        String   // Manufacturer, Warehouse, Coal Mine, etc.
-  capacity    Int?
-  spotCount   Int?     // Number of car spots
-  trackLength Float?   // In feet
+  id             String   @id @default(cuid())
+  name           String
+  type           String   // Manufacturer, Warehouse, Coal Mine, etc.
+  capacity       Int?
+  spotCount      Int?
+  trackLength    Float?
+  description    String?
+  commoditiesIn  String[]
+  commoditiesOut String[]
 
-  stationId   String
-  station     Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId     String
+  location       Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@index([userId, stationId])
+  waybillPanelsAsShipper   WaybillPanel[] @relation("PanelShipper")
+  waybillPanelsAsConsignee WaybillPanel[] @relation("PanelConsignee")
+
+  @@index([userId, locationId])
 }
 
-model RollingStock {
-  id              String   @id @default(cuid())
-  reportingMarks  String   // e.g., "UP", "ATSF"
-  number          String
-  carType         String   // Boxcar, Hopper, Tank, etc.
-  subtype         String?
-  length          Float?   // In feet
-  commodities     String[] // Array of commodities this car can carry
-  imageUrl        String?
+model YardTrack {
+  id        String        @id @default(cuid())
+  name      String
+  trackType YardTrackType
+  capacity  Int
+  length    Float?
+  sortOrder Int           @default(0)
 
-  homeStationId   String?
-  homeStation     Station? @relation(fields: [homeStationId], references: [id], onDelete: SetNull)
-  layoutId        String
-  layout          Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId String
+  location   Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
-  // Relations
-  waybills        Waybill[]
+  carCardsHere CarCard[]
+
+  @@index([userId, locationId])
+}
+
+// ─────────────────────────────────────────────
+// ROLLING STOCK
+// ─────────────────────────────────────────────
+
+model Locomotive {
+  id                  String             @id @default(cuid())
+  road                String
+  number              String
+  model               String             // "SD40-2", "GP38", "2-8-2"
+  locomotiveType      LocomotiveType
+  serviceType         LocomotiveService  @default(ROAD_FREIGHT)
+  horsepower          Int?
+  status              RollingStockStatus @default(SERVICEABLE)
+
+  // DCC
+  dccAddress          Int?
+  decoderManufacturer String?
+  decoderModel        String?
+  hasSound            Boolean            @default(false)
+
+  length              Float?
+  fuelType            String?
+  canPull             Int?
+  imageUrl            String?
+
+  currentLocationId   String?
+  currentLocation     Location?          @relation("LocomotiveCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
+
+  layoutId            String
+  layout              Layout             @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  consistPositions    ConsistPosition[]
+  maintenanceTasks    MaintenanceTask[]  @relation("LocomotiveMaintenance")
+  badOrders           BadOrder[]         @relation("LocomotiveBadOrder")
+
+  @@unique([road, number, userId])
+  @@index([userId, layoutId])
+  @@index([status])
+}
+
+model FreightCar {
+  id             String             @id @default(cuid())
+  reportingMarks String
+  number         String
+  carType        String             // Boxcar, Hopper, Tank, Gondola, Flat
+  aarTypeCode    String?            // "XM", "HT", "TM", "FM"
+  subtype        String?
+  length         Float?
+  capacity       Int?               // Weight capacity in tons
+  homeRoad       String?
+  status         RollingStockStatus @default(SERVICEABLE)
+  commodities    String[]
+  imageUrl       String?
+
+  currentLocationId String?
+  currentLocation   Location?        @relation("FreightCarCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
+
+  layoutId       String
+  layout         Layout             @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  consistPositions ConsistPosition[]
+  carCard          CarCard?
+  maintenanceTasks MaintenanceTask[]  @relation("FreightCarMaintenance")
+  badOrders        BadOrder[]         @relation("FreightCarBadOrder")
+
+  @@unique([reportingMarks, number, userId])
+  @@index([userId, layoutId])
+  @@index([status])
+}
+
+model PassengerCar {
+  id             String             @id @default(cuid())
+  reportingMarks String
+  number         String
+  carName        String?
+  carType        PassengerCarType
+  seats          Int?
+  berths         Int?
+  classOfService ClassOfService     @default(COACH)
+  length         Float?
+  status         RollingStockStatus @default(SERVICEABLE)
+  imageUrl       String?
+
+  currentLocationId String?
+  currentLocation   Location?        @relation("PassengerCarCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
+
+  layoutId       String
+  layout         Layout             @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  consistPositions ConsistPosition[]
+  maintenanceTasks MaintenanceTask[]  @relation("PassengerCarMaintenance")
+  badOrders        BadOrder[]         @relation("PassengerCarBadOrder")
 
   @@unique([reportingMarks, number, userId])
   @@index([userId, layoutId])
 }
 
-model Engine {
-  id          String   @id @default(cuid())
-  road        String   // Railroad company
-  number      String
-  model       String
-  type        String   // Diesel, Steam, Electric
-  horsepower  Int?
-  fuelType    String?
-  canPull     Int?     // Number of cars
-  imageUrl    String?
+model MOWEquipment {
+  id             String             @id @default(cuid())
+  reportingMarks String
+  number         String
+  equipmentType  MOWEquipmentType
+  description    String?
+  length         Float?
+  status         RollingStockStatus @default(SERVICEABLE)
+  imageUrl       String?
 
-  layoutId    String
-  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentLocationId String?
+  currentLocation   Location?        @relation("MOWCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  layoutId       String
+  layout         Layout             @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  routes      Route[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
-  @@unique([road, number, userId])
+  consistPositions ConsistPosition[]
+  maintenanceTasks MaintenanceTask[]  @relation("MOWMaintenance")
+  badOrders        BadOrder[]         @relation("MOWBadOrder")
+
+  @@unique([reportingMarks, number, userId])
   @@index([userId, layoutId])
 }
 
-model Route {
-  id            String   @id @default(cuid())
-  name          String
-  number        String?
-  symbol        String?  // Route symbol/logo
-  departureTime String?
-  isActive      Boolean  @default(true)
+model Caboose {
+  id             String             @id @default(cuid())
+  reportingMarks String
+  number         String
+  cabooseType    CabooseType        @default(STANDARD)
+  road           String?
+  length         Float?
+  status         RollingStockStatus @default(SERVICEABLE)
+  imageUrl       String?
 
-  engineId      String?
-  engine        Engine?  @relation(fields: [engineId], references: [id], onDelete: SetNull)
+  currentLocationId String?
+  currentLocation   Location?        @relation("CabooseCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
+
+  layoutId       String
+  layout         Layout             @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  consistPositions ConsistPosition[]
+  maintenanceTasks MaintenanceTask[]  @relation("CabooseMaintenance")
+  badOrders        BadOrder[]         @relation("CabooseBadOrder")
+
+  @@unique([reportingMarks, number, userId])
+  @@index([userId, layoutId])
+}
+
+// ─────────────────────────────────────────────
+// TRAINS & CONSISTS (replaces Route)
+// ─────────────────────────────────────────────
+
+model Train {
+  id            String           @id @default(cuid())
+  trainNumber   String
+  trainName     String?
+  trainClass    TrainClass       @default(MANIFEST)
+  serviceType   TrainServiceType @default(FREIGHT)
+  departureTime String?
+  isActive      Boolean          @default(true)
+  symbol        String?
+  description   String?
+
+  originId      String?
+  origin        Location?        @relation("TrainOrigin", fields: [originId], references: [id], onDelete: SetNull)
+  destinationId String?
+  destination   Location?        @relation("TrainDestination", fields: [destinationId], references: [id], onDelete: SetNull)
+
   layoutId      String
-  layout        Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  layout        Layout           @relation(fields: [layoutId], references: [id], onDelete: Cascade)
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  stops         TrainStop[]
+  consists      TrainConsist[]
+  sessionTrains SessionTrain[]
+
+  @@unique([trainNumber, layoutId])
+  @@index([userId, layoutId])
+}
+
+model TrainStop {
+  id            String   @id @default(cuid())
+  stopOrder     Int
+  arrivalTime   String?
+  departureTime String?
+  instructions  String?
+
+  trainId       String
+  train         Train    @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  locationId    String
+  location      Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 
-  // Relations
-  stops         RouteStop[]
-  waybills      Waybill[]
-  sessions      SessionRoute[]
+  switchListEntries SwitchListEntry[]
 
-  @@index([userId, layoutId])
+  @@unique([trainId, stopOrder])
+  @@index([trainId])
 }
 
-model RouteStop {
-  id             String   @id @default(cuid())
-  order          Int      // Stop sequence number
-  arrivalTime    String?
-  departureTime  String?
+model TrainConsist {
+  id        String             @id @default(cuid())
 
-  routeId        String
-  route          Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  stationId      String
-  station        Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  trainId   String
+  train     Train              @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  sessionId String?
+  session   OperatingSession?  @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  positions   ConsistPosition[]
+  switchLists SwitchList[]
+
+  @@index([trainId])
+  @@index([sessionId])
+}
+
+// Polymorphic: exactly one rolling stock FK must be set (enforced in app code)
+model ConsistPosition {
+  id             String   @id @default(cuid())
+  position       Int
+  facing         String?  // "F" or "R"
+
+  consistId      String
+  consist        TrainConsist @relation(fields: [consistId], references: [id], onDelete: Cascade)
+
+  locomotiveId   String?
+  locomotive     Locomotive?   @relation(fields: [locomotiveId], references: [id], onDelete: Cascade)
+  freightCarId   String?
+  freightCar     FreightCar?   @relation(fields: [freightCarId], references: [id], onDelete: Cascade)
+  passengerCarId String?
+  passengerCar   PassengerCar? @relation(fields: [passengerCarId], references: [id], onDelete: Cascade)
+  mowEquipmentId String?
+  mowEquipment   MOWEquipment? @relation(fields: [mowEquipmentId], references: [id], onDelete: Cascade)
+  cabooseId      String?
+  caboose        Caboose?      @relation(fields: [cabooseId], references: [id], onDelete: Cascade)
 
   createdAt      DateTime @default(now())
 
-  @@unique([routeId, order])
-  @@index([routeId])
+  @@unique([consistId, position])
+  @@index([consistId])
 }
 
+// ─────────────────────────────────────────────
+// WAYBILL SYSTEM (four-panel + car cards)
+// ─────────────────────────────────────────────
+
 model Waybill {
-  id               String        @id @default(cuid())
-  commodity        String
-  weight           Float?
-  pickupLocation   String?
-  setoutLocation   String?
-  status           WaybillStatus @default(PENDING)
+  id           String        @id @default(cuid())
+  status       WaybillStatus @default(PENDING)
+  currentPanel Int           @default(1)
+  isReturnable Boolean       @default(true)
+  notes        String?
 
-  carId            String
-  car              RollingStock  @relation(fields: [carId], references: [id], onDelete: Cascade)
-  routeId          String
-  route            Route         @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  originId         String
-  origin           Station       @relation("WaybillOrigin", fields: [originId], references: [id], onDelete: Cascade)
-  destinationId    String
-  destination      Station       @relation("WaybillDestination", fields: [destinationId], references: [id], onDelete: Cascade)
-  userId           String
-  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  @@index([userId, routeId])
+  panels       WaybillPanel[]
+  carCard      CarCard?
+
+  @@index([userId])
   @@index([status])
 }
 
-model OperatingSession {
+model WaybillPanel {
+  id                  String     @id @default(cuid())
+  panelNumber         Int        // 1-4
+  loadStatus          LoadStatus
+  commodity           String?
+  weight              Float?
+  specialInstructions String?
+  routeVia            String?
+
+  waybillId           String
+  waybill             Waybill    @relation(fields: [waybillId], references: [id], onDelete: Cascade)
+
+  originId            String?
+  origin              Location?  @relation("PanelOrigin", fields: [originId], references: [id], onDelete: SetNull)
+  shipperIndustryId   String?
+  shipperIndustry     Industry?  @relation("PanelShipper", fields: [shipperIndustryId], references: [id], onDelete: SetNull)
+
+  destinationId       String?
+  destination         Location?  @relation("PanelDestination", fields: [destinationId], references: [id], onDelete: SetNull)
+  consigneeIndustryId String?
+  consigneeIndustry   Industry?  @relation("PanelConsignee", fields: [consigneeIndustryId], references: [id], onDelete: SetNull)
+
+  createdAt           DateTime   @default(now())
+
+  @@unique([waybillId, panelNumber])
+  @@index([waybillId])
+}
+
+model CarCard {
+  id                 String     @id @default(cuid())
+
+  freightCarId       String     @unique
+  freightCar         FreightCar @relation(fields: [freightCarId], references: [id], onDelete: Cascade)
+
+  waybillId          String?    @unique
+  waybill            Waybill?   @relation(fields: [waybillId], references: [id], onDelete: SetNull)
+
+  currentLocationId  String?
+  currentLocation    Location?  @relation(fields: [currentLocationId], references: [id], onDelete: SetNull)
+  currentYardTrackId String?
+  currentYardTrack   YardTrack? @relation(fields: [currentYardTrackId], references: [id], onDelete: SetNull)
+
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// SWITCH LISTS
+// ─────────────────────────────────────────────
+
+model SwitchList {
   id          String   @id @default(cuid())
-  name        String
-  date        DateTime
+  generatedAt DateTime @default(now())
   notes       String?
 
+  consistId   String
+  consist     TrainConsist @relation(fields: [consistId], references: [id], onDelete: Cascade)
+
+  entries     SwitchListEntry[]
+
+  @@index([consistId])
+}
+
+model SwitchListEntry {
+  id              String   @id @default(cuid())
+  action          String   // "PICKUP" or "SETOUT"
+  carDescription  String   // Denormalized: "UP 123456 (Boxcar)"
+  commodity       String?
+  destinationDesc String?
+  trackAssignment String?
+  sortOrder       Int      @default(0)
+
+  switchListId    String
+  switchList      SwitchList @relation(fields: [switchListId], references: [id], onDelete: Cascade)
+
+  trainStopId     String?
+  trainStop       TrainStop? @relation(fields: [trainStopId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime @default(now())
+
+  @@index([switchListId])
+}
+
+// ─────────────────────────────────────────────
+// OPERATING SESSIONS
+// ─────────────────────────────────────────────
+
+model OperatingSession {
+  id          String        @id @default(cuid())
+  name        String
+  date        DateTime
+  status      SessionStatus @default(PLANNED)
+  notes       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+
   layoutId    String
-  layout      Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  layout      Layout        @relation(fields: [layoutId], references: [id], onDelete: Cascade)
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  // Relations
-  routes      SessionRoute[]
+  sessionTrains  SessionTrain[]
+  trainConsists  TrainConsist[]
 
   @@index([userId, layoutId])
   @@index([date])
 }
 
-model SessionRoute {
+model SessionTrain {
   id        String           @id @default(cuid())
+  status    String?
 
   sessionId String
   session   OperatingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  routeId   String
-  route     Route            @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  trainId   String
+  train     Train            @relation(fields: [trainId], references: [id], onDelete: Cascade)
 
   createdAt DateTime         @default(now())
 
-  @@unique([sessionId, routeId])
+  @@unique([sessionId, trainId])
+}
+
+// ─────────────────────────────────────────────
+// MAINTENANCE & BAD ORDERS
+// ─────────────────────────────────────────────
+
+model MaintenanceTask {
+  id              String            @id @default(cuid())
+  assetType       AssetType
+  maintenanceType MaintenanceType
+  description     String
+  status          MaintenanceStatus @default(PENDING)
+  dueDate         DateTime?
+  completedDate   DateTime?
+  cost            Float?
+  notes           String?
+
+  locomotiveId    String?
+  locomotive      Locomotive?   @relation("LocomotiveMaintenance", fields: [locomotiveId], references: [id], onDelete: Cascade)
+  freightCarId    String?
+  freightCar      FreightCar?   @relation("FreightCarMaintenance", fields: [freightCarId], references: [id], onDelete: Cascade)
+  passengerCarId  String?
+  passengerCar    PassengerCar? @relation("PassengerCarMaintenance", fields: [passengerCarId], references: [id], onDelete: Cascade)
+  mowEquipmentId  String?
+  mowEquipment    MOWEquipment? @relation("MOWMaintenance", fields: [mowEquipmentId], references: [id], onDelete: Cascade)
+  cabooseId       String?
+  caboose         Caboose?      @relation("CabooseMaintenance", fields: [cabooseId], references: [id], onDelete: Cascade)
+
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([assetType, status])
+}
+
+model BadOrder {
+  id                String    @id @default(cuid())
+  assetType         AssetType
+  defectDescription String
+  reportedDate      DateTime  @default(now())
+  resolvedDate      DateTime?
+  resolution        String?
+  isResolved        Boolean   @default(false)
+
+  locationId        String?
+  location          Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  locomotiveId      String?
+  locomotive        Locomotive?   @relation("LocomotiveBadOrder", fields: [locomotiveId], references: [id], onDelete: Cascade)
+  freightCarId      String?
+  freightCar        FreightCar?   @relation("FreightCarBadOrder", fields: [freightCarId], references: [id], onDelete: Cascade)
+  passengerCarId    String?
+  passengerCar      PassengerCar? @relation("PassengerCarBadOrder", fields: [passengerCarId], references: [id], onDelete: Cascade)
+  mowEquipmentId    String?
+  mowEquipment      MOWEquipment? @relation("MOWBadOrder", fields: [mowEquipmentId], references: [id], onDelete: Cascade)
+  cabooseId         String?
+  caboose           Caboose?      @relation("CabooseBadOrder", fields: [cabooseId], references: [id], onDelete: Cascade)
+
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([isResolved])
 }

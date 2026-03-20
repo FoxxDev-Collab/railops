@@ -25,9 +25,10 @@ export async function getAllUsers() {
       _count: {
         select: {
           layouts: true,
-          stations: true,
-          rollingStock: true,
-          routes: true,
+          locations: true,
+          freightCars: true,
+          locomotives: true,
+          trains: true,
         },
       },
     },
@@ -48,9 +49,10 @@ export async function getUserDetails(userId: string) {
         include: {
           _count: {
             select: {
-              stations: true,
-              rollingStock: true,
-              routes: true,
+              locations: true,
+              freightCars: true,
+              locomotives: true,
+              trains: true,
             },
           },
         },
@@ -58,10 +60,10 @@ export async function getUserDetails(userId: string) {
       _count: {
         select: {
           layouts: true,
-          stations: true,
-          rollingStock: true,
-          engines: true,
-          routes: true,
+          locations: true,
+          freightCars: true,
+          locomotives: true,
+          trains: true,
           waybills: true,
           sessions: true,
         },
@@ -185,17 +187,19 @@ export async function getSystemStats() {
     adminUsers,
     verifiedUsers,
     totalLayouts,
-    totalStations,
-    totalRollingStock,
-    totalRoutes,
+    totalLocations,
+    totalFreightCars,
+    totalLocomotives,
+    totalTrains,
   ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { role: "ADMIN" } }),
     db.user.count({ where: { emailVerified: { not: null } } }),
     db.layout.count(),
-    db.station.count(),
-    db.rollingStock.count(),
-    db.route.count(),
+    db.location.count(),
+    db.freightCar.count(),
+    db.locomotive.count(),
+    db.train.count(),
   ]);
 
   return {
@@ -205,8 +209,9 @@ export async function getSystemStats() {
     verifiedUsers,
     unverifiedUsers: totalUsers - verifiedUsers,
     totalLayouts,
-    totalStations,
-    totalRollingStock,
-    totalRoutes,
+    totalLocations,
+    totalFreightCars,
+    totalLocomotives,
+    totalTrains,
   };
 }

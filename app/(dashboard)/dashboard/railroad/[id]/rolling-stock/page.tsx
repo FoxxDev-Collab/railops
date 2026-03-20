@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 
@@ -27,7 +28,7 @@ export default async function RollingStockPage({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Rolling Stock</h1>
+            <h1 className="text-3xl font-bold">Freight Cars</h1>
             <p className="text-muted-foreground">{layout.name}</p>
           </div>
         </div>
@@ -37,10 +38,10 @@ export default async function RollingStockPage({
         </Button>
       </div>
 
-      {layout.rollingStock.length === 0 ? (
+      {layout.freightCars.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>No rolling stock yet</CardTitle>
+            <CardTitle>No freight cars yet</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
@@ -50,15 +51,27 @@ export default async function RollingStockPage({
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {layout.rollingStock.map((car) => (
+          {layout.freightCars.map((car) => (
             <Card key={car.id}>
               <CardHeader>
                 <CardTitle>
                   {car.reportingMarks} {car.number}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">{car.carType}</p>
+                <div className="flex gap-2">
+                  {car.aarTypeCode && (
+                    <Badge variant="outline">{car.aarTypeCode}</Badge>
+                  )}
+                  <Badge
+                    variant={
+                      car.status === "SERVICEABLE" ? "default" : "secondary"
+                    }
+                  >
+                    {car.status}
+                  </Badge>
+                </div>
               </CardContent>
             </Card>
           ))}

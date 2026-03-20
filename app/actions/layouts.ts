@@ -138,9 +138,10 @@ export async function getLayouts() {
     include: {
       _count: {
         select: {
-          stations: true,
-          rollingStock: true,
-          routes: true,
+          locations: true,
+          freightCars: true,
+          locomotives: true,
+          trains: true,
         },
       },
     },
@@ -160,9 +161,13 @@ export async function getLayout(layoutId: string) {
       userId: session.user.id, // Ensures user owns this layout
     },
     include: {
-      stations: true,
-      rollingStock: true,
-      routes: true,
+      locations: true,
+      locomotives: true,
+      freightCars: true,
+      passengerCars: true,
+      cabooses: true,
+      mowEquipment: true,
+      trains: true,
     },
   });
 

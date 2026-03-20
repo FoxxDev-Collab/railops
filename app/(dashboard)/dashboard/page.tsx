@@ -61,15 +61,15 @@ export default async function DashboardPage() {
                   <div className="flex gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3.5 w-3.5" />
-                      {layout._count.stations} stations
+                      {layout._count.locations} locations
                     </span>
                     <span className="flex items-center gap-1">
                       <Train className="h-3.5 w-3.5" />
-                      {layout._count.rollingStock} cars
+                      {layout._count.freightCars + layout._count.locomotives} stock
                     </span>
                     <span className="flex items-center gap-1">
                       <Route className="h-3.5 w-3.5" />
-                      {layout._count.routes} routes
+                      {layout._count.trains} trains
                     </span>
                   </div>
                 </CardContent>

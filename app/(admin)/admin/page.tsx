@@ -45,10 +45,10 @@ export default async function AdminDashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Stations</CardTitle>
+            <CardTitle>Locations</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalStations}</div>
+            <div className="text-2xl font-bold">{stats.totalLocations}</div>
             <p className="text-xs text-muted-foreground">
               Across all layouts
             </p>
@@ -59,9 +59,11 @@ export default async function AdminDashboardPage() {
             <CardTitle>Rolling Stock</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRollingStock}</div>
+            <div className="text-2xl font-bold">
+              {stats.totalFreightCars + stats.totalLocomotives}
+            </div>
             <p className="text-xs text-muted-foreground">
-              Total inventory
+              {stats.totalLocomotives} locos, {stats.totalFreightCars} freight cars
             </p>
           </CardContent>
         </Card>

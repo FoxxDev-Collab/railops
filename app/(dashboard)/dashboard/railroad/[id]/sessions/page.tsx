@@ -20,7 +20,7 @@ export default async function SessionsPage({
 
   const sessions = await db.operatingSession.findMany({
     where: { layoutId: id, userId: session.user.id },
-    include: { _count: { select: { routes: true } } },
+    include: { _count: { select: { sessionTrains: true } } },
     orderBy: { date: "desc" },
   });
 
@@ -66,7 +66,7 @@ export default async function SessionsPage({
                 <p className="text-muted-foreground">
                   {new Date(s.date).toLocaleDateString()}
                 </p>
-                <p>{s._count.routes} routes assigned</p>
+                <p>{s._count.sessionTrains} trains assigned</p>
               </CardContent>
             </Card>
           ))}
