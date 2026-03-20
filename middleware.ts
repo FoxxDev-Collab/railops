@@ -5,11 +5,19 @@ export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role;
+  const emailVerified = req.auth?.user?.emailVerified;
 
-  const isAuthRoute = nextUrl.pathname.startsWith("/auth");
-  const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-  const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
-  const isPublicRoute = nextUrl.pathname === "/";
+  const pathname = nextUrl.pathname;
+  const isAuthRoute = pathname.startsWith("/auth");
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isVerificationRoute =
+    pathname === "/auth/verify" || pathname === "/auth/check-email";
+
+  // Allow verification routes even when logged in and unverified
+  if (isVerificationRoute && isLoggedIn) {
+    return NextResponse.next();
+  }
 
   // Redirect logged-in users away from auth pages
   if (isAuthRoute && isLoggedIn) {
@@ -26,9 +34,14 @@ export default auth((req) => {
     }
   }
 
-  // Protect dashboard routes
-  if (isDashboardRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl));
+  // Protect dashboard routes — require login + verified email
+  if (isDashboardRoute) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL("/auth/login", nextUrl));
+    }
+    if (!emailVerified) {
+      return NextResponse.redirect(new URL("/auth/check-email", nextUrl));
+    }
   }
 
   return NextResponse.next();

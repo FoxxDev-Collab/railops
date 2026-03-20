@@ -5,10 +5,18 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
+import { generateToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
+
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
 
 const signupSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: passwordSchema,
   name: z.string().min(2).optional(),
 });
 
@@ -16,12 +24,12 @@ export async function signup(values: z.infer<typeof signupSchema>) {
   const validatedFields = signupSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields" };
+    const firstError = validatedFields.error.issues[0]?.message;
+    return { error: firstError || "Invalid fields" };
   }
 
   const { email, password, name } = validatedFields.data;
 
-  // Check if user exists
   const existingUser = await db.user.findUnique({
     where: { email },
   });
@@ -30,10 +38,8 @@ export async function signup(values: z.infer<typeof signupSchema>) {
     return { error: "Email already in use" };
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create user
   await db.user.create({
     data: {
       email,
@@ -42,7 +48,11 @@ export async function signup(values: z.infer<typeof signupSchema>) {
     },
   });
 
-  return { success: "Account created! Please sign in." };
+  // Generate verification token and send email
+  const token = await generateToken(email, "EMAIL_VERIFICATION");
+  await sendVerificationEmail(email, token);
+
+  return { success: "Verification email sent! Check your inbox." };
 }
 
 export async function login(values: { email: string; password: string }) {
@@ -53,13 +63,16 @@ export async function login(values: { email: string; password: string }) {
       redirect: false,
     });
 
-    // Get the user's role to determine redirect
     const user = await db.user.findUnique({
       where: { email: values.email },
-      select: { role: true },
+      select: { role: true, emailVerified: true },
     });
 
-    return { success: true, role: user?.role };
+    return {
+      success: true,
+      role: user?.role,
+      emailVerified: !!user?.emailVerified,
+    };
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

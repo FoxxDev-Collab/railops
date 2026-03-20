@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { signup } from "@/app/actions/auth";
+import { resetPassword } from "@/app/actions/password-reset";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,12 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import Link from "next/link";
 
-const signupSchema = z
+const schema = z
   .object({
-    name: z.string().min(2).optional(),
-    email: z.string().email(),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -35,32 +32,35 @@ const signupSchema = z
     path: ["confirmPassword"],
   });
 
-export function SignupForm() {
+export function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const token = searchParams.get("token");
 
-  const form = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: { password: "", confirmPassword: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof signupSchema>) {
-    setIsLoading(true);
+  if (!token) {
+    return (
+      <p className="text-center text-sm text-destructive">
+        Missing reset token. Please request a new password reset link.
+      </p>
+    );
+  }
 
-    const result = await signup(values);
+  async function onSubmit(values: z.infer<typeof schema>) {
+    setIsLoading(true);
+    const result = await resetPassword(token!, values.password);
 
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(result.success || "Check your email to verify your account");
-      router.push("/auth/check-email");
+      toast.success(result.success);
+      router.push("/auth/login");
     }
-
     setIsLoading(false);
   }
 
@@ -69,36 +69,10 @@ export function SignupForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name (optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="Your name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>New Password</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -120,14 +94,8 @@ export function SignupForm() {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Sign Up"}
+          {isLoading ? "Resetting..." : "Reset Password"}
         </Button>
-        <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
       </form>
     </Form>
   );

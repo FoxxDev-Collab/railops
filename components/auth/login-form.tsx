@@ -45,9 +45,12 @@ export function LoginForm() {
       toast.error(result.error);
     } else {
       toast.success("Signed in successfully");
-      // Redirect based on user role
-      const redirectUrl = result.role === "ADMIN" ? "/admin" : "/dashboard";
-      router.push(redirectUrl);
+      if (!result.emailVerified) {
+        router.push("/auth/check-email");
+      } else {
+        const redirectUrl = result.role === "ADMIN" ? "/admin" : "/dashboard";
+        router.push(redirectUrl);
+      }
       router.refresh();
     }
 
@@ -86,8 +89,16 @@ export function LoginForm() {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign In"}
         </Button>
+        <div className="text-center text-sm text-muted-foreground">
+          <Link
+            href="/auth/forgot-password"
+            className="text-primary hover:underline"
+          >
+            Forgot your password?
+          </Link>
+        </div>
         <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/auth/signup" className="text-primary hover:underline">
             Sign up
           </Link>

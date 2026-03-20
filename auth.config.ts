@@ -3,8 +3,8 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { getUserByEmail } from "@/lib/db/user";
+import { db } from "@/lib/db";
 
-// Validation schema for credentials
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -37,11 +37,18 @@ export default {
           return null;
         }
 
+        // Track last login
+        await db.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        });
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.role,
+          emailVerified: user.emailVerified,
         };
       },
     }),

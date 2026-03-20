@@ -103,6 +103,7 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
       password: hashedPassword,
       name,
       role,
+      emailVerified: new Date(), // Admin-created users are pre-verified
     },
   });
 
@@ -182,6 +183,7 @@ export async function getSystemStats() {
   const [
     totalUsers,
     adminUsers,
+    verifiedUsers,
     totalLayouts,
     totalStations,
     totalRollingStock,
@@ -189,6 +191,7 @@ export async function getSystemStats() {
   ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { role: "ADMIN" } }),
+    db.user.count({ where: { emailVerified: { not: null } } }),
     db.layout.count(),
     db.station.count(),
     db.rollingStock.count(),
@@ -199,6 +202,8 @@ export async function getSystemStats() {
     totalUsers,
     adminUsers,
     regularUsers: totalUsers - adminUsers,
+    verifiedUsers,
+    unverifiedUsers: totalUsers - verifiedUsers,
     totalLayouts,
     totalStations,
     totalRollingStock,

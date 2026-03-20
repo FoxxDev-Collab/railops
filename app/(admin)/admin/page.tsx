@@ -27,6 +27,8 @@ export default async function AdminDashboardPage() {
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
             <p className="text-xs text-muted-foreground">
               {stats.adminUsers} admins, {stats.regularUsers} users
+              <br />
+              {stats.verifiedUsers} verified, {stats.unverifiedUsers} unverified
             </p>
           </CardContent>
         </Card>

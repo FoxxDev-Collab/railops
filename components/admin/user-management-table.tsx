@@ -66,6 +66,7 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
             <TableHead>Email</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Verified</TableHead>
             <TableHead>Layouts</TableHead>
             <TableHead>Stations</TableHead>
             <TableHead>Rolling Stock</TableHead>
@@ -81,6 +82,11 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
               <TableCell>
                 <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
                   {user.role}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant={user.emailVerified ? "default" : "outline"}>
+                  {user.emailVerified ? "Yes" : "No"}
                 </Badge>
               </TableCell>
               <TableCell>{user._count.layouts}</TableCell>

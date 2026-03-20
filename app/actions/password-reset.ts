@@ -1,0 +1,48 @@
+"use server";
+
+import { z } from "zod";
+import bcrypt from "bcryptjs";
+import { db } from "@/lib/db";
+import { generateToken, verifyToken } from "@/lib/tokens";
+import { sendPasswordResetEmail } from "@/lib/mail";
+
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
+
+export async function requestPasswordReset(email: string) {
+  const user = await db.user.findUnique({ where: { email } });
+
+  // Always return success to not leak email existence
+  if (!user) {
+    return { success: "If that email is registered, a reset link has been sent." };
+  }
+
+  const token = await generateToken(email, "PASSWORD_RESET");
+  await sendPasswordResetEmail(email, token);
+
+  return { success: "If that email is registered, a reset link has been sent." };
+}
+
+export async function resetPassword(rawToken: string, newPassword: string) {
+  const parsed = passwordSchema.safeParse(newPassword);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || "Invalid password" };
+  }
+
+  const result = await verifyToken(rawToken, "PASSWORD_RESET");
+  if (!result) {
+    return { error: "Invalid or expired reset link." };
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await db.user.update({
+    where: { email: result.email },
+    data: { password: hashedPassword },
+  });
+
+  return { success: "Password reset successfully. You can now sign in." };
+}
