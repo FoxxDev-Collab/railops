@@ -125,7 +125,7 @@ export async function createLayout(values: z.infer<typeof layoutSchema>) {
     },
   });
 
-  revalidatePath("/dashboard/layouts");
+  revalidatePath("/dashboard");
   return { success: true, layout };
 }
 
@@ -202,8 +202,8 @@ export async function updateLayout(
     data: validatedFields.data,
   });
 
-  revalidatePath("/dashboard/layouts");
-  revalidatePath(`/dashboard/layouts/${layoutId}`);
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/railroad/${layoutId}`);
   return { success: true, layout };
 }
 
@@ -227,6 +227,6 @@ export async function deleteLayout(layoutId: string) {
     where: { id: layoutId },
   });
 
-  revalidatePath("/dashboard/layouts");
+  revalidatePath("/dashboard");
   return { success: true };
 }

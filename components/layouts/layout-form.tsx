@@ -71,7 +71,13 @@ export function LayoutForm({ initialData }: LayoutFormProps) {
       toast.error(result.error);
     } else {
       toast.success(isEdit ? "Layout updated" : "Layout created");
-      router.push("/dashboard/layouts");
+      if (isEdit) {
+        router.push(`/dashboard/railroad/${initialData.id}`);
+      } else if (result.layout) {
+        router.push(`/dashboard/railroad/${result.layout.id}`);
+      } else {
+        router.push("/dashboard");
+      }
       router.refresh();
     }
 
@@ -162,7 +168,7 @@ export function LayoutForm({ initialData }: LayoutFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/dashboard/layouts")}
+                onClick={() => router.back()}
                 disabled={isLoading}
               >
                 Cancel

@@ -1,7 +1,17 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayouts } from "@/app/actions/layouts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus, Train, MapPin, Route, TrainTrack } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -10,53 +20,71 @@ export default async function DashboardPage() {
   const layouts = await getLayouts();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {session.user.name || session.user.email}
+    <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-8">
+      <div className="text-center space-y-2">
+        <TrainTrack className="h-12 w-12 mx-auto text-muted-foreground" />
+        <h1 className="text-4xl font-bold tracking-tight">
+          Select or Create Your Railroad
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-md mx-auto">
+          {layouts.length === 0
+            ? "Welcome aboard! Create your first railroad to start managing operations."
+            : "Choose a railroad to enter its operations center."}
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Layouts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{layouts.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Total railroad layouts
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Stations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {layouts.reduce((acc, l) => acc + l._count.stations, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Across all layouts
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Rolling Stock</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {layouts.reduce((acc, l) => acc + l._count.rollingStock, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Cars in inventory
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {layouts.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full max-w-4xl">
+          {layouts.map((layout) => (
+            <Link
+              key={layout.id}
+              href={`/dashboard/railroad/${layout.id}`}
+              className="group"
+            >
+              <Card className="h-full transition-colors hover:border-primary">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>{layout.name}</span>
+                    {layout.scale && (
+                      <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-1 rounded">
+                        {layout.scale}
+                      </span>
+                    )}
+                  </CardTitle>
+                  {layout.description && (
+                    <CardDescription className="line-clamp-2">
+                      {layout.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {layout._count.stations} stations
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Train className="h-3.5 w-3.5" />
+                      {layout._count.rollingStock} cars
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Route className="h-3.5 w-3.5" />
+                      {layout._count.routes} routes
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <Button asChild size="lg">
+        <Link href="/dashboard/railroad/new">
+          <Plus className="mr-2 h-5 w-5" />
+          Create New Railroad
+        </Link>
+      </Button>
     </div>
   );
 }

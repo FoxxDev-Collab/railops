@@ -4,13 +4,16 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
-  Map,
-  Building,
+  MapPin,
   Train,
+  TrainFront,
   Route,
+  FileText,
+  PlayCircle,
+  Settings,
   LogOut,
   Users,
-  Settings,
+  ArrowLeftRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,19 +27,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { LayoutSelector } from "@/components/layouts/layout-selector";
+import { useLayout } from "@/components/layouts/layout-context";
 
 interface AppSidebarProps {
   variant?: "user" | "admin";
 }
-
-const userMenuItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/layouts", label: "Layouts", icon: Map },
-  { href: "/dashboard/stations", label: "Stations", icon: Building },
-  { href: "/dashboard/rolling-stock", label: "Rolling Stock", icon: Train },
-  { href: "/dashboard/routes", label: "Routes", icon: Route },
-];
 
 const adminMenuItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -44,40 +39,124 @@ const adminMenuItems = [
   { href: "/admin/system", label: "System Settings", icon: Settings },
 ];
 
+function getRailroadMenuItems(railroadId: string) {
+  return [
+    {
+      href: `/dashboard/railroad/${railroadId}`,
+      label: "Operations Center",
+      icon: LayoutDashboard,
+      exact: true,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/stations`,
+      label: "Stations & Yards",
+      icon: MapPin,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/rolling-stock`,
+      label: "Rolling Stock",
+      icon: Train,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/engines`,
+      label: "Engines",
+      icon: TrainFront,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/routes`,
+      label: "Routes",
+      icon: Route,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/waybills`,
+      label: "Waybills",
+      icon: FileText,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/sessions`,
+      label: "Sessions",
+      icon: PlayCircle,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/settings`,
+      label: "Settings",
+      icon: Settings,
+    },
+  ];
+}
+
 export function AppSidebar({ variant = "user" }: AppSidebarProps) {
   const pathname = usePathname();
-  const menuItems = variant === "admin" ? adminMenuItems : userMenuItems;
+  const { selectedLayout } = useLayout();
+
+  // Detect if we're inside a railroad context
+  const railroadMatch = pathname.match(/\/dashboard\/railroad\/([^/]+)/);
+  const railroadId = railroadMatch?.[1];
+  const isInRailroad = railroadId && railroadId !== "new";
+
+  const menuItems = variant === "admin"
+    ? adminMenuItems
+    : isInRailroad
+      ? getRailroadMenuItems(railroadId)
+      : [];
 
   async function handleSignOut() {
-    // Use next-auth signOut
     const { signOut } = await import("next-auth/react");
     signOut({ callbackUrl: "/auth/login" });
   }
+
+  const isActive = (href: string, exact?: boolean) => {
+    if (exact) return pathname === href;
+    return pathname === href || pathname.startsWith(href + "/");
+  };
 
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="px-6 py-4">
-          <h2 className="text-lg font-semibold">RailOps</h2>
+          <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+            <h2 className="text-lg font-semibold">RailOps</h2>
+          </Link>
           {variant === "admin" && (
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           )}
         </div>
-        {variant === "user" && (
+        {isInRailroad && selectedLayout && (
           <>
             <SidebarSeparator />
-            <div className="px-2 py-2">
-              <LayoutSelector />
+            <div className="px-4 py-2">
+              <p className="text-sm font-medium">{selectedLayout.name}</p>
+              {selectedLayout.scale && (
+                <p className="text-xs text-muted-foreground">
+                  {selectedLayout.scale} Scale
+                </p>
+              )}
             </div>
             <SidebarSeparator />
           </>
         )}
       </SidebarHeader>
       <SidebarContent>
+        {isInRailroad && (
+          <div className="px-2 pt-2">
+            <SidebarMenuButton asChild>
+              <Link
+                href="/dashboard"
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeftRight className="h-3.5 w-3.5" />
+                <span>Switch Railroad</span>
+              </Link>
+            </SidebarMenuButton>
+          </div>
+        )}
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton asChild isActive={pathname === item.href}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive(item.href, (item as { exact?: boolean }).exact)}
+              >
                 <Link href={item.href}>
                   <item.icon className="h-4 w-4" />
                   <span>{item.label}</span>
