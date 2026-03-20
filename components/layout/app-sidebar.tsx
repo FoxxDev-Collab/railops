@@ -48,23 +48,23 @@ function getRailroadMenuItems(railroadId: string) {
       exact: true,
     },
     {
-      href: `/dashboard/railroad/${railroadId}/stations`,
-      label: "Stations & Yards",
+      href: `/dashboard/railroad/${railroadId}/locations`,
+      label: "Locations",
       icon: MapPin,
     },
     {
-      href: `/dashboard/railroad/${railroadId}/rolling-stock`,
-      label: "Rolling Stock",
-      icon: Train,
-    },
-    {
-      href: `/dashboard/railroad/${railroadId}/engines`,
-      label: "Engines",
+      href: `/dashboard/railroad/${railroadId}/locomotives`,
+      label: "Locomotives",
       icon: TrainFront,
     },
     {
-      href: `/dashboard/railroad/${railroadId}/routes`,
-      label: "Routes",
+      href: `/dashboard/railroad/${railroadId}/rolling-stock`,
+      label: "Freight Cars",
+      icon: Train,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/trains`,
+      label: "Trains",
       icon: Route,
     },
     {
