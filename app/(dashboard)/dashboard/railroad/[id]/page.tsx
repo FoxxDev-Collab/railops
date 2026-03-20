@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
-import { selectLayout } from "@/app/actions/layouts";
+import { db } from "@/lib/db";
 import {
   Card,
   CardContent,
@@ -72,8 +72,11 @@ export default async function RailroadPage({
   const { id } = await params;
   const layout = await getLayout(id);
 
-  // Set this as the user's selected layout
-  await selectLayout(layout.id);
+  // Set this as the user's selected layout (no revalidate — we're in a render)
+  await db.user.update({
+    where: { id: session.user.id },
+    data: { selectedLayoutId: layout.id },
+  });
 
   return (
     <div className="space-y-8">
