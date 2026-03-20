@@ -13,6 +13,95 @@ async function requireAuth() {
   return session;
 }
 
+// Get user's selected layout and all layouts for context provider
+export async function getLayoutContext() {
+  const session = await requireAuth();
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      selectedLayout: true,
+      layouts: {
+        select: {
+          id: true,
+          name: true,
+          scale: true,
+          description: true,
+        },
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  let selectedLayout = user.selectedLayout;
+
+  // Auto-select logic: if no layout selected but user has layouts
+  if (!selectedLayout && user.layouts.length > 0) {
+    // If only one layout, auto-select it
+    if (user.layouts.length === 1) {
+      const autoSelectedLayout = user.layouts[0];
+      await db.user.update({
+        where: { id: session.user.id },
+        data: { selectedLayoutId: autoSelectedLayout.id },
+      });
+      selectedLayout = await db.layout.findUnique({
+        where: { id: autoSelectedLayout.id },
+      });
+    }
+  }
+
+  // If selected layout no longer exists (was deleted), clear it
+  if (user.selectedLayoutId && !selectedLayout) {
+    await db.user.update({
+      where: { id: session.user.id },
+      data: { selectedLayoutId: null },
+    });
+  }
+
+  return {
+    selectedLayout: selectedLayout
+      ? {
+          id: selectedLayout.id,
+          name: selectedLayout.name,
+          scale: selectedLayout.scale,
+          description: selectedLayout.description,
+        }
+      : null,
+    layouts: user.layouts,
+  };
+}
+
+// Select a layout
+export async function selectLayout(layoutId: string | null) {
+  const session = await requireAuth();
+
+  if (layoutId) {
+    // Verify ownership
+    const layout = await db.layout.findFirst({
+      where: {
+        id: layoutId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!layout) {
+      return { error: "Layout not found" };
+    }
+  }
+
+  await db.user.update({
+    where: { id: session.user.id },
+    data: { selectedLayoutId: layoutId },
+  });
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
 const layoutSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),

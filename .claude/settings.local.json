@@ -11,7 +11,8 @@
       "Bash(set -a)",
       "Bash(source .env.local)",
       "Bash(set +a)",
-      "Bash(npx prisma migrate reset:*)"
+      "Bash(npx prisma migrate reset:*)",
+      "Bash(npx prisma migrate:*)"
     ],
     "additionalDirectories": [
       "D:\\Dev Projects\\railops\\app\\(dashboard)\\dashboard\\layouts"

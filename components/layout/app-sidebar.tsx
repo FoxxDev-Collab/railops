@@ -20,9 +20,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LayoutSelector } from "@/components/layouts/layout-selector";
 
 interface AppSidebarProps {
   variant?: "user" | "admin";
@@ -61,6 +63,15 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           )}
         </div>
+        {variant === "user" && (
+          <>
+            <SidebarSeparator />
+            <div className="px-2 py-2">
+              <LayoutSelector />
+            </div>
+            <SidebarSeparator />
+          </>
+        )}
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
