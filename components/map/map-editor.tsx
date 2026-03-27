@@ -6,6 +6,8 @@ import { MapCanvas } from "./map-canvas";
 import { MapToolbar } from "./map-toolbar";
 import { MapProperties } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
+import { LocationDetailView } from "./location-detail-view";
+import { SessionOverlay } from "./session-overlay";
 import { useMapStore } from "./use-map-store";
 import { deleteCanvasElement } from "@/app/actions/canvas";
 import { toast } from "sonner";
@@ -53,6 +55,10 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
   const detailLocationId = useMapStore((s) => s.detailLocationId);
   const setDetailLocation = useMapStore((s) => s.setDetailLocation);
   const [addLocationPos, setAddLocationPos] = useState<{ x: number; y: number } | null>(null);
+
+  const detailNode = detailLocationId
+    ? canvasData.nodes.find((n) => n.locationId === detailLocationId)
+    : null;
 
   // Handle initial view from query params
   useEffect(() => {
@@ -124,28 +130,50 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
   return (
     <div className={`flex h-full ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
       <MapToolbar />
-      <div className="relative flex-1">
-        <MapCanvas canvasData={canvasData} onAddLocation={setAddLocationPos} />
-
-        {/* Save status indicator */}
-        <div className="absolute top-3 right-3 z-10 rounded-md border border-slate-700 bg-[#0f172a] px-2.5 py-1 font-mono text-xs">
-          {saveStatus === "saved" && <span className="text-green-400">✓ Saved</span>}
-          {saveStatus === "saving" && <span className="text-amber-400">Saving...</span>}
-          {saveStatus === "unsaved" && <span className="text-slate-400">Unsaved</span>}
+      {detailNode ? (
+        <div className="relative flex-1">
+          <LocationDetailView
+            locationId={detailNode.locationId}
+            locationName={detailNode.location.name}
+            locationType={detailNode.location.locationType}
+            yardTracks={detailNode.location.yardTracks.map((t) => ({
+              ...t,
+              capacity: undefined,
+            }))}
+            industries={detailNode.location.industries}
+          />
         </div>
+      ) : (
+        <div className="relative flex-1">
+          <MapCanvas canvasData={canvasData} onAddLocation={setAddLocationPos} />
 
-        {/* Tool hint */}
-        {tool === "add-location" && !addLocationPos && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
-            Click on the canvas to place a new location
+          {activeSessionId && (
+            <SessionOverlay
+              sessionId={activeSessionId}
+              isDispatcher={isDispatcher ?? false}
+            />
+          )}
+
+          {/* Save status indicator */}
+          <div className="absolute top-3 right-3 z-10 rounded-md border border-slate-700 bg-[#0f172a] px-2.5 py-1 font-mono text-xs">
+            {saveStatus === "saved" && <span className="text-green-400">✓ Saved</span>}
+            {saveStatus === "saving" && <span className="text-amber-400">Saving...</span>}
+            {saveStatus === "unsaved" && <span className="text-slate-400">Unsaved</span>}
           </div>
-        )}
-        {tool === "draw-track" && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
-            Click a location to start, then click another to connect
-          </div>
-        )}
-      </div>
+
+          {/* Tool hint */}
+          {tool === "add-location" && !addLocationPos && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
+              Click on the canvas to place a new location
+            </div>
+          )}
+          {tool === "draw-track" && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
+              Click a location to start, then click another to connect
+            </div>
+          )}
+        </div>
+      )}
 
       {addLocationPos ? (
         <AddLocationForm
