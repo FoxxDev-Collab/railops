@@ -52,9 +52,7 @@ export const importSchemas: Record<ResourceType, z.ZodType> = {
     name: z.string().min(1, "Name is required"),
     code: z.string().min(1, "Code is required"),
     locationType: z.enum(enumValues(LocationType), {
-      errorMap: () => ({
-        message: `Must be one of: ${enumValues(LocationType).join(", ")}`,
-      }),
+      error: `Must be one of: ${enumValues(LocationType).join(", ")}`,
     }),
     description: optionalString,
   }),
@@ -76,9 +74,7 @@ export const importSchemas: Record<ResourceType, z.ZodType> = {
     number: z.string().min(1, "Number is required"),
     model: z.string().min(1, "Model is required"),
     locomotiveType: z.enum(enumValues(LocomotiveType), {
-      errorMap: () => ({
-        message: `Must be one of: ${enumValues(LocomotiveType).join(", ")}`,
-      }),
+      error: `Must be one of: ${enumValues(LocomotiveType).join(", ")}`,
     }),
     serviceType: z
       .enum(enumValues(LocomotiveService))
@@ -119,9 +115,7 @@ export const importSchemas: Record<ResourceType, z.ZodType> = {
     number: z.string().min(1, "Number is required"),
     carName: optionalString,
     carType: z.enum(enumValues(PassengerCarType), {
-      errorMap: () => ({
-        message: `Must be one of: ${enumValues(PassengerCarType).join(", ")}`,
-      }),
+      error: `Must be one of: ${enumValues(PassengerCarType).join(", ")}`,
     }),
     classOfService: z
       .enum(enumValues(ClassOfService))
@@ -157,9 +151,7 @@ export const importSchemas: Record<ResourceType, z.ZodType> = {
     reportingMarks: z.string().min(1, "Reporting marks required"),
     number: z.string().min(1, "Number is required"),
     equipmentType: z.enum(enumValues(MOWEquipmentType), {
-      errorMap: () => ({
-        message: `Must be one of: ${enumValues(MOWEquipmentType).join(", ")}`,
-      }),
+      error: `Must be one of: ${enumValues(MOWEquipmentType).join(", ")}`,
     }),
     description: optionalString,
     length: optionalNumber,
