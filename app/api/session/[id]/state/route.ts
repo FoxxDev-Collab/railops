@@ -30,7 +30,8 @@ export async function GET(
           train: {
             select: {
               id: true,
-              name: true,
+              trainNumber: true,
+              trainName: true,
               originId: true,
               destinationId: true,
             },
@@ -47,7 +48,7 @@ export async function GET(
   const trains = operatingSession.sessionTrains.map((st) => ({
     id: st.id,
     trainId: st.trainId,
-    trainName: st.train.name,
+    trainName: st.train.trainName ?? st.train.trainNumber,
     status: st.status ?? "IDLE",
     locationId: st.train.originId,
   }));
