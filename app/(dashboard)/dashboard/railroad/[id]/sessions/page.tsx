@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { SessionCardList } from "@/components/sessions/session-card-list";
 import { SessionTable } from "@/components/sessions/session-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function SessionsPage({
   params,
@@ -56,6 +57,10 @@ export default async function SessionsPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-sessions" title="Run your railroad" railroadId={id} guideSection="#sessions">
+        Operating sessions tie everything together — assign trains, run your railroad, and track progress.
+      </OperationsHint>
 
       {sessions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

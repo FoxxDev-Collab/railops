@@ -19,6 +19,7 @@ import {
   Wrench,
   ShieldCheck,
   CreditCard,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -98,6 +99,11 @@ function getRailroadMenuItems(railroadId: string) {
       href: `/dashboard/railroad/${railroadId}/sessions`,
       label: "Sessions",
       icon: PlayCircle,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/guide`,
+      label: "Operations Guide",
+      icon: BookOpen,
     },
     {
       href: `/dashboard/railroad/${railroadId}/settings`,

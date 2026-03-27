@@ -22,6 +22,9 @@ import {
   Users,
   Check,
   ArrowRight,
+  CircleDot,
+  ArrowDown,
+  Gauge,
 } from "lucide-react";
 import { LandingHeader } from "@/components/landing/landing-header";
 
@@ -84,7 +87,34 @@ export default async function Home() {
     },
   ];
 
-  const freeFeatures = [
+  const workflowSteps = [
+    {
+      step: "01",
+      title: "Build Your Railroad",
+      desc: "Define locations, industries, and track layout. Add your locomotive roster and freight car fleet.",
+      icon: MapPin,
+    },
+    {
+      step: "02",
+      title: "Generate Waybills",
+      desc: "RailOps creates four-panel waybills that route cars between industries based on commodity demand.",
+      icon: FileText,
+    },
+    {
+      step: "03",
+      title: "Assemble Trains",
+      desc: "Build consists with power, cars, and caboose. Assign them to routes with scheduled stops.",
+      icon: TrainFront,
+    },
+    {
+      step: "04",
+      title: "Run Your Session",
+      desc: "Print switch lists, dispatch trains, and track car movements in real time. Debrief when the last train clears.",
+      icon: Gauge,
+    },
+  ];
+
+  const hobbyistFeatures = [
     "1 railroad",
     "25 locations",
     "25 locomotives",
@@ -96,7 +126,7 @@ export default async function Home() {
   ];
 
   const operatorFeatures = [
-    "Everything in Free",
+    "Everything in Hobbyist",
     "Unlimited railroads",
     "Unlimited inventory",
     "Unlimited trains & waybills",
@@ -105,71 +135,113 @@ export default async function Home() {
     "Priority support",
   ];
 
+  const clubFeatures = [
+    "Everything in Operator",
+    "5 crew seats included",
+    "Role-based access control",
+    "Dispatcher, Yardmaster, Conductor roles",
+    "Shared session management",
+    "Crew activity log",
+    "Additional seats $5/mo each",
+  ];
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LandingHeader />
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="container mx-auto px-4 py-20">
-          <div className="mx-auto max-w-4xl text-center">
-            <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-foreground sm:text-7xl">
-              Run Your Railroad
-              <br />
-              <span className="text-muted-foreground">Like the Prototype</span>
-            </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-muted-foreground">
-              RailOps replaces spreadsheets, car cards, and JMRI paperwork with
-              a cloud platform built for model railroad operations. Inventory
-              your equipment, generate waybills, build consists, and run
-              sessions — all from your browser.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button
-                size="lg"
-                asChild
-                className="h-14 px-8 text-lg font-semibold shadow-xl"
-              >
-                <Link href="/auth/signup">
-                  Start Free — No Card Required
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="h-14 px-8 text-lg font-semibold"
-              >
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
+        <section className="relative overflow-hidden border-b border-border">
+          {/* Subtle grid pattern */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+              backgroundSize: "4rem 4rem",
+            }}
+          />
+          <div className="container relative mx-auto px-4 py-24 sm:py-32">
+            <div className="mx-auto max-w-4xl">
+              <div className="mb-8 flex items-center justify-center gap-3">
+                <div className="h-px flex-1 max-w-16 bg-border" />
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Model Railroad Operations Platform
+                </span>
+                <div className="h-px flex-1 max-w-16 bg-border" />
+              </div>
+
+              <h1 className="mb-8 text-center text-5xl font-extrabold tracking-tight text-foreground sm:text-7xl">
+                Run Your Railroad
+                <br />
+                <span className="text-muted-foreground">
+                  Like the Prototype
+                </span>
+              </h1>
+
+              <p className="mx-auto mb-12 max-w-2xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                RailOps replaces spreadsheets, car cards, and JMRI paperwork
+                with a cloud platform purpose-built for model railroad
+                operations. Inventory your equipment, generate waybills, build
+                consists, and run sessions — all from your browser.
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <Button
+                  size="lg"
+                  asChild
+                  className="h-14 px-8 text-base font-semibold shadow-xl"
+                >
+                  <Link href="/auth/signup">
+                    Start Free — No Card Required
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="h-14 px-8 text-base font-semibold"
+                >
+                  <Link href="/auth/login">Sign In</Link>
+                </Button>
+              </div>
+
+              {/* Trust signal */}
+              <p className="mt-10 text-center text-xs uppercase tracking-widest text-muted-foreground/60">
+                Built by railroaders &bull; NMRA OpSIG compatible &bull; Free
+                tier forever
+              </p>
             </div>
           </div>
         </section>
 
         {/* Features */}
-        <section className="border-y border-border bg-muted/50 py-24">
+        <section className="border-b border-border bg-muted/40 py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
+                <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Everything You Need
+                </span>
                 <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground">
                   The Dispatcher&apos;s Toolkit
                 </h2>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-                  Everything you need to run authentic operating sessions.
-                  Built by railroaders, for railroaders.
+                  Nine core modules for running authentic operating sessions.
+                  Each one replaces a stack of paper or a clunky spreadsheet.
                 </p>
               </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className="group rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
+                    className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
                   >
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary shadow-sm">
-                      <feature.icon className="h-6 w-6 text-primary-foreground" />
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-md bg-primary shadow-sm">
+                      <feature.icon className="h-5 w-5 text-primary-foreground" />
                     </div>
-                    <h3 className="mb-2 text-lg font-bold text-card-foreground">
+                    <h3 className="mb-2 text-base font-bold text-card-foreground">
                       {feature.title}
                     </h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">
@@ -182,38 +254,89 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Pricing */}
-        <section className="py-24">
+        {/* Workflow */}
+        <section className="border-b border-border py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl">
               <div className="mb-16 text-center">
+                <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  How It Works
+                </span>
+                <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground">
+                  From Roster to Roll Call
+                </h2>
+                <p className="mx-auto max-w-xl text-lg text-muted-foreground">
+                  Four steps from an empty screen to a fully dispatched
+                  operating session.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {workflowSteps.map((step, idx) => (
+                  <div key={step.step}>
+                    <div className="flex items-start gap-6 rounded-lg border border-border bg-card p-6 shadow-sm">
+                      <div className="flex shrink-0 flex-col items-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary font-mono text-sm font-bold text-primary-foreground shadow-sm">
+                          {step.step}
+                        </div>
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <h3 className="mb-1 text-lg font-bold text-card-foreground">
+                          {step.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {step.desc}
+                        </p>
+                      </div>
+                      <step.icon className="mt-1 hidden h-6 w-6 shrink-0 text-muted-foreground/40 sm:block" />
+                    </div>
+                    {idx < workflowSteps.length - 1 && (
+                      <div className="flex justify-start pl-9">
+                        <ArrowDown className="h-5 w-5 text-border" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section className="border-b border-border bg-muted/40 py-24">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-5xl">
+              <div className="mb-16 text-center">
+                <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Pricing
+                </span>
                 <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground">
                   Simple, Honest Pricing
                 </h2>
                 <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-                  Start free, upgrade when you need more. No tricks, no
-                  annual commitments, cancel anytime.
+                  Start free, upgrade when you outgrow the limits. No tricks, no
+                  annual lock-in, cancel anytime.
                 </p>
               </div>
 
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Free */}
-                <Card className="relative">
+              <div className="grid gap-6 md:grid-cols-3">
+                {/* Hobbyist — Free */}
+                <Card className="relative flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Hobbyist</CardTitle>
+                    <CardTitle className="text-xl">Hobbyist</CardTitle>
                     <CardDescription>
-                      Perfect for getting started with a single railroad
+                      For getting started with a single railroad
                     </CardDescription>
-                    <div className="pt-2">
+                    <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
                         $0
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {freeFeatures.map((f) => (
+                  <CardContent className="flex flex-1 flex-col">
+                    <ul className="flex-1 space-y-3">
+                      {hobbyistFeatures.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           <span>{f}</span>
@@ -231,27 +354,27 @@ export default async function Home() {
                   </CardContent>
                 </Card>
 
-                {/* Operator */}
-                <Card className="relative border-primary">
+                {/* Operator — $5/mo */}
+                <Card className="relative flex flex-col border-primary shadow-lg">
                   <div className="absolute -top-3 left-6">
                     <Badge className="px-3 py-1 text-xs font-semibold">
                       Most Popular
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-2xl">Operator</CardTitle>
+                    <CardTitle className="text-xl">Operator</CardTitle>
                     <CardDescription>
                       Unlimited everything for serious railroaders
                     </CardDescription>
-                    <div className="pt-2">
+                    <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
                         $5
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
+                  <CardContent className="flex flex-1 flex-col">
+                    <ul className="flex-1 space-y-3">
                       {operatorFeatures.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -259,55 +382,78 @@ export default async function Home() {
                         </li>
                       ))}
                     </ul>
-                    <div className="mt-6 rounded-lg border border-border bg-muted/50 p-4">
-                      <p className="text-sm font-medium text-foreground">
-                        Crew Add-on
-                      </p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Invite club members at{" "}
-                        <span className="font-semibold text-foreground">
-                          $5/month per crew member
-                        </span>
-                        . Each gets their own login with role-based access.
-                      </p>
-                    </div>
-                    <Button asChild className="mt-6 w-full" size="lg">
+                    <Button asChild className="mt-8 w-full" size="lg">
                       <Link href="/auth/signup">Start Free, Upgrade Later</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Club — $25/mo */}
+                <Card className="relative flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Club</CardTitle>
+                    <CardDescription>
+                      Multi-crew operations for clubs and groups
+                    </CardDescription>
+                    <div className="pt-3">
+                      <span className="text-4xl font-extrabold text-foreground">
+                        $25
+                      </span>
+                      <span className="text-muted-foreground">/month</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col">
+                    <ul className="flex-1 space-y-3">
+                      {clubFeatures.map((f) => (
+                        <li key={f} className="flex items-start gap-3 text-sm">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="mt-8 w-full"
+                      size="lg"
+                    >
+                      <Link href="/auth/signup">Get Started Free</Link>
                     </Button>
                   </CardContent>
                 </Card>
               </div>
 
               <p className="mt-8 text-center text-sm text-muted-foreground">
-                Running a club?{" "}
+                All plans start on the free tier. Upgrade or downgrade at any
+                time.{" "}
                 <span className="font-medium text-foreground">
-                  A 5-person club pays $25/mo total
-                </span>{" "}
-                ($5 operator + 4 crew at $5 each) — less than a box of
-                Kadee couplers.
+                  Club pricing: $5 operator + $5/seat &times; 4 included crew =
+                  $25/mo
+                </span>
+                . Additional seats are $5/mo each.
               </p>
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="border-t border-border bg-muted/50 py-24">
+        <section className="py-24">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-12 text-center shadow-xl">
-              <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary shadow-lg">
-                <Train className="h-10 w-10 text-primary-foreground" />
+            <div className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-12 text-center shadow-xl">
+              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg bg-primary shadow-lg">
+                <Train className="h-8 w-8 text-primary-foreground" />
               </div>
-              <h2 className="mb-4 text-4xl font-bold tracking-tight text-card-foreground">
-                All Aboard!
+              <h2 className="mb-4 text-3xl font-bold tracking-tight text-card-foreground sm:text-4xl">
+                All Aboard
               </h2>
-              <p className="mb-8 text-xl text-muted-foreground">
+              <p className="mb-8 text-lg text-muted-foreground sm:text-xl">
                 Spend less time on paperwork, more time running trains. Your
                 first railroad is free — no credit card needed.
               </p>
               <Button
                 size="lg"
                 asChild
-                className="h-14 px-10 text-lg font-semibold shadow-xl"
+                className="h-14 px-10 text-base font-semibold shadow-xl"
               >
                 <Link href="/auth/signup">
                   Create Your Railroad
@@ -324,7 +470,7 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
                 <Train className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="font-semibold text-foreground">RailOps</span>

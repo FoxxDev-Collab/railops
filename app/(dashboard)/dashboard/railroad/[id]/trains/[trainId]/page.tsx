@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronRight, ListOrdered } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLayout } from "@/app/actions/layouts";
 import { TrainBuilder } from "@/components/consists/train-builder";
+import { OperationsHint } from "@/components/operations/operations-hint";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -205,6 +206,10 @@ export default async function TrainDetailPage({
       </div>
 
       <Separator />
+
+      <OperationsHint pageKey="hint-consists" title="Build your consist" railroadId={layoutId} guideSection="#consists">
+        Build your consist by adding rolling stock. Cars with active waybills will appear on the switch list.
+      </OperationsHint>
 
       {/* Consist section */}
       <div className="space-y-4">

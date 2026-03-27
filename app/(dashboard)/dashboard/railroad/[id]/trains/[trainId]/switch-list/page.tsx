@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SwitchListContainer } from "@/components/switch-lists/switch-list-container";
 import { GenerateSwitchListButton } from "@/components/switch-lists/generate-switch-list-button";
 import { Separator } from "@/components/ui/separator";
+import { OperationsHint } from "@/components/operations/operations-hint";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -124,6 +125,10 @@ export default async function SwitchListPage({
       </div>
 
       <Separator className="print:hidden" />
+
+      <OperationsHint pageKey="hint-switch-lists" title="Your crew's work order" railroadId={layoutId} guideSection="#switch-lists">
+        Switch lists are auto-generated from your consist and waybills. Each entry is a pickup or setout at a train stop.
+      </OperationsHint>
 
       {/* Content */}
       {switchList ? (

@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, TrainFront } from "lucide-react";
 import { LocomotiveCardList } from "@/components/locomotives/locomotive-card-list";
 import { LocomotiveTable } from "@/components/locomotives/locomotive-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function LocomotivesPage({
   params,
@@ -43,6 +44,10 @@ export default async function LocomotivesPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-locomotives" title="Motive power for your trains" railroadId={id} guideSection="#rolling-stock">
+        Locomotives provide motive power for your trains. Add them to a consist when you&apos;re ready to build a train.
+      </OperationsHint>
 
       {layout.locomotives.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

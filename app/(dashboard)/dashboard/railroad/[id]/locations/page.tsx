@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, MapPin } from "lucide-react";
 import { LocationCardList } from "@/components/locations/location-card-list";
 import { LocationTable } from "@/components/locations/location-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function LocationsPage({
   params,
@@ -43,6 +44,10 @@ export default async function LocationsPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-locations" title="Locations are the foundation" railroadId={id} guideSection="#locations">
+        Locations are the foundation of your railroad. Create your yards, stations, and sidings first — everything else references them.
+      </OperationsHint>
 
       {layout.locations.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

@@ -87,12 +87,22 @@ export async function addPosition(
       return { error: "Invalid rolling stock type" };
   }
 
+  // Look up car card for freight cars
+  let carCardId: string | undefined;
+  if (data.type === "FREIGHT_CAR") {
+    const carCard = await db.carCard.findUnique({
+      where: { freightCarId: data.rollingStockId },
+    });
+    if (carCard) carCardId = carCard.id;
+  }
+
   await db.consistPosition.create({
     data: {
       consistId,
       position: nextPosition,
       facing: data.facing ?? "F",
       ...fkData,
+      ...(carCardId ? { carCardId } : {}),
     },
   });
 

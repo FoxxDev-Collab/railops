@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, Armchair } from "lucide-react";
 import { PassengerCarCardList } from "@/components/passenger-cars/passenger-car-card-list";
 import { PassengerCarTable } from "@/components/passenger-cars/passenger-car-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function PassengerCarsPage({
   params,
@@ -43,6 +44,10 @@ export default async function PassengerCarsPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-passenger-cars" title="Carry your passengers" railroadId={id} guideSection="#rolling-stock">
+        Passenger cars are added to consists for passenger and mixed trains.
+      </OperationsHint>
 
       {layout.passengerCars.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

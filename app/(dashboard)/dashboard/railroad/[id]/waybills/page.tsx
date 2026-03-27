@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { WaybillCardList } from "@/components/waybills/waybill-card-list";
 import { WaybillTable } from "@/components/waybills/waybill-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function WaybillsPage({
   params,
@@ -64,6 +65,10 @@ export default async function WaybillsPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-waybills" title="Shipping orders for your cars" railroadId={id} guideSection="#waybills">
+        Waybills are shipping orders — they tell the system where each car needs to go. The switch list is generated from these.
+      </OperationsHint>
 
       {waybills.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

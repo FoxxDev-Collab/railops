@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, Wrench } from "lucide-react";
 import { MOWEquipmentCardList } from "@/components/mow-equipment/mow-equipment-card-list";
 import { MOWEquipmentTable } from "@/components/mow-equipment/mow-equipment-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function MOWEquipmentPage({
   params,
@@ -43,6 +44,10 @@ export default async function MOWEquipmentPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-mow" title="Maintain your railroad" railroadId={id} guideSection="#rolling-stock">
+        Maintenance-of-way equipment supports your railroad&apos;s infrastructure. Assign to work trains as needed.
+      </OperationsHint>
 
       {layout.mowEquipment.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

@@ -77,6 +77,7 @@ export async function generateSwitchList(consistId: string, layoutId: string) {
     trackAssignment: string | null;
     sortOrder: number;
     trainStopId: string | null;
+    carCardId: string | null;
   }[] = [];
 
   let sortOrder = 0;
@@ -109,6 +110,7 @@ export async function generateSwitchList(consistId: string, layoutId: string) {
             trackAssignment: activePanel.consigneeIndustry?.name ?? null,
             sortOrder: sortOrder++,
             trainStopId: stop.id,
+            carCardId: carCard.id,
           });
         } else if (activePanel.originId === stop.locationId) {
           entries.push({
@@ -119,6 +121,7 @@ export async function generateSwitchList(consistId: string, layoutId: string) {
             trackAssignment: activePanel.consigneeIndustry?.name ?? null,
             sortOrder: sortOrder++,
             trainStopId: stop.id,
+            carCardId: carCard.id,
           });
         }
       }
@@ -148,6 +151,7 @@ export async function generateSwitchList(consistId: string, layoutId: string) {
         trackAssignment: activePanel.consigneeIndustry?.name ?? null,
         sortOrder: sortOrder++,
         trainStopId: null,
+        carCardId: carCard.id,
       });
     }
   }

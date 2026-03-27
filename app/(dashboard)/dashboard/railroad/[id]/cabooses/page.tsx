@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, TrainTrack } from "lucide-react";
 import { CabooseCardList } from "@/components/cabooses/caboose-card-list";
 import { CabooseTable } from "@/components/cabooses/caboose-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function CaboosesPage({
   params,
@@ -43,6 +44,10 @@ export default async function CaboosesPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-cabooses" title="End of train" railroadId={id} guideSection="#rolling-stock">
+        Cabooses ride at the end of freight trains. Add them to a consist to complete your train.
+      </OperationsHint>
 
       {layout.cabooses.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

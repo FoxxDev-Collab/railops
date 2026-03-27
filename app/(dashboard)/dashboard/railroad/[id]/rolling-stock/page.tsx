@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, Train } from "lucide-react";
 import { FreightCarCardList } from "@/components/freight-cars/freight-car-card-list";
 import { FreightCarTable } from "@/components/freight-cars/freight-car-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function RollingStockPage({
   params,
@@ -45,6 +46,10 @@ export default async function RollingStockPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-freight-cars" title="Cars that carry goods" railroadId={id} guideSection="#rolling-stock">
+        Freight cars carry goods across your railroad. Pair them with waybills to give them shipping orders.
+      </OperationsHint>
 
       {layout.freightCars.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">

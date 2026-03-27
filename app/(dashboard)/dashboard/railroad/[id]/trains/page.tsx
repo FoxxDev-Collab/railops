@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, Route } from "lucide-react";
 import { TrainCardList } from "@/components/trains/train-card-list";
 import { TrainTable } from "@/components/trains/train-table";
 import { CollectionView } from "@/components/shared/collection-view";
+import { OperationsHint } from "@/components/operations/operations-hint";
 
 export default async function TrainsPage({
   params,
@@ -49,6 +50,10 @@ export default async function TrainsPage({
           </Link>
         </Button>
       </div>
+
+      <OperationsHint pageKey="hint-trains" title="Define your routes" railroadId={id} guideSection="#trains">
+        Trains define routes across your railroad. Add stops, then build a consist and generate a switch list.
+      </OperationsHint>
 
       {layout.trains.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
