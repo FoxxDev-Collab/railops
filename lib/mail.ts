@@ -91,3 +91,88 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     `,
   });
 }
+
+export async function sendCrewInviteEmail(
+  email: string,
+  token: string,
+  railroadName: string,
+  roleName: string,
+  inviterName: string | null
+) {
+  const [transporter, fromEmail, appUrl] = await Promise.all([
+    getTransporter(),
+    getFromEmail(),
+    getAppUrl(),
+  ]);
+
+  const acceptUrl = `${appUrl}/invite/accept/${token}`;
+  const invitedBy = inviterName || "A railroad owner";
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: email,
+    subject: `You're invited to join ${railroadName} on RailOps`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Join ${railroadName}</h2>
+        <p>${invitedBy} has invited you to join <strong>${railroadName}</strong> as a <strong>${roleName}</strong>.</p>
+        <p>
+          <a href="${acceptUrl}"
+             style="display: inline-block; padding: 12px 24px; background: #171717; color: #fff; text-decoration: none; border-radius: 6px;">
+            Accept Invitation
+          </a>
+        </p>
+        <p style="color: #666; font-size: 14px;">
+          This invitation expires in 7 days. If you don't have a RailOps account, you'll be able to create one.
+        </p>
+      </div>
+    `,
+  });
+}
+
+export async function sendCrewRoleChangedEmail(
+  email: string,
+  railroadName: string,
+  newRoleName: string
+) {
+  const [transporter, fromEmail] = await Promise.all([
+    getTransporter(),
+    getFromEmail(),
+  ]);
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: email,
+    subject: `Your role on ${railroadName} has changed`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Role Updated</h2>
+        <p>Your role on <strong>${railroadName}</strong> has been changed to <strong>${newRoleName}</strong>.</p>
+        <p style="color: #666; font-size: 14px;">Your permissions have been updated accordingly.</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendCrewRemovedEmail(
+  email: string,
+  railroadName: string
+) {
+  const [transporter, fromEmail] = await Promise.all([
+    getTransporter(),
+    getFromEmail(),
+  ]);
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: email,
+    subject: `You've been removed from ${railroadName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Access Removed</h2>
+        <p>You no longer have access to <strong>${railroadName}</strong> on RailOps.</p>
+        <p style="color: #666; font-size: 14px;">If you believe this was a mistake, contact the railroad owner.</p>
+      </div>
+    `,
+  });
+}

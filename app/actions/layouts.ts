@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { checkRailroadLimit } from "@/lib/limits";
+import { seedDefaultRoles } from "@/lib/crew/seed-roles";
 
 async function requireAuth() {
   const session = await auth();
@@ -31,6 +32,25 @@ export async function getLayoutContext() {
         },
         orderBy: { updatedAt: "desc" },
       },
+      crewMemberships: {
+        where: {
+          acceptedAt: { not: null },
+          removedAt: null,
+        },
+        include: {
+          layout: {
+            select: {
+              id: true,
+              name: true,
+              scale: true,
+              description: true,
+            },
+          },
+          role: {
+            select: { name: true },
+          },
+        },
+      },
     },
   });
 
@@ -38,13 +58,23 @@ export async function getLayoutContext() {
     throw new Error("User not found");
   }
 
+  // Combine owned + crew layouts
+  const ownedLayouts = user.layouts.map((l) => ({
+    ...l,
+    crewRole: null as string | null,
+  }));
+  const crewLayouts = user.crewMemberships.map((m) => ({
+    ...m.layout,
+    crewRole: m.role.name,
+  }));
+  const allLayouts = [...ownedLayouts, ...crewLayouts];
+
   let selectedLayout = user.selectedLayout;
 
   // Auto-select logic: if no layout selected but user has layouts
-  if (!selectedLayout && user.layouts.length > 0) {
-    // If only one layout, auto-select it
-    if (user.layouts.length === 1) {
-      const autoSelectedLayout = user.layouts[0];
+  if (!selectedLayout && allLayouts.length > 0) {
+    if (allLayouts.length === 1) {
+      const autoSelectedLayout = allLayouts[0];
       await db.user.update({
         where: { id: session.user.id },
         data: { selectedLayoutId: autoSelectedLayout.id },
@@ -72,25 +102,34 @@ export async function getLayoutContext() {
           description: selectedLayout.description,
         }
       : null,
-    layouts: user.layouts,
+    layouts: allLayouts,
   };
 }
 
-// Select a layout
+// Select a layout (owner or crew member)
 export async function selectLayout(layoutId: string | null) {
   const session = await requireAuth();
 
   if (layoutId) {
-    // Verify ownership
-    const layout = await db.layout.findFirst({
-      where: {
-        id: layoutId,
-        userId: session.user.id,
-      },
+    // Verify ownership OR active crew membership
+    const isOwner = await db.layout.count({
+      where: { id: layoutId, userId: session.user.id },
     });
 
-    if (!layout) {
-      return { error: "Layout not found" };
+    if (!isOwner) {
+      const membership = await db.crewMember.findUnique({
+        where: {
+          userId_layoutId: {
+            userId: session.user.id,
+            layoutId,
+          },
+        },
+        select: { acceptedAt: true, removedAt: true },
+      });
+
+      if (!membership?.acceptedAt || membership?.removedAt) {
+        return { error: "Layout not found" };
+      }
     }
   }
 
@@ -131,6 +170,9 @@ export async function createLayout(values: z.infer<typeof layoutSchema>) {
     },
   });
 
+  // Seed default crew roles for this railroad
+  await seedDefaultRoles(layout.id);
+
   revalidatePath("/dashboard");
   return { success: true, layout };
 }
@@ -160,34 +202,54 @@ export async function getLayouts() {
   return layouts;
 }
 
-// Get single layout with ownership check
+// Get single layout — owner OR active crew member can access
 export async function getLayout(layoutId: string) {
   const session = await requireAuth();
 
-  const layout = await db.layout.findFirst({
-    where: {
-      id: layoutId,
-      userId: session.user.id, // Ensures user owns this layout
+  const layoutInclude = {
+    locations: {
+      include: { industries: true, yardTracks: true },
+      orderBy: { sortOrder: "asc" } as const,
     },
-    include: {
-      locations: {
-        include: { industries: true, yardTracks: true },
-        orderBy: { sortOrder: "asc" },
-      },
-      locomotives: true,
-      freightCars: true,
-      passengerCars: true,
-      cabooses: true,
-      mowEquipment: true,
-      trains: {
-        include: { origin: true, destination: true },
-        orderBy: { trainNumber: "asc" },
-      },
+    locomotives: true,
+    freightCars: true,
+    passengerCars: true,
+    cabooses: true,
+    mowEquipment: true,
+    trains: {
+      include: { origin: true, destination: true },
+      orderBy: { trainNumber: "asc" } as const,
     },
+  };
+
+  // First try as owner
+  let layout = await db.layout.findFirst({
+    where: { id: layoutId, userId: session.user.id },
+    include: layoutInclude,
   });
 
   if (!layout) {
-    throw new Error("Layout not found");
+    // Check if user is an active crew member
+    const membership = await db.crewMember.findUnique({
+      where: {
+        userId_layoutId: { userId: session.user.id, layoutId },
+      },
+      select: { acceptedAt: true, removedAt: true },
+    });
+
+    if (!membership?.acceptedAt || membership?.removedAt) {
+      throw new Error("Layout not found");
+    }
+
+    // Fetch layout without ownership check
+    layout = await db.layout.findUnique({
+      where: { id: layoutId },
+      include: layoutInclude,
+    });
+
+    if (!layout) {
+      throw new Error("Layout not found");
+    }
   }
 
   return layout;
