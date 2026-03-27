@@ -437,8 +437,8 @@ export function WaybillForm({
     consigneeIndustryId: null,
   };
 
-  const form = useForm<FormValues>({
-    // @ts-expect-error zodResolver typing mismatch with zod v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(waybillFormSchema),
     defaultValues: {
       freightCarId: initialData?.carCard?.freightCarId ?? null,

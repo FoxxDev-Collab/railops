@@ -115,8 +115,8 @@ export function LocomotiveForm({
   const router = useRouter();
   const isEdit = !!initialData;
 
-  const form = useForm<FormValues>({
-    // @ts-expect-error zodResolver typing mismatch with zod v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(locomotiveSchema),
     defaultValues: {
       road: initialData?.road ?? "",
@@ -156,8 +156,6 @@ export function LocomotiveForm({
       router.push(backUrl);
     }
   }
-
-  const hasSound = form.watch("hasSound");
 
   return (
     <div className="space-y-6">

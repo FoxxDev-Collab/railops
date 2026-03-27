@@ -71,8 +71,8 @@ export function SessionForm({
     ? initialData.sessionTrains.map((st) => st.train.id)
     : [];
 
-  const form = useForm<FormValues>({
-    // @ts-expect-error zodResolver typing mismatch with zod v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(sessionSchema),
     defaultValues: {
       name: initialData?.name ?? "",
@@ -105,7 +105,7 @@ export function SessionForm({
   function toggleTrain(trainId: string) {
     const current = form.getValues("trainIds") ?? [];
     const next = current.includes(trainId)
-      ? current.filter((id) => id !== trainId)
+      ? current.filter((id: string) => id !== trainId)
       : [...current, trainId];
     form.setValue("trainIds", next);
   }

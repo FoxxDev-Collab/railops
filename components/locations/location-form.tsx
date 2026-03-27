@@ -276,8 +276,8 @@ export function LocationForm({ layoutId, initialData, backUrl }: LocationFormPro
 
   const attrs = (initialData?.typeAttributes ?? {}) as Record<string, unknown>;
 
-  const form = useForm<FormValues>({
-    // @ts-expect-error zodResolver typing mismatch with zod v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name ?? "",

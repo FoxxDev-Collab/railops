@@ -85,8 +85,8 @@ export function CabooseForm({
   const router = useRouter();
   const isEdit = !!initialData;
 
-  const form = useForm<FormValues>({
-    // @ts-expect-error zodResolver typing mismatch with zod v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(cabooseSchema),
     defaultValues: {
       reportingMarks: initialData?.reportingMarks ?? "",
@@ -142,7 +142,7 @@ export function CabooseForm({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Identity Card */}
           <Card>
