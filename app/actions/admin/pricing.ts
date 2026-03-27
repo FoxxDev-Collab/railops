@@ -143,5 +143,6 @@ export async function updatePricingTier(
   invalidateCache();
   revalidatePath("/admin/billing");
   revalidatePath("/");
+  revalidatePath("/pricing");
   return { success: true };
 }

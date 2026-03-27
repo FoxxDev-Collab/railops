@@ -26,6 +26,7 @@ import {
   Gauge,
 } from "lucide-react";
 import { LandingHeader } from "@/components/landing/landing-header";
+import { LandingFooter } from "@/components/landing/landing-footer";
 import { getPricingConfig } from "@/app/actions/admin/pricing";
 
 export default async function Home() {
@@ -432,23 +433,7 @@ export default async function Home() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-muted/30 py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-                <Train className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <span className="font-semibold text-foreground">RailOps</span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} RailOps. Keeping the rails
-              running since 2024.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter />
     </div>
   );
 }
