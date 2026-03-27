@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { checkRailroadLimit } from "@/lib/limits";
+import { seedDefaultRoles } from "@/lib/crew/seed-roles";
 
 async function requireAuth() {
   const session = await auth();
@@ -130,6 +131,9 @@ export async function createLayout(values: z.infer<typeof layoutSchema>) {
       userId: session.user.id,
     },
   });
+
+  // Seed default crew roles for this railroad
+  await seedDefaultRoles(layout.id);
 
   revalidatePath("/dashboard");
   return { success: true, layout };
