@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { RollingStockStatus } from "@prisma/client";
+import { checkCategoryLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
