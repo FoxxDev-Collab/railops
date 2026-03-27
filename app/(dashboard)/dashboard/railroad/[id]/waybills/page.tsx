@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Plus, FileText } from "lucide-react";
+import { ArrowLeft, Plus, FileText, Printer } from "lucide-react";
 import { db } from "@/lib/db";
 import { WaybillCardList } from "@/components/waybills/waybill-card-list";
 import { WaybillTable } from "@/components/waybills/waybill-table";
@@ -55,15 +55,25 @@ export default async function WaybillsPage({
             </p>
           </div>
         </div>
-        <Button
-          className="transition-all duration-150 hover:shadow-md"
-          asChild
-        >
-          <Link href={`/dashboard/railroad/${id}/waybills/new`}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Waybill
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {waybills.length > 0 && (
+            <Button variant="outline" asChild>
+              <Link href={`/dashboard/railroad/${id}/waybills/print`}>
+                <Printer className="mr-2 h-4 w-4" />
+                Print All
+              </Link>
+            </Button>
+          )}
+          <Button
+            className="transition-all duration-150 hover:shadow-md"
+            asChild
+          >
+            <Link href={`/dashboard/railroad/${id}/waybills/new`}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Waybill
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <OperationsHint pageKey="hint-waybills" title="Shipping orders for your cars" railroadId={id} guideSection="#waybills">

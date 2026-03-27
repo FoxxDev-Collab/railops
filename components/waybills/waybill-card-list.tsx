@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, ArrowRight } from "lucide-react";
+import { Pencil, ArrowRight, Printer } from "lucide-react";
 import { WaybillStatus, LoadStatus } from "@prisma/client";
 import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
@@ -114,10 +114,22 @@ export function WaybillCardList({ waybills, layoutId }: WaybillCardListProps) {
                       className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       asChild
                     >
+                      <Link href={`/dashboard/railroad/${layoutId}/waybills/${waybill.id}/print`}>
+                        <Printer className="h-3.5 w-3.5" />
+                        <span className="sr-only">Print</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      asChild
+                    >
                       <Link
                         href={`/dashboard/railroad/${layoutId}/waybills/${waybill.id}/edit`}
                       >
                         <Pencil className="h-3.5 w-3.5" />
+                        <span className="sr-only">Edit</span>
                       </Link>
                     </Button>
                     <DeleteButton

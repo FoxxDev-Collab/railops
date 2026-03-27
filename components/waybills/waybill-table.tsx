@@ -3,7 +3,7 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, ArrowRight } from "lucide-react";
+import { Pencil, ArrowRight, Printer } from "lucide-react";
 import { WaybillStatus, LoadStatus } from "@prisma/client";
 import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
@@ -185,6 +185,12 @@ function getColumns(layoutId: string): ColumnDef<Waybill, unknown>[] {
         const carLabel = car ? `${car.reportingMarks} ${car.number}` : "waybill";
         return (
           <div className="flex items-center justify-end gap-0.5">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
+              <Link href={`/dashboard/railroad/${layoutId}/waybills/${row.original.id}/print`}>
+                <Printer className="h-3.5 w-3.5" />
+                <span className="sr-only">Print</span>
+              </Link>
+            </Button>
             <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
               <Link href={`/dashboard/railroad/${layoutId}/waybills/${row.original.id}/edit`}>
                 <Pencil className="h-3.5 w-3.5" />
