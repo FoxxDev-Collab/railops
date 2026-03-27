@@ -95,3 +95,31 @@ export async function canExport(userId: string): Promise<boolean> {
   });
   return getPlanLimits(user?.plan ?? "FREE").canExport;
 }
+
+export async function checkCrewLimit(
+  layoutId: string
+): Promise<{ allowed: boolean; current: number; limit: number }> {
+  const layout = await db.layout.findUnique({
+    where: { id: layoutId },
+    include: { user: { select: { plan: true } } },
+  });
+
+  if (!layout) return { allowed: false, current: 0, limit: 0 };
+
+  const limits = getPlanLimits(layout.user.plan);
+  const limit = limits.maxCrew;
+
+  if (limit === Infinity) {
+    return { allowed: true, current: 0, limit };
+  }
+
+  const current = await db.crewMember.count({
+    where: {
+      layoutId,
+      acceptedAt: { not: null },
+      removedAt: null,
+    },
+  });
+
+  return { allowed: current < limit, current, limit };
+}
