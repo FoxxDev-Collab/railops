@@ -23,7 +23,7 @@ import {
 import { toggleAdminRole, setUserPlan, verifyUserEmail, deleteUser } from "@/app/actions/admin/users";
 import { adminCancelSubscription, adminGrantPlan } from "@/app/actions/admin/billing";
 import { startImpersonation } from "@/app/actions/admin/impersonate";
-import type { Plan, Role } from "@prisma/client";
+import type { Plan, UserRole as Role } from "@prisma/client";
 
 interface LayoutInfo {
   id: string;

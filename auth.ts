@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
-import type { Role } from "@prisma/client";
+import type { UserRole as Role } from "@prisma/client";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 

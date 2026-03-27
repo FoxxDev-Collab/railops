@@ -12,7 +12,7 @@ datasource db {
 // ENUMS
 // ─────────────────────────────────────────────
 
-enum Role {
+enum UserRole {
   USER
   ADMIN
 }
@@ -168,13 +168,6 @@ enum Plan {
   OPERATOR
 }
 
-enum CrewRole {
-  DISPATCHER
-  YARDMASTER
-  CONDUCTOR
-  VIEWER
-}
-
 // ─────────────────────────────────────────────
 // AUTH / SYSTEM
 // ─────────────────────────────────────────────
@@ -200,7 +193,7 @@ model User {
   email         String    @unique
   password      String
   name          String?
-  role          Role      @default(USER)
+  role          UserRole  @default(USER)
   emailVerified DateTime?
   image         String?
 
@@ -234,6 +227,8 @@ model User {
   maintenanceTasks MaintenanceTask[]
   badOrders        BadOrder[]
   crewMemberships  CrewMember[]       @relation("CrewUser")
+  crewInvitations  CrewMember[]       @relation("CrewInviter")
+  inviteLinks      InviteLink[]       @relation("InviteLinkCreator")
 
   @@index([email])
   @@index([role])
@@ -263,6 +258,8 @@ model Layout {
   sessions        OperatingSession[]
   selectedByUsers User[]   @relation("SelectedLayout")
   crewMembers     CrewMember[]
+  roles           Role[]
+  inviteLinks     InviteLink[]
 
   @@index([userId])
 }
@@ -272,20 +269,79 @@ model Layout {
 // ─────────────────────────────────────────────
 
 model CrewMember {
-  id        String   @id @default(cuid())
-  role      CrewRole @default(VIEWER)
+  id         String    @id @default(cuid())
 
-  userId    String
-  user      User     @relation("CrewUser", fields: [userId], references: [id], onDelete: Cascade)
-  layoutId  String
-  layout    Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation("CrewUser", fields: [userId], references: [id], onDelete: Cascade)
+  layoutId   String
+  layout     Layout    @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  roleId     String
+  role       Role      @relation(fields: [roleId], references: [id])
 
-  invitedAt DateTime @default(now())
+  invitedBy  String?
+  inviter    User?     @relation("CrewInviter", fields: [invitedBy], references: [id], onDelete: SetNull)
+  invitedAt  DateTime  @default(now())
   acceptedAt DateTime?
+  removedAt  DateTime?
+  removedBy  String?
 
   @@unique([userId, layoutId])
   @@index([userId])
   @@index([layoutId])
+  @@index([roleId])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String
+  isDefault   Boolean          @default(false)
+
+  layoutId    String
+  layout      Layout           @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  permissions RolePermission[]
+  members     CrewMember[]
+  inviteLinks InviteLink[]
+
+  @@unique([layoutId, name])
+  @@index([layoutId])
+}
+
+model RolePermission {
+  id      String  @id @default(cuid())
+  section String
+  canView Boolean @default(true)
+  canEdit Boolean @default(false)
+
+  roleId  String
+  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, section])
+  @@index([roleId])
+}
+
+model InviteLink {
+  id        String    @id @default(cuid())
+  code      String    @unique @default(cuid())
+  maxUses   Int?
+  uses      Int       @default(0)
+  expiresAt DateTime?
+  paused    Boolean   @default(false)
+
+  layoutId  String
+  layout    Layout    @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  roleId    String
+  role      Role      @relation(fields: [roleId], references: [id])
+  createdBy String
+  creator   User      @relation("InviteLinkCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+
+  @@index([layoutId])
+  @@index([code])
 }
 
 // ─────────────────────────────────────────────
