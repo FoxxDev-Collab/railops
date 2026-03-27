@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowLeft, PlayCircle, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { SessionCardList } from "@/components/sessions/session-card-list";
+import { SessionTable } from "@/components/sessions/session-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function SessionsPage({
   params,
@@ -75,7 +77,10 @@ export default async function SessionsPage({
           </Button>
         </div>
       ) : (
-        <SessionCardList sessions={sessions} layoutId={id} />
+        <CollectionView
+          cardView={<SessionCardList sessions={sessions} layoutId={id} />}
+          tableView={<SessionTable sessions={sessions} layoutId={id} />}
+        />
       )}
     </div>
   );

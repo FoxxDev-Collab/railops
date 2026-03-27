@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, Wrench } from "lucide-react";
 import { MOWEquipmentCardList } from "@/components/mow-equipment/mow-equipment-card-list";
+import { MOWEquipmentTable } from "@/components/mow-equipment/mow-equipment-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function MOWEquipmentPage({
   params,
@@ -62,7 +64,10 @@ export default async function MOWEquipmentPage({
           </Button>
         </div>
       ) : (
-        <MOWEquipmentCardList mowEquipment={layout.mowEquipment} layoutId={id} />
+        <CollectionView
+          cardView={<MOWEquipmentCardList mowEquipment={layout.mowEquipment} layoutId={id} />}
+          tableView={<MOWEquipmentTable mowEquipment={layout.mowEquipment} layoutId={id} />}
+        />
       )}
     </div>
   );

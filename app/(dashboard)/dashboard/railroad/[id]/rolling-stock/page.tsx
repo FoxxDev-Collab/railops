@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, Train } from "lucide-react";
 import { FreightCarCardList } from "@/components/freight-cars/freight-car-card-list";
+import { FreightCarTable } from "@/components/freight-cars/freight-car-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function RollingStockPage({
   params,
@@ -64,7 +66,10 @@ export default async function RollingStockPage({
           </Button>
         </div>
       ) : (
-        <FreightCarCardList freightCars={layout.freightCars} layoutId={id} />
+        <CollectionView
+          cardView={<FreightCarCardList freightCars={layout.freightCars} layoutId={id} />}
+          tableView={<FreightCarTable freightCars={layout.freightCars} layoutId={id} />}
+        />
       )}
     </div>
   );

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, TrainTrack } from "lucide-react";
 import { CabooseCardList } from "@/components/cabooses/caboose-card-list";
+import { CabooseTable } from "@/components/cabooses/caboose-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function CaboosesPage({
   params,
@@ -62,7 +64,10 @@ export default async function CaboosesPage({
           </Button>
         </div>
       ) : (
-        <CabooseCardList cabooses={layout.cabooses} layoutId={id} />
+        <CollectionView
+          cardView={<CabooseCardList cabooses={layout.cabooses} layoutId={id} />}
+          tableView={<CabooseTable cabooses={layout.cabooses} layoutId={id} />}
+        />
       )}
     </div>
   );

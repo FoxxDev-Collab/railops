@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, MapPin } from "lucide-react";
 import { LocationCardList } from "@/components/locations/location-card-list";
+import { LocationTable } from "@/components/locations/location-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function LocationsPage({
   params,
@@ -62,7 +64,10 @@ export default async function LocationsPage({
           </Button>
         </div>
       ) : (
-        <LocationCardList locations={layout.locations} layoutId={id} />
+        <CollectionView
+          cardView={<LocationCardList locations={layout.locations} layoutId={id} />}
+          tableView={<LocationTable locations={layout.locations} layoutId={id} />}
+        />
       )}
     </div>
   );

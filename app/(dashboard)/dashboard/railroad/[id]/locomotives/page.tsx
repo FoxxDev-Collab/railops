@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, TrainFront } from "lucide-react";
 import { LocomotiveCardList } from "@/components/locomotives/locomotive-card-list";
+import { LocomotiveTable } from "@/components/locomotives/locomotive-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function LocomotivesPage({
   params,
@@ -62,7 +64,10 @@ export default async function LocomotivesPage({
           </Button>
         </div>
       ) : (
-        <LocomotiveCardList locomotives={layout.locomotives} layoutId={id} />
+        <CollectionView
+          cardView={<LocomotiveCardList locomotives={layout.locomotives} layoutId={id} />}
+          tableView={<LocomotiveTable locomotives={layout.locomotives} layoutId={id} />}
+        />
       )}
     </div>
   );

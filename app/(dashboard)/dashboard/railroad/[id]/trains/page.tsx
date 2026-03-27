@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, Route } from "lucide-react";
 import { TrainCardList } from "@/components/trains/train-card-list";
+import { TrainTable } from "@/components/trains/train-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function TrainsPage({
   params,
@@ -69,9 +71,9 @@ export default async function TrainsPage({
           </Button>
         </div>
       ) : (
-        <TrainCardList
-          trains={layout.trains}
-          layoutId={id}
+        <CollectionView
+          cardView={<TrainCardList trains={layout.trains} layoutId={id} />}
+          tableView={<TrainTable trains={layout.trains} layoutId={id} />}
         />
       )}
     </div>

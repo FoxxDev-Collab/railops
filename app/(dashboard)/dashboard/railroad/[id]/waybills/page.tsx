@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowLeft, Plus, FileText } from "lucide-react";
 import { db } from "@/lib/db";
 import { WaybillCardList } from "@/components/waybills/waybill-card-list";
+import { WaybillTable } from "@/components/waybills/waybill-table";
+import { CollectionView } from "@/components/shared/collection-view";
 
 export default async function WaybillsPage({
   params,
@@ -83,7 +85,10 @@ export default async function WaybillsPage({
           </Button>
         </div>
       ) : (
-        <WaybillCardList waybills={waybills} layoutId={id} />
+        <CollectionView
+          cardView={<WaybillCardList waybills={waybills} layoutId={id} />}
+          tableView={<WaybillTable waybills={waybills} layoutId={id} />}
+        />
       )}
     </div>
   );
