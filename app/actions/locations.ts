@@ -13,15 +13,81 @@ async function requireAuth() {
   return session;
 }
 
+// --- Type-specific attribute schemas ---
+
+const passengerStationAttributesSchema = z.object({
+  stationClass: z.string().optional().nullable(),
+  platformCount: z.coerce.number().int().optional().nullable(),
+  hasFreightHouse: z.boolean().optional(),
+  hasExpressService: z.boolean().optional(),
+});
+
+const yardAttributesSchema = z.object({
+  yardType: z.string().optional().nullable(),
+  hasEngineFacilities: z.boolean().optional(),
+  hasRipTrack: z.boolean().optional(),
+  hasCabooseTrack: z.boolean().optional(),
+  totalCarCapacity: z.coerce.number().int().optional().nullable(),
+});
+
+const interchangeAttributesSchema = z.object({
+  connectingRailroads: z.array(z.string()).optional(),
+  interchangeDirection: z.string().optional().nullable(),
+  trackCount: z.coerce.number().int().optional().nullable(),
+  carCapacity: z.coerce.number().int().optional().nullable(),
+});
+
+const junctionAttributesSchema = z.object({
+  convergingLines: z.array(z.string()).optional(),
+  hasSignals: z.boolean().optional(),
+  controlPoint: z.string().optional().nullable(),
+  hasPassingSiding: z.boolean().optional(),
+});
+
+const stagingAttributesSchema = z.object({
+  represents: z.string().optional().nullable(),
+  stagingType: z.string().optional().nullable(),
+  trackCount: z.coerce.number().int().optional().nullable(),
+  totalCarCapacity: z.coerce.number().int().optional().nullable(),
+  isFiddleYard: z.boolean().optional(),
+});
+
+const teamTrackAttributesSchema = z.object({
+  carSpots: z.coerce.number().int().optional().nullable(),
+  hasLoadingDock: z.boolean().optional(),
+  hasScaleTrack: z.boolean().optional(),
+});
+
+const sidingAttributesSchema = z.object({
+  sidingType: z.string().optional().nullable(),
+  lengthInCarLengths: z.coerce.number().int().optional().nullable(),
+  carCapacity: z.coerce.number().int().optional().nullable(),
+  isDoubleEnded: z.boolean().optional(),
+});
+
+function getTypeAttributesSchema(locationType: LocationType) {
+  switch (locationType) {
+    case "PASSENGER_STATION": return passengerStationAttributesSchema;
+    case "YARD": return yardAttributesSchema;
+    case "INTERCHANGE": return interchangeAttributesSchema;
+    case "JUNCTION": return junctionAttributesSchema;
+    case "STAGING": return stagingAttributesSchema;
+    case "TEAM_TRACK": return teamTrackAttributesSchema;
+    case "SIDING": return sidingAttributesSchema;
+    default: return null;
+  }
+}
+
+// --- Main location schema ---
+
 const locationSchema = z.object({
   name: z.string().min(1, "Name is required"),
   code: z.string().min(1, "Code is required").max(10),
   locationType: z.nativeEnum(LocationType),
   description: z.string().optional(),
-  latitude: z.coerce.number().optional().nullable(),
-  longitude: z.coerce.number().optional().nullable(),
   population: z.coerce.number().int().optional().nullable(),
   sortOrder: z.coerce.number().int().optional(),
+  typeAttributes: z.any().optional(),
 });
 
 export type LocationFormValues = z.infer<typeof locationSchema>;
@@ -31,6 +97,19 @@ export async function createLocation(layoutId: string, values: LocationFormValue
 
   const parsed = locationSchema.safeParse(values);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  // Only allow population for PASSENGER_STATION
+  if (parsed.data.locationType !== "PASSENGER_STATION") {
+    parsed.data.population = null;
+  }
+
+  // Validate typeAttributes per type
+  const typeAttributesSchema = getTypeAttributesSchema(parsed.data.locationType);
+  if (parsed.data.typeAttributes && typeAttributesSchema) {
+    const attrResult = typeAttributesSchema.safeParse(parsed.data.typeAttributes);
+    if (!attrResult.success) return { error: attrResult.error.issues[0].message };
+    parsed.data.typeAttributes = attrResult.data;
+  }
 
   // Verify layout ownership
   const layout = await db.layout.findFirst({
@@ -52,13 +131,20 @@ export async function createLocation(layoutId: string, values: LocationFormValue
 
   const location = await db.location.create({
     data: {
-      ...parsed.data,
+      name: parsed.data.name,
+      code: parsed.data.code,
+      locationType: parsed.data.locationType,
+      description: parsed.data.description,
+      population: parsed.data.population,
+      sortOrder: parsed.data.sortOrder,
+      typeAttributes: parsed.data.typeAttributes ?? undefined,
       layoutId,
       userId: session.user.id,
     },
   });
 
   revalidatePath(`/dashboard/railroad/${layoutId}`);
+  revalidatePath(`/dashboard/railroad/${layoutId}/locations`);
   return { success: true, location };
 }
 
@@ -67,6 +153,19 @@ export async function updateLocation(locationId: string, values: LocationFormVal
 
   const parsed = locationSchema.safeParse(values);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  // Only allow population for PASSENGER_STATION
+  if (parsed.data.locationType !== "PASSENGER_STATION") {
+    parsed.data.population = null;
+  }
+
+  // Validate typeAttributes per type
+  const typeAttributesSchema = getTypeAttributesSchema(parsed.data.locationType);
+  if (parsed.data.typeAttributes && typeAttributesSchema) {
+    const attrResult = typeAttributesSchema.safeParse(parsed.data.typeAttributes);
+    if (!attrResult.success) return { error: attrResult.error.issues[0].message };
+    parsed.data.typeAttributes = attrResult.data;
+  }
 
   const existing = await db.location.findFirst({
     where: { id: locationId, userId: session.user.id },
@@ -85,10 +184,19 @@ export async function updateLocation(locationId: string, values: LocationFormVal
 
   const location = await db.location.update({
     where: { id: locationId },
-    data: parsed.data,
+    data: {
+      name: parsed.data.name,
+      code: parsed.data.code,
+      locationType: parsed.data.locationType,
+      description: parsed.data.description,
+      population: parsed.data.population,
+      sortOrder: parsed.data.sortOrder,
+      typeAttributes: parsed.data.typeAttributes ?? undefined,
+    },
   });
 
   revalidatePath(`/dashboard/railroad/${existing.layoutId}`);
+  revalidatePath(`/dashboard/railroad/${existing.layoutId}/locations`);
   return { success: true, location };
 }
 
@@ -103,6 +211,7 @@ export async function deleteLocation(locationId: string) {
   await db.location.delete({ where: { id: locationId } });
 
   revalidatePath(`/dashboard/railroad/${location.layoutId}`);
+  revalidatePath(`/dashboard/railroad/${location.layoutId}/locations`);
   return { success: true };
 }
 

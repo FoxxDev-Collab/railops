@@ -1,30 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { X } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { ArrowLeft, X } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { createIndustry, updateIndustry } from "@/app/actions/locations";
 
 const industrySchema = z.object({
@@ -75,9 +76,10 @@ const industryTypes = [
   "Other",
 ];
 
-interface IndustryFormDialogProps {
+interface IndustryFormProps {
   locationId: string;
   locationName: string;
+  layoutId: string;
   initialData?: {
     id: string;
     name: string;
@@ -89,7 +91,7 @@ interface IndustryFormDialogProps {
     commoditiesIn: string[];
     commoditiesOut: string[];
   };
-  trigger: React.ReactNode;
+  backUrl: string;
 }
 
 function CommodityInput({
@@ -128,20 +130,20 @@ function CommodityInput({
             }
           }}
           placeholder={placeholder}
-          className="h-8 text-sm transition-shadow duration-150 focus:shadow-md"
+          className="transition-shadow duration-150 focus:shadow-md"
         />
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={addCommodity}
-          className="h-8 px-3 text-xs shrink-0"
+          className="shrink-0"
         >
           Add
         </Button>
       </div>
       {value.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {value.map((commodity) => (
             <Badge
               key={commodity}
@@ -153,6 +155,7 @@ function CommodityInput({
                 type="button"
                 onClick={() => removeCommodity(commodity)}
                 className="ml-0.5 rounded-sm hover:bg-foreground/10 p-0.5 transition-colors cursor-pointer"
+                aria-label={`Remove ${commodity}`}
               >
                 <X className="h-2.5 w-2.5" />
               </button>
@@ -164,13 +167,12 @@ function CommodityInput({
   );
 }
 
-export function IndustryFormDialog({
+export function IndustryForm({
   locationId,
   locationName,
   initialData,
-  trigger,
-}: IndustryFormDialogProps) {
-  const [open, setOpen] = useState(false);
+  backUrl,
+}: IndustryFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEdit = !!initialData;
@@ -189,10 +191,6 @@ export function IndustryFormDialog({
     },
   });
 
-  useEffect(() => {
-    if (open && !isEdit) form.reset();
-  }, [open, isEdit, form]);
-
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
 
@@ -202,65 +200,56 @@ export function IndustryFormDialog({
 
     if (result.error) {
       toast.error(result.error);
+      setIsLoading(false);
     } else {
       toast.success(isEdit ? "Industry updated" : "Industry added");
-      setOpen(false);
-      form.reset();
-      router.refresh();
+      router.push(backUrl);
     }
-
-    setIsLoading(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[540px] p-0 overflow-hidden gap-0">
-        {/* Header */}
-        <div className="relative border-b bg-muted/30 px-6 pt-6 pb-4">
-          <div
-            className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 11px,
-                currentColor 11px,
-                currentColor 12px
-              )`,
-            }}
-          />
-          <DialogHeader className="relative">
-            <DialogTitle className="text-lg tracking-wide">
-              {isEdit ? `Edit ${initialData.name}` : "Add Industry"}
-            </DialogTitle>
-            <DialogDescription className="text-xs tracking-wider uppercase text-muted-foreground/70">
-              {locationName}
-            </DialogDescription>
-          </DialogHeader>
+    <div className="space-y-6">
+      {/* Page header */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" asChild>
+          <Link href={backUrl}>
+            <ArrowLeft className="h-4 w-4" />
+            <span className="sr-only">Back</span>
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">
+            {isEdit ? `Edit ${initialData.name}` : "Add Industry"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {locationName}
+          </p>
         </div>
+      </div>
 
-        <div className="px-6 py-5">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
-              {/* Name + Type row */}
-              <div className="grid grid-cols-2 gap-3">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Identity */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                Identity
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Name
-                      </FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Acme Manufacturing"
-                          className="h-10 transition-shadow duration-150 focus:shadow-md"
                           autoFocus
+                          className="transition-shadow duration-150 focus:shadow-md"
                           {...field}
                         />
                       </FormControl>
@@ -273,15 +262,13 @@ export function IndustryFormDialog({
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Type
-                      </FormLabel>
+                      <FormLabel>Type</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-10 transition-shadow duration-150 focus:shadow-md">
+                          <SelectTrigger className="transition-shadow duration-150 focus:shadow-md">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                         </FormControl>
@@ -299,21 +286,50 @@ export function IndustryFormDialog({
                 />
               </div>
 
-              {/* Capacity details */}
-              <div className="grid grid-cols-3 gap-3">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Switching instructions, special handling notes..."
+                        className="resize-none transition-shadow duration-150 focus:shadow-md"
+                        rows={3}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Capacity */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                Capacity
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Physical constraints for car spotting operations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="spotCount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Car Spots
-                      </FormLabel>
+                      <FormLabel>Car Spots</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="—"
-                          className="h-10 text-center transition-shadow duration-150 focus:shadow-md"
+                          className="text-center transition-shadow duration-150 focus:shadow-md"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) =>
@@ -323,7 +339,7 @@ export function IndustryFormDialog({
                           }
                         />
                       </FormControl>
-                      <FormDescription className="text-[10px] text-center">
+                      <FormDescription className="text-[11px] text-center">
                         Spots for cars
                       </FormDescription>
                       <FormMessage />
@@ -335,14 +351,12 @@ export function IndustryFormDialog({
                   name="trackLength"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Track Length
-                      </FormLabel>
+                      <FormLabel>Track Length</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="—"
-                          className="h-10 text-center transition-shadow duration-150 focus:shadow-md"
+                          className="text-center transition-shadow duration-150 focus:shadow-md"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) =>
@@ -352,7 +366,7 @@ export function IndustryFormDialog({
                           }
                         />
                       </FormControl>
-                      <FormDescription className="text-[10px] text-center">
+                      <FormDescription className="text-[11px] text-center">
                         Feet
                       </FormDescription>
                       <FormMessage />
@@ -364,14 +378,12 @@ export function IndustryFormDialog({
                   name="capacity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Capacity
-                      </FormLabel>
+                      <FormLabel>Capacity</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="—"
-                          className="h-10 text-center transition-shadow duration-150 focus:shadow-md"
+                          className="text-center transition-shadow duration-150 focus:shadow-md"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) =>
@@ -381,7 +393,7 @@ export function IndustryFormDialog({
                           }
                         />
                       </FormControl>
-                      <FormDescription className="text-[10px] text-center">
+                      <FormDescription className="text-[11px] text-center">
                         Tons
                       </FormDescription>
                       <FormMessage />
@@ -389,17 +401,29 @@ export function IndustryFormDialog({
                   )}
                 />
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Commodities */}
-              <div className="grid grid-cols-2 gap-4">
+          </div>
+
+          {/* Commodities */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                Commodities
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Press Enter or click Add to add each commodity
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="commoditiesIn"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Receives (Inbound)
-                      </FormLabel>
+                      <FormLabel>Receives (Inbound)</FormLabel>
                       <CommodityInput
                         value={field.value ?? []}
                         onChange={field.onChange}
@@ -414,9 +438,7 @@ export function IndustryFormDialog({
                   name="commoditiesOut"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Ships (Outbound)
-                      </FormLabel>
+                      <FormLabel>Ships (Outbound)</FormLabel>
                       <CommodityInput
                         value={field.value ?? []}
                         onChange={field.onChange}
@@ -427,67 +449,34 @@ export function IndustryFormDialog({
                   )}
                 />
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Description */}
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                      Notes
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Switching instructions, special handling notes..."
-                        className="resize-none min-h-[60px] transition-shadow duration-150 focus:shadow-md"
-                        rows={2}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={isLoading}
-                  className="min-w-[100px] transition-all duration-150"
-                >
-                  {isLoading ? (
-                    <motion.div
-                      className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                  ) : isEdit ? (
-                    "Save Changes"
-                  ) : (
-                    "Add Industry"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-3">
+            <Button type="button" variant="outline" asChild>
+              <Link href={backUrl}>Cancel</Link>
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="min-w-[120px] transition-all duration-150"
+            >
+              {isLoading ? (
+                <motion.div
+                  className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                />
+              ) : isEdit ? (
+                "Save Changes"
+              ) : (
+                "Add Industry"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

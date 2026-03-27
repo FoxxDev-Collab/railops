@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Role } from "@prisma/client";
+import { User, Role, Plan } from "@prisma/client";
 import {
   Table,
   TableBody,
@@ -17,10 +17,26 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Shield, Trash, Eye } from "lucide-react";
-import { toggleAdminRole, deleteUser } from "@/app/actions/admin/users";
+import {
+  MoreHorizontal,
+  Shield,
+  Trash,
+  CreditCard,
+  CheckCircle,
+  KeyRound,
+} from "lucide-react";
+import {
+  toggleAdminRole,
+  deleteUser,
+  setUserPlan,
+  verifyUserEmail,
+  resetUserPassword,
+} from "@/app/actions/admin/users";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -47,6 +63,41 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
     }
   }
 
+  async function handleSetPlan(userId: string, plan: Plan) {
+    const result = await setUserPlan(userId, plan);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success(`Plan set to ${plan}`);
+      router.refresh();
+    }
+  }
+
+  async function handleVerifyEmail(userId: string) {
+    const result = await verifyUserEmail(userId);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Email verified");
+      router.refresh();
+    }
+  }
+
+  async function handleResetPassword(userId: string) {
+    const password = prompt("Enter new password (min 8 chars):");
+    if (!password) return;
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    const result = await resetUserPassword(userId, password);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Password reset");
+    }
+  }
+
   async function handleDelete(userId: string) {
     if (!confirm("Are you sure? This will delete all user data.")) return;
 
@@ -67,9 +118,9 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
             <TableHead>Email</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Plan</TableHead>
             <TableHead>Verified</TableHead>
             <TableHead>Layouts</TableHead>
-            <TableHead>Locations</TableHead>
             <TableHead>Stock</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -86,13 +137,21 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
                 </Badge>
               </TableCell>
               <TableCell>
+                <Badge
+                  variant={user.plan === "OPERATOR" ? "default" : "outline"}
+                >
+                  {user.plan}
+                </Badge>
+              </TableCell>
+              <TableCell>
                 <Badge variant={user.emailVerified ? "default" : "outline"}>
                   {user.emailVerified ? "Yes" : "No"}
                 </Badge>
               </TableCell>
               <TableCell>{user._count.layouts}</TableCell>
-              <TableCell>{user._count.locations}</TableCell>
-              <TableCell>{user._count.freightCars + user._count.locomotives}</TableCell>
+              <TableCell>
+                {user._count.freightCars + user._count.locomotives}
+              </TableCell>
               <TableCell>
                 {new Date(user.createdAt).toLocaleDateString()}
               </TableCell>
@@ -105,14 +164,53 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleToggleRole(user.id)}>
+
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Set Plan
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem
+                          onClick={() => handleSetPlan(user.id, "FREE")}
+                          disabled={user.plan === "FREE"}
+                        >
+                          Free
+                          {user.plan === "FREE" && " (current)"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleSetPlan(user.id, "OPERATOR")}
+                          disabled={user.plan === "OPERATOR"}
+                        >
+                          Operator
+                          {user.plan === "OPERATOR" && " (current)"}
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <DropdownMenuItem
+                      onClick={() => handleToggleRole(user.id)}
+                    >
                       <Shield className="mr-2 h-4 w-4" />
-                      Toggle Admin Role
+                      {user.role === "ADMIN" ? "Demote to User" : "Promote to Admin"}
                     </DropdownMenuItem>
+
+                    {!user.emailVerified && (
+                      <DropdownMenuItem
+                        onClick={() => handleVerifyEmail(user.id)}
+                      >
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Verify Email
+                      </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuItem
+                      onClick={() => handleResetPassword(user.id)}
+                    >
+                      <KeyRound className="mr-2 h-4 w-4" />
+                      Reset Password
+                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => handleDelete(user.id)}

@@ -9,10 +9,39 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Factory, Plus, Pencil } from "lucide-react";
+import Link from "next/link";
+import {
+  Factory,
+  Plus,
+  Pencil,
+  Building2,
+  Layers,
+  ArrowLeftRight,
+  GitFork,
+  Users,
+  Fence,
+} from "lucide-react";
 import { LocationType } from "@prisma/client";
-import { LocationFormDialog } from "./location-form-dialog";
-import { IndustryFormDialog } from "./industry-form-dialog";
+
+const typeIcons: Record<LocationType, React.ElementType> = {
+  PASSENGER_STATION: Building2,
+  YARD: Layers,
+  INTERCHANGE: ArrowLeftRight,
+  JUNCTION: GitFork,
+  STAGING: Layers,
+  TEAM_TRACK: Users,
+  SIDING: Fence,
+};
+
+const typeLabels: Record<LocationType, string> = {
+  PASSENGER_STATION: "Station",
+  YARD: "Yard",
+  INTERCHANGE: "Interchange",
+  JUNCTION: "Junction",
+  STAGING: "Staging",
+  TEAM_TRACK: "Team Track",
+  SIDING: "Siding",
+};
 import { DeleteLocationButton } from "./delete-location-button";
 
 interface Industry {
@@ -43,15 +72,11 @@ interface Location {
 interface LocationCardListProps {
   locations: Location[];
   layoutId: string;
-  typeIcons: Record<LocationType, React.ElementType>;
-  typeLabels: Record<LocationType, string>;
 }
 
 export function LocationCardList({
   locations,
   layoutId,
-  typeIcons,
-  typeLabels,
 }: LocationCardListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -93,19 +118,16 @@ export function LocationCardList({
                   </div>
                   {/* Action buttons — visible on hover */}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                    <LocationFormDialog
-                      layoutId={layoutId}
-                      initialData={location}
-                      trigger={
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      }
-                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      asChild
+                    >
+                      <Link href={`/dashboard/railroad/${layoutId}/locations/${location.id}/edit`}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
                     <DeleteLocationButton
                       locationId={location.id}
                       locationName={location.name}
@@ -131,51 +153,44 @@ export function LocationCardList({
                     </div>
                     <div className="space-y-1">
                       {location.industries.map((industry) => (
-                        <IndustryFormDialog
+                        <Link
                           key={industry.id}
-                          locationId={location.id}
-                          locationName={location.name}
-                          initialData={industry}
-                          trigger={
-                            <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded border border-transparent
-                              hover:border-border/60 hover:bg-muted/30 transition-all duration-150 text-left cursor-pointer group/ind">
-                              <Factory className="h-3 w-3 text-muted-foreground/50 shrink-0" />
-                              <span className="text-xs truncate flex-1">
-                                {industry.name}
-                              </span>
-                              <span className="text-[10px] text-muted-foreground/50">
-                                {industry.type}
-                              </span>
-                              {industry.spotCount && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-[9px] px-1 py-0 h-3.5 font-normal"
-                                >
-                                  {industry.spotCount} spot
-                                  {industry.spotCount !== 1 ? "s" : ""}
-                                </Badge>
-                              )}
-                            </button>
-                          }
-                        />
+                          href={`/dashboard/railroad/${layoutId}/locations/${location.id}/industries/${industry.id}/edit`}
+                          className="w-full flex items-center gap-2 px-2 py-1.5 rounded border border-transparent
+                            hover:border-border/60 hover:bg-muted/30 transition-all duration-150 text-left group/ind"
+                        >
+                          <Factory className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                          <span className="text-xs truncate flex-1">
+                            {industry.name}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground/50">
+                            {industry.type}
+                          </span>
+                          {industry.spotCount && (
+                            <Badge
+                              variant="secondary"
+                              className="text-[9px] px-1 py-0 h-3.5 font-normal"
+                            >
+                              {industry.spotCount} spot
+                              {industry.spotCount !== 1 ? "s" : ""}
+                            </Badge>
+                          )}
+                        </Link>
                       ))}
                     </div>
                   </div>
                 )}
 
                 {/* Add industry button */}
-                <IndustryFormDialog
-                  locationId={location.id}
-                  locationName={location.name}
-                  trigger={
-                    <button className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded border border-dashed
-                      border-border/40 text-muted-foreground/50 hover:border-primary/30 hover:text-primary/70
-                      hover:bg-primary/[0.02] transition-all duration-150 cursor-pointer">
-                      <Plus className="h-3 w-3" />
-                      <span className="text-[11px]">Add industry</span>
-                    </button>
-                  }
-                />
+                <Link
+                  href={`/dashboard/railroad/${layoutId}/locations/${location.id}/industries/new`}
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded border border-dashed
+                    border-border/40 text-muted-foreground/50 hover:border-primary/30 hover:text-primary/70
+                    hover:bg-primary/[0.02] transition-all duration-150"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span className="text-[11px]">Add industry</span>
+                </Link>
 
                 {/* Population if set */}
                 {location.population && (

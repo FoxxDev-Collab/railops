@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { checkRailroadLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -118,6 +119,11 @@ export async function createLayout(values: z.infer<typeof layoutSchema>) {
     return { error: "Invalid fields" };
   }
 
+  const limit = await checkRailroadLimit(session.user.id);
+  if (!limit.allowed) {
+    return { error: `Free plan limit reached (${limit.limit} railroad). Upgrade to add more.` };
+  }
+
   const layout = await db.layout.create({
     data: {
       ...validatedFields.data,
@@ -141,6 +147,9 @@ export async function getLayouts() {
           locations: true,
           freightCars: true,
           locomotives: true,
+          passengerCars: true,
+          cabooses: true,
+          mowEquipment: true,
           trains: true,
         },
       },

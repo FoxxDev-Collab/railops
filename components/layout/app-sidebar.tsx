@@ -14,6 +14,9 @@ import {
   LogOut,
   Users,
   ArrowLeftRight,
+  Armchair,
+  Container,
+  Wrench,
 } from "lucide-react";
 import {
   Sidebar,
@@ -61,6 +64,21 @@ function getRailroadMenuItems(railroadId: string) {
       href: `/dashboard/railroad/${railroadId}/rolling-stock`,
       label: "Freight Cars",
       icon: Train,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/passenger-cars`,
+      label: "Passenger Cars",
+      icon: Armchair,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/cabooses`,
+      label: "Cabooses",
+      icon: Container,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/mow-equipment`,
+      label: "MOW Equipment",
+      icon: Wrench,
     },
     {
       href: `/dashboard/railroad/${railroadId}/trains`,

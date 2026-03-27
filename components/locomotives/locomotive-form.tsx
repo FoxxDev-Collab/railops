@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,24 +8,24 @@ import { z } from "zod";
 import { LocomotiveType, LocomotiveService, RollingStockStatus } from "@prisma/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
-import { Cpu, Volume2, VolumeOff } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { ArrowLeft, Cpu, Loader2, Volume2, VolumeOff } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -80,7 +80,7 @@ const statusOptions: { value: RollingStockStatus; label: string }[] = [
   { value: "RETIRED", label: "Retired" },
 ];
 
-interface LocomotiveFormDialogProps {
+interface LocomotiveFormProps {
   layoutId: string;
   initialData?: {
     id: string;
@@ -100,15 +100,14 @@ interface LocomotiveFormDialogProps {
     canPull: number | null;
     currentLocationId: string | null;
   };
-  trigger: React.ReactNode;
+  backUrl: string;
 }
 
-export function LocomotiveFormDialog({
+export function LocomotiveForm({
   layoutId,
   initialData,
-  trigger,
-}: LocomotiveFormDialogProps) {
-  const [open, setOpen] = useState(false);
+  backUrl,
+}: LocomotiveFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showDcc, setShowDcc] = useState(
     !!(initialData?.dccAddress || initialData?.decoderManufacturer)
@@ -137,13 +136,6 @@ export function LocomotiveFormDialog({
     },
   });
 
-  useEffect(() => {
-    if (open && !isEdit) {
-      form.reset();
-      setShowDcc(false);
-    }
-  }, [open, isEdit, form]);
-
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
 
@@ -153,53 +145,54 @@ export function LocomotiveFormDialog({
 
     if (result.error) {
       toast.error(result.error);
+      setIsLoading(false);
     } else {
       toast.success(
         isEdit
           ? "Locomotive updated"
           : `${values.road} #${values.number} added to roster`
       );
-      setOpen(false);
-      form.reset();
-      router.refresh();
+      router.push(backUrl);
     }
-
-    setIsLoading(false);
   }
 
   const hasSound = form.watch("hasSound");
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[580px] p-0 overflow-hidden gap-0 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="relative border-b bg-muted/30 px-6 pt-6 pb-4">
-          <div
-            className="absolute inset-0 opacity-[0.02] pointer-events-none"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)`,
-              backgroundSize: "16px 16px",
-            }}
-          />
-          <DialogHeader className="relative">
-            <DialogTitle className="text-lg tracking-wide">
-              {isEdit
-                ? `${initialData.road} #${initialData.number}`
-                : "Add Locomotive"}
-            </DialogTitle>
-            <DialogDescription className="text-xs tracking-wider uppercase text-muted-foreground/70">
-              {isEdit ? "Edit locomotive details" : "Add to locomotive roster"}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+    <div className="space-y-6">
+      {/* Back link + page title */}
+      <div>
+        <Link
+          href={backUrl}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Locomotives
+        </Link>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {isEdit
+            ? `Edit: ${initialData.road} #${initialData.number}`
+            : "Add Locomotive"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {isEdit
+            ? "Update locomotive details and DCC configuration."
+            : "Add a new locomotive to your roster."}
+        </p>
+      </div>
 
-        <div className="px-6 py-5">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Basic Info Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Locomotive Details</CardTitle>
+              <CardDescription>
+                Identity, classification, and operational specs.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
               {/* Identity row: Road + Number + Model */}
               <div className="grid grid-cols-[1fr_100px_1fr] gap-3">
                 <FormField
@@ -443,179 +436,165 @@ export function LocomotiveFormDialog({
                   )}
                 />
               </div>
+            </CardContent>
+          </Card>
 
-              {/* DCC Section — collapsible */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => setShowDcc(!showDcc)}
-                  className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-full"
+          {/* DCC Configuration Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <button
+                type="button"
+                onClick={() => setShowDcc(!showDcc)}
+                className="flex items-center gap-2 text-sm font-medium hover:text-foreground transition-colors cursor-pointer w-full text-left"
+              >
+                <Cpu className="h-4 w-4 text-muted-foreground" />
+                <span>DCC Configuration</span>
+                <Separator className="flex-1 mx-2" />
+                <span className="text-xs text-muted-foreground font-normal">
+                  {showDcc ? "Hide" : "Show"}
+                </span>
+              </button>
+            </CardHeader>
+
+            <AnimatePresence initial={false}>
+              {showDcc && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="overflow-hidden"
                 >
-                  <Cpu className="h-3.5 w-3.5" />
-                  <span className="uppercase tracking-wider font-medium">
-                    DCC Configuration
-                  </span>
-                  <Separator className="flex-1" />
-                  <span className="text-[10px]">
-                    {showDcc ? "Hide" : "Show"}
-                  </span>
-                </button>
+                  <CardContent className="pt-0 space-y-4">
+                    <div className="grid grid-cols-[100px_1fr_1fr] gap-3">
+                      <FormField
+                        control={form.control}
+                        name="dccAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                              Address
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="3"
+                                className="h-10 font-mono text-center tracking-wider transition-shadow duration-150 focus:shadow-md"
+                                {...field}
+                                value={field.value ?? ""}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? Number(e.target.value)
+                                      : null
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="decoderManufacturer"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                              Decoder Make
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Digitrax"
+                                className="h-10 transition-shadow duration-150 focus:shadow-md"
+                                {...field}
+                                value={field.value ?? ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="decoderModel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                              Decoder Model
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="SDH166D"
+                                className="h-10 transition-shadow duration-150 focus:shadow-md"
+                                {...field}
+                                value={field.value ?? ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                <AnimatePresence>
-                  {showDcc && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pt-4 space-y-4">
-                        <div className="grid grid-cols-[100px_1fr_1fr] gap-3">
-                          <FormField
-                            control={form.control}
-                            name="dccAddress"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                                  Address
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="3"
-                                    className="h-10 font-mono text-center tracking-wider transition-shadow duration-150 focus:shadow-md"
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    onChange={(e) =>
-                                      field.onChange(
-                                        e.target.value
-                                          ? Number(e.target.value)
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
+                    {/* Sound toggle */}
+                    <FormField
+                      control={form.control}
+                      name="hasSound"
+                      render={({ field }) => (
+                        <FormItem>
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded border text-sm
+                              transition-all duration-150 cursor-pointer w-full
+                              ${
+                                field.value
+                                  ? "border-primary/40 bg-primary/5 text-primary"
+                                  : "border-border/60 text-muted-foreground hover:border-border"
+                              }`}
+                          >
+                            {field.value ? (
+                              <Volume2 className="h-4 w-4" />
+                            ) : (
+                              <VolumeOff className="h-4 w-4" />
                             )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="decoderManufacturer"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                                  Decoder Make
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="Digitrax"
-                                    className="h-10 transition-shadow duration-150 focus:shadow-md"
-                                    {...field}
-                                    value={field.value ?? ""}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="decoderModel"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                                  Decoder Model
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="SDH166D"
-                                    className="h-10 transition-shadow duration-150 focus:shadow-md"
-                                    {...field}
-                                    value={field.value ?? ""}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* Sound toggle */}
-                        <FormField
-                          control={form.control}
-                          name="hasSound"
-                          render={({ field }) => (
-                            <FormItem>
-                              <button
-                                type="button"
-                                onClick={() => field.onChange(!field.value)}
-                                className={`flex items-center gap-2.5 px-3 py-2 rounded border text-sm
-                                  transition-all duration-150 cursor-pointer w-full
-                                  ${
-                                    field.value
-                                      ? "border-primary/40 bg-primary/5 text-primary"
-                                      : "border-border/60 text-muted-foreground hover:border-border"
-                                  }`}
-                              >
-                                {field.value ? (
-                                  <Volume2 className="h-4 w-4" />
-                                ) : (
-                                  <VolumeOff className="h-4 w-4" />
-                                )}
-                                <span>
-                                  Sound{" "}
-                                  {field.value ? "Equipped" : "Not Equipped"}
-                                </span>
-                              </button>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={isLoading}
-                  className="min-w-[120px] transition-all duration-150"
-                >
-                  {isLoading ? (
-                    <motion.div
-                      className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                            <span>
+                              Sound{" "}
+                              {field.value ? "Equipped" : "Not Equipped"}
+                            </span>
+                          </button>
+                        </FormItem>
+                      )}
                     />
-                  ) : isEdit ? (
-                    "Save Changes"
-                  ) : (
-                    "Add Locomotive"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+                  </CardContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Card>
+          </div>
+
+          {/* Action bar */}
+          <div className="flex items-center justify-between pt-2">
+            <Button variant="outline" asChild>
+              <Link href={backUrl}>Cancel</Link>
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="min-w-[140px] transition-all duration-150"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isEdit ? (
+                "Save Changes"
+              ) : (
+                "Add Locomotive"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

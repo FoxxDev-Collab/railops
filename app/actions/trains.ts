@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { TrainClass, TrainServiceType } from "@prisma/client";
+import { checkCategoryLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -37,6 +38,11 @@ export async function createTrain(layoutId: string, values: TrainFormValues) {
     where: { id: layoutId, userId: session.user.id },
   });
   if (!layout) return { error: "Layout not found" };
+
+  const limit = await checkCategoryLimit(session.user.id, layoutId, "trains");
+  if (!limit.allowed) {
+    return { error: `Free plan limit reached (${limit.limit} trains). Upgrade to add more.` };
+  }
 
   const existing = await db.train.findUnique({
     where: { trainNumber_layoutId: { trainNumber: parsed.data.trainNumber, layoutId } },

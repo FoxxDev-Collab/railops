@@ -40,6 +40,11 @@ export async function createFreightCar(layoutId: string, values: FreightCarFormV
   });
   if (!layout) return { error: "Layout not found" };
 
+  const limit = await checkCategoryLimit(session.user.id, layoutId, "freightCars");
+  if (!limit.allowed) {
+    return { error: `Free plan limit reached (${limit.limit} freight cars). Upgrade to add more.` };
+  }
+
   const existing = await db.freightCar.findUnique({
     where: {
       reportingMarks_number_userId: {

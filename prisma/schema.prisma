@@ -300,8 +300,9 @@ model Location {
   description  String?
   latitude     Float?
   longitude    Float?
-  population   Int?
-  imageUrl     String?
+  population      Int?
+  typeAttributes  Json?
+  imageUrl        String?
   sortOrder    Int          @default(0)
 
   layoutId     String

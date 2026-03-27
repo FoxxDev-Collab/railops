@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,16 +8,16 @@ import { z } from "zod";
 import { TrainClass, TrainServiceType } from "@prisma/client";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { Power, PowerOff } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { ArrowLeft, Loader2, Power, PowerOff } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -75,9 +75,10 @@ interface Location {
   code: string;
 }
 
-interface TrainFormDialogProps {
+interface TrainFormProps {
   layoutId: string;
   locations: Location[];
+  backUrl: string;
   initialData?: {
     id: string;
     trainNumber: string;
@@ -91,16 +92,14 @@ interface TrainFormDialogProps {
     destinationId: string | null;
     isActive: boolean;
   };
-  trigger: React.ReactNode;
 }
 
-export function TrainFormDialog({
+export function TrainForm({
   layoutId,
   locations,
+  backUrl,
   initialData,
-  trigger,
-}: TrainFormDialogProps) {
-  const [open, setOpen] = useState(false);
+}: TrainFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEdit = !!initialData;
@@ -121,10 +120,6 @@ export function TrainFormDialog({
     },
   });
 
-  useEffect(() => {
-    if (open && !isEdit) form.reset();
-  }, [open, isEdit, form]);
-
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
 
@@ -134,58 +129,52 @@ export function TrainFormDialog({
 
     if (result.error) {
       toast.error(result.error);
+      setIsLoading(false);
     } else {
       toast.success(
         isEdit ? "Train updated" : `Train ${values.trainNumber} created`
       );
-      setOpen(false);
-      form.reset();
-      router.refresh();
+      router.push(backUrl);
     }
-
-    setIsLoading(false);
   }
 
   const isActive = form.watch("isActive");
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[580px] p-0 overflow-hidden gap-0 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="relative border-b bg-muted/30 px-6 pt-6 pb-4">
-          <div
-            className="absolute inset-0 opacity-[0.02] pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(
-                -45deg,
-                transparent,
-                transparent 5px,
-                currentColor 5px,
-                currentColor 6px
-              )`,
-            }}
-          />
-          <DialogHeader className="relative">
-            <DialogTitle className="text-lg tracking-wide">
-              {isEdit
-                ? `Train ${initialData.trainNumber}`
-                : "Create Train"}
-            </DialogTitle>
-            <DialogDescription className="text-xs tracking-wider uppercase text-muted-foreground/70">
-              {isEdit
-                ? "Edit train configuration"
-                : "Define a new train service"}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+    <div className="space-y-6">
+      {/* Back link + page title */}
+      <div>
+        <Link
+          href={backUrl}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Trains
+        </Link>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {isEdit
+            ? `Edit Train ${initialData.trainNumber}`
+            : "Create Train"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {isEdit
+            ? "Update train service details and schedule."
+            : "Define a new train service for your railroad."}
+        </p>
+      </div>
 
-        <div className="px-6 py-5">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Identity Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Train Identity</CardTitle>
+              <CardDescription>
+                Number, name, symbol, and classification.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
               {/* Number + Name + Symbol */}
               <div className="grid grid-cols-[100px_1fr_100px] gap-3">
                 <FormField
@@ -334,7 +323,18 @@ export function TrainFormDialog({
                   )}
                 />
               </div>
+            </CardContent>
+          </Card>
 
+          {/* Route Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Route</CardTitle>
+              <CardDescription>
+                Origin, destination, and operating notes.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
               {/* Origin + Destination */}
               <div className="grid grid-cols-2 gap-3">
                 <FormField
@@ -429,8 +429,8 @@ export function TrainFormDialog({
                     <FormControl>
                       <Textarea
                         placeholder="Switching instructions, routing notes..."
-                        className="resize-none min-h-[60px] transition-shadow duration-150 focus:shadow-md"
-                        rows={2}
+                        className="resize-none min-h-[80px] transition-shadow duration-150 focus:shadow-md"
+                        rows={3}
                         {...field}
                         value={field.value ?? ""}
                       />
@@ -469,45 +469,31 @@ export function TrainFormDialog({
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </Card>
+          </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={isLoading}
-                  className="min-w-[100px] transition-all duration-150"
-                >
-                  {isLoading ? (
-                    <motion.div
-                      className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                  ) : isEdit ? (
-                    "Save Changes"
-                  ) : (
-                    "Create Train"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+          {/* Action bar */}
+          <div className="flex items-center justify-between pt-2">
+            <Button variant="outline" asChild>
+              <Link href={backUrl}>Cancel</Link>
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="min-w-[140px] transition-all duration-150"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isEdit ? (
+                "Save Changes"
+              ) : (
+                "Create Train"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

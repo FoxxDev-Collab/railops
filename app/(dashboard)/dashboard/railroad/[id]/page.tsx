@@ -19,6 +19,9 @@ import {
   PlayCircle,
   Settings,
   ArrowLeft,
+  Armchair,
+  Container,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -40,6 +43,24 @@ const sections = [
     label: "Freight Cars",
     description: "Boxcars, hoppers, tankers, gondolas, and flats",
     icon: Train,
+  },
+  {
+    href: "passenger-cars",
+    label: "Passenger Cars",
+    description: "Coaches, sleepers, diners, and observation cars",
+    icon: Armchair,
+  },
+  {
+    href: "cabooses",
+    label: "Cabooses",
+    description: "Standard, bay window, and extended vision cabooses",
+    icon: Container,
+  },
+  {
+    href: "mow-equipment",
+    label: "MOW Equipment",
+    description: "Maintenance of way cars and equipment",
+    icon: Wrench,
   },
   {
     href: "trains",
@@ -123,7 +144,7 @@ export default async function RailroadPage({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {layout.locomotives.length + layout.freightCars.length}
+              {layout.locomotives.length + layout.freightCars.length + layout.passengerCars.length + layout.cabooses.length + layout.mowEquipment.length}
             </div>
           </CardContent>
         </Card>

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Cpu, Volume2 } from "lucide-react";
 import { LocomotiveType, LocomotiveService, RollingStockStatus } from "@prisma/client";
-import { LocomotiveFormDialog } from "./locomotive-form-dialog";
+import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteLocomotive } from "@/app/actions/locomotives";
 
@@ -76,19 +76,16 @@ export function LocomotiveCardList({
                   </p>
                 </div>
                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                  <LocomotiveFormDialog
-                    layoutId={layoutId}
-                    initialData={loco}
-                    trigger={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                    }
-                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    asChild
+                  >
+                    <Link href={`/dashboard/railroad/${layoutId}/locomotives/${loco.id}/edit`}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
                   <DeleteButton
                     itemName={`${loco.road} #${loco.number}`}
                     itemType="locomotive"

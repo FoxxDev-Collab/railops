@@ -1,0 +1,123 @@
+"use client";
+
+import { motion } from "motion/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import Link from "next/link";
+import { CabooseType, RollingStockStatus } from "@prisma/client";
+import { DeleteButton } from "@/components/shared/delete-button";
+import { deleteCaboose } from "@/app/actions/cabooses";
+
+interface Caboose {
+  id: string;
+  reportingMarks: string;
+  number: string;
+  cabooseType: CabooseType;
+  road: string | null;
+  length: number | null;
+  status: RollingStockStatus;
+}
+
+const cabooseTypeLabels: Record<CabooseType, string> = {
+  STANDARD: "Standard",
+  EXTENDED_VISION: "Extended Vision",
+  BAY_WINDOW: "Bay Window",
+  TRANSFER: "Transfer",
+  BOBBER: "Bobber",
+};
+
+const statusColors: Record<RollingStockStatus, string> = {
+  SERVICEABLE: "default",
+  BAD_ORDER: "destructive",
+  STORED: "secondary",
+  RETIRED: "outline",
+};
+
+interface CabooseCardListProps {
+  cabooses: Caboose[];
+  layoutId: string;
+}
+
+export function CabooseCardList({ cabooses, layoutId }: CabooseCardListProps) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {cabooses.map((caboose, i) => (
+        <motion.div
+          key={caboose.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.04, duration: 0.25, ease: "easeOut" }}
+        >
+          <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-base font-mono tracking-wide">
+                    {caboose.reportingMarks} {caboose.number}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    {cabooseTypeLabels[caboose.cabooseType]}
+                  </p>
+                </div>
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    asChild
+                  >
+                    <Link
+                      href={`/dashboard/railroad/${layoutId}/cabooses/${caboose.id}/edit`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                  <DeleteButton
+                    itemName={`${caboose.reportingMarks} ${caboose.number}`}
+                    itemType="caboose"
+                    onDelete={() => deleteCaboose(caboose.id)}
+                  />
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-0 space-y-3">
+              <div className="flex flex-wrap gap-1.5">
+                <Badge
+                  variant={
+                    statusColors[caboose.status] as
+                      | "default"
+                      | "destructive"
+                      | "secondary"
+                      | "outline"
+                  }
+                  className="text-[10px] px-1.5 py-0 h-4 font-normal"
+                >
+                  {caboose.status.replace("_", " ")}
+                </Badge>
+                {caboose.road && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] px-1.5 py-0 h-4 font-normal"
+                  >
+                    {caboose.road}
+                  </Badge>
+                )}
+              </div>
+
+              {caboose.length && (
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>{caboose.length}ft</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+}

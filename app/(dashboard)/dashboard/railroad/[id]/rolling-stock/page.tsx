@@ -4,7 +4,6 @@ import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, Train } from "lucide-react";
-import { FreightCarFormDialog } from "@/components/freight-cars/freight-car-form-dialog";
 import { FreightCarCardList } from "@/components/freight-cars/freight-car-card-list";
 
 export default async function RollingStockPage({
@@ -17,6 +16,8 @@ export default async function RollingStockPage({
 
   const { id } = await params;
   const layout = await getLayout(id);
+
+  const newCarUrl = `/dashboard/railroad/${id}/rolling-stock/new`;
 
   return (
     <div className="space-y-6">
@@ -35,15 +36,12 @@ export default async function RollingStockPage({
             </p>
           </div>
         </div>
-        <FreightCarFormDialog
-          layoutId={id}
-          trigger={
-            <Button className="transition-all duration-150 hover:shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Car
-            </Button>
-          }
-        />
+        <Button className="transition-all duration-150 hover:shadow-md" asChild>
+          <Link href={newCarUrl}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Car
+          </Link>
+        </Button>
       </div>
 
       {layout.freightCars.length === 0 ? (
@@ -58,15 +56,12 @@ export default async function RollingStockPage({
               inventory. Cars can be assigned commodities for waybill generation.
             </p>
           </div>
-          <FreightCarFormDialog
-            layoutId={id}
-            trigger={
-              <Button variant="outline" className="mt-2">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Your First Car
-              </Button>
-            }
-          />
+          <Button variant="outline" className="mt-2" asChild>
+            <Link href={newCarUrl}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Your First Car
+            </Link>
+          </Button>
         </div>
       ) : (
         <FreightCarCardList freightCars={layout.freightCars} layoutId={id} />

@@ -4,7 +4,6 @@ import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, Route } from "lucide-react";
-import { TrainFormDialog } from "@/components/trains/train-form-dialog";
 import { TrainCardList } from "@/components/trains/train-card-list";
 
 export default async function TrainsPage({
@@ -41,16 +40,12 @@ export default async function TrainsPage({
             </p>
           </div>
         </div>
-        <TrainFormDialog
-          layoutId={id}
-          locations={locationOptions}
-          trigger={
-            <Button className="transition-all duration-150 hover:shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Train
-            </Button>
-          }
-        />
+        <Button className="transition-all duration-150 hover:shadow-md" asChild>
+          <Link href={`/dashboard/railroad/${id}/trains/new`}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Train
+          </Link>
+        </Button>
       </div>
 
       {layout.trains.length === 0 ? (
@@ -66,21 +61,16 @@ export default async function TrainsPage({
               sessions.
             </p>
           </div>
-          <TrainFormDialog
-            layoutId={id}
-            locations={locationOptions}
-            trigger={
-              <Button variant="outline" className="mt-2">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Your First Train
-              </Button>
-            }
-          />
+          <Button variant="outline" className="mt-2" asChild>
+            <Link href={`/dashboard/railroad/${id}/trains/new`}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Your First Train
+            </Link>
+          </Button>
         </div>
       ) : (
         <TrainCardList
           trains={layout.trains}
-          locations={locationOptions}
           layoutId={id}
         />
       )}

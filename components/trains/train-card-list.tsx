@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, ArrowRight } from "lucide-react";
 import { TrainClass, TrainServiceType } from "@prisma/client";
-import { TrainFormDialog } from "./train-form-dialog";
+import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteTrain } from "@/app/actions/trains";
 
@@ -44,15 +44,10 @@ const classLabels: Record<TrainClass, string> = {
 
 interface TrainCardListProps {
   trains: Train[];
-  locations: Location[];
   layoutId: string;
 }
 
-export function TrainCardList({
-  trains,
-  locations,
-  layoutId,
-}: TrainCardListProps) {
+export function TrainCardList({ trains, layoutId }: TrainCardListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {trains.map((train, i) => (
@@ -89,20 +84,18 @@ export function TrainCardList({
                   )}
                 </div>
                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                  <TrainFormDialog
-                    layoutId={layoutId}
-                    locations={locations}
-                    initialData={train}
-                    trigger={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                    }
-                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    asChild
+                  >
+                    <Link
+                      href={`/dashboard/railroad/${layoutId}/trains/${train.id}/edit`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
                   <DeleteButton
                     itemName={`Train ${train.trainNumber}`}
                     itemType="train"
@@ -144,7 +137,7 @@ export function TrainCardList({
                 )}
               </div>
 
-              {/* Origin → Destination */}
+              {/* Origin to Destination */}
               {(train.origin || train.destination) && (
                 <div className="flex items-center gap-2 text-xs pt-1 border-t border-border/30">
                   {train.origin ? (

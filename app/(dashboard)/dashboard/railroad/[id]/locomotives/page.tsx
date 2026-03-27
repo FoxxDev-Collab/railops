@@ -4,7 +4,6 @@ import { getLayout } from "@/app/actions/layouts";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, Plus, TrainFront } from "lucide-react";
-import { LocomotiveFormDialog } from "@/components/locomotives/locomotive-form-dialog";
 import { LocomotiveCardList } from "@/components/locomotives/locomotive-card-list";
 
 export default async function LocomotivesPage({
@@ -35,15 +34,12 @@ export default async function LocomotivesPage({
             </p>
           </div>
         </div>
-        <LocomotiveFormDialog
-          layoutId={id}
-          trigger={
-            <Button className="transition-all duration-150 hover:shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Locomotive
-            </Button>
-          }
-        />
+        <Button className="transition-all duration-150 hover:shadow-md" asChild>
+          <Link href={`/dashboard/railroad/${id}/locomotives/new`}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Locomotive
+          </Link>
+        </Button>
       </div>
 
       {layout.locomotives.length === 0 ? (
@@ -58,15 +54,12 @@ export default async function LocomotivesPage({
               addressing and decoder details for operations.
             </p>
           </div>
-          <LocomotiveFormDialog
-            layoutId={id}
-            trigger={
-              <Button variant="outline" className="mt-2">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Your First Locomotive
-              </Button>
-            }
-          />
+          <Button variant="outline" className="mt-2" asChild>
+            <Link href={`/dashboard/railroad/${id}/locomotives/new`}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Your First Locomotive
+            </Link>
+          </Button>
         </div>
       ) : (
         <LocomotiveCardList locomotives={layout.locomotives} layoutId={id} />

@@ -8,15 +8,14 @@ import { z } from "zod";
 import { RollingStockStatus } from "@prisma/client";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
+import Link from "next/link";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { createFreightCar, updateFreightCar } from "@/app/actions/freight-cars";
 
 const freightCarSchema = z.object({
@@ -77,23 +77,25 @@ const statusOptions: { value: RollingStockStatus; label: string }[] = [
   { value: "RETIRED", label: "Retired" },
 ];
 
-interface FreightCarFormDialogProps {
+interface FreightCarInitialData {
+  id: string;
+  reportingMarks: string;
+  number: string;
+  carType: string;
+  aarTypeCode: string | null;
+  subtype: string | null;
+  length: number | null;
+  capacity: number | null;
+  homeRoad: string | null;
+  status: RollingStockStatus;
+  commodities: string[];
+  currentLocationId: string | null;
+}
+
+interface FreightCarFormProps {
   layoutId: string;
-  initialData?: {
-    id: string;
-    reportingMarks: string;
-    number: string;
-    carType: string;
-    aarTypeCode: string | null;
-    subtype: string | null;
-    length: number | null;
-    capacity: number | null;
-    homeRoad: string | null;
-    status: RollingStockStatus;
-    commodities: string[];
-    currentLocationId: string | null;
-  };
-  trigger: React.ReactNode;
+  initialData?: FreightCarInitialData;
+  backUrl: string;
 }
 
 function CommodityInput({
@@ -126,29 +128,29 @@ function CommodityInput({
             }
           }}
           placeholder="e.g. Lumber, Coal"
-          className="h-8 text-sm transition-shadow duration-150 focus:shadow-md"
+          className="h-10 text-sm transition-shadow duration-150 focus:shadow-md"
         />
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={add}
-          className="h-8 px-3 text-xs shrink-0"
+          className="h-10 px-4 text-sm shrink-0"
         >
           Add
         </Button>
       </div>
       {value.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {value.map((c) => (
-            <Badge key={c} variant="secondary" className="gap-1 pr-1 text-xs">
+            <Badge key={c} variant="secondary" className="gap-1 pr-1">
               {c}
               <button
                 type="button"
                 onClick={() => onChange(value.filter((v) => v !== c))}
                 className="ml-0.5 rounded-sm hover:bg-foreground/10 p-0.5 transition-colors cursor-pointer"
               >
-                <X className="h-2.5 w-2.5" />
+                <X className="h-3 w-3" />
               </button>
             </Badge>
           ))}
@@ -158,12 +160,11 @@ function CommodityInput({
   );
 }
 
-export function FreightCarFormDialog({
+export function FreightCarForm({
   layoutId,
   initialData,
-  trigger,
-}: FreightCarFormDialogProps) {
-  const [open, setOpen] = useState(false);
+  backUrl,
+}: FreightCarFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const isEdit = !!initialData;
@@ -185,9 +186,14 @@ export function FreightCarFormDialog({
     },
   });
 
+  // Auto-fill AAR code when car type changes (only on create)
+  const watchedType = form.watch("carType");
   useEffect(() => {
-    if (open && !isEdit) form.reset();
-  }, [open, isEdit, form]);
+    const match = carTypes.find((t) => t.value === watchedType);
+    if (match && !isEdit) {
+      form.setValue("aarTypeCode", match.aar);
+    }
+  }, [watchedType, form, isEdit]);
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
@@ -198,67 +204,55 @@ export function FreightCarFormDialog({
 
     if (result.error) {
       toast.error(result.error);
-    } else {
-      toast.success(
-        isEdit
-          ? "Freight car updated"
-          : `${values.reportingMarks} ${values.number} added`
-      );
-      setOpen(false);
-      form.reset();
-      router.refresh();
+      setIsLoading(false);
+      return;
     }
 
-    setIsLoading(false);
+    toast.success(
+      isEdit
+        ? "Freight car updated"
+        : `${values.reportingMarks} ${values.number} added`
+    );
+    router.push(backUrl);
   }
 
-  // Auto-fill AAR code when car type changes
-  const watchedType = form.watch("carType");
-  useEffect(() => {
-    const match = carTypes.find((t) => t.value === watchedType);
-    if (match && !isEdit) {
-      form.setValue("aarTypeCode", match.aar);
-    }
-  }, [watchedType, form, isEdit]);
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[540px] p-0 overflow-hidden gap-0 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="relative border-b bg-muted/30 px-6 pt-6 pb-4">
-          <div
-            className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 7px,
-                currentColor 7px,
-                currentColor 8px
-              )`,
-            }}
-          />
-          <DialogHeader className="relative">
-            <DialogTitle className="text-lg tracking-wide">
-              {isEdit
-                ? `${initialData.reportingMarks} ${initialData.number}`
-                : "Add Freight Car"}
-            </DialogTitle>
-            <DialogDescription className="text-xs tracking-wider uppercase text-muted-foreground/70">
-              {isEdit ? "Edit car details" : "Add to car inventory"}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+    <div className="space-y-6">
+      {/* Back navigation */}
+      <div>
+        <Button variant="ghost" size="sm" asChild className="-ml-2 text-muted-foreground hover:text-foreground">
+          <Link href={backUrl}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Freight Cars
+          </Link>
+        </Button>
+      </div>
 
-        <div className="px-6 py-5">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
-              {/* Reporting Marks + Number + Home Road */}
-              <div className="grid grid-cols-[1fr_100px_1fr] gap-3">
+      {/* Page heading */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {isEdit
+            ? `Edit: ${initialData.reportingMarks} ${initialData.number}`
+            : "Add Freight Car"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {isEdit
+            ? "Update the details for this freight car."
+            : "Add a new car to your rolling stock inventory."}
+        </p>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Car Identity Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Car Identity</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {/* Reporting Marks + Number */}
+              <div className="grid grid-cols-[1fr_100px] gap-3">
                 <FormField
                   control={form.control}
                   name="reportingMarks"
@@ -301,30 +295,12 @@ export function FreightCarFormDialog({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="homeRoad"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Home Road
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="ATSF"
-                          className="h-10 uppercase transition-shadow duration-150 focus:shadow-md"
-                          {...field}
-                          value={field.value ?? ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
-              {/* Car Type + AAR + Status */}
-              <div className="grid grid-cols-[1fr_80px_1fr] gap-3">
+              <Separator />
+
+              {/* Car Type + AAR */}
+              <div className="grid grid-cols-[1fr_80px] gap-3">
                 <FormField
                   control={form.control}
                   name="carType"
@@ -379,6 +355,38 @@ export function FreightCarFormDialog({
                     </FormItem>
                   )}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Specifications Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Specifications</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {/* Home Road + Status */}
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  control={form.control}
+                  name="homeRoad"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Home Road
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="ATSF"
+                          className="h-10 uppercase transition-shadow duration-150 focus:shadow-md"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="status"
@@ -409,6 +417,8 @@ export function FreightCarFormDialog({
                   )}
                 />
               </div>
+
+              <Separator />
 
               {/* Specs row */}
               <div className="grid grid-cols-2 gap-3">
@@ -472,6 +482,8 @@ export function FreightCarFormDialog({
                 />
               </div>
 
+              <Separator />
+
               {/* Commodities */}
               <FormField
                 control={form.control}
@@ -489,45 +501,44 @@ export function FreightCarFormDialog({
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </Card>
+          </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={isLoading}
-                  className="min-w-[100px] transition-all duration-150"
-                >
-                  {isLoading ? (
-                    <motion.div
-                      className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                  ) : isEdit ? (
-                    "Save Changes"
-                  ) : (
-                    "Add Car"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+          {/* Action bar */}
+          <div className="flex items-center justify-end gap-3 pb-8">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isLoading}
+              asChild
+            >
+              <Link href={backUrl}>Cancel</Link>
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="min-w-[120px] transition-all duration-150"
+            >
+              {isLoading ? (
+                <motion.div
+                  className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+              ) : isEdit ? (
+                "Save Changes"
+              ) : (
+                "Add Car"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

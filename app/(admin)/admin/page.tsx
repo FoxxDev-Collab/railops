@@ -18,7 +18,7 @@ export default async function AdminDashboardPage() {
         <p className="text-muted-foreground">System overview and management</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
         <Card>
           <CardHeader>
             <CardTitle>Total Users</CardTitle>
@@ -29,6 +29,19 @@ export default async function AdminDashboardPage() {
               {stats.adminUsers} admins, {stats.regularUsers} users
               <br />
               {stats.verifiedUsers} verified, {stats.unverifiedUsers} unverified
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Subscriptions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.operatorUsers}</div>
+            <p className="text-xs text-muted-foreground">
+              paid operators
+              <br />
+              {stats.freeUsers} free users
             </p>
           </CardContent>
         </Card>

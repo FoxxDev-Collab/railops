@@ -1,52 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getLayout } from "@/app/actions/layouts";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Plus,
-  Factory,
-  Building2,
-  Layers,
-  ArrowLeftRight,
-  GitFork,
-  Users,
-  Fence,
-  MapPin,
-} from "lucide-react";
-import { LocationType } from "@prisma/client";
-import { LocationFormDialog } from "@/components/locations/location-form-dialog";
-import { IndustryFormDialog } from "@/components/locations/industry-form-dialog";
-import { DeleteLocationButton } from "@/components/locations/delete-location-button";
+import { ArrowLeft, Plus, MapPin } from "lucide-react";
 import { LocationCardList } from "@/components/locations/location-card-list";
-
-const typeIcons: Record<LocationType, React.ElementType> = {
-  PASSENGER_STATION: Building2,
-  YARD: Layers,
-  INTERCHANGE: ArrowLeftRight,
-  JUNCTION: GitFork,
-  STAGING: Layers,
-  TEAM_TRACK: Users,
-  SIDING: Fence,
-};
-
-const typeLabels: Record<LocationType, string> = {
-  PASSENGER_STATION: "Station",
-  YARD: "Yard",
-  INTERCHANGE: "Interchange",
-  JUNCTION: "Junction",
-  STAGING: "Staging",
-  TEAM_TRACK: "Team Track",
-  SIDING: "Siding",
-};
 
 export default async function LocationsPage({
   params,
@@ -76,15 +34,12 @@ export default async function LocationsPage({
             </p>
           </div>
         </div>
-        <LocationFormDialog
-          layoutId={id}
-          trigger={
-            <Button className="transition-all duration-150 hover:shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Location
-            </Button>
-          }
-        />
+        <Button className="transition-all duration-150 hover:shadow-md" asChild>
+          <Link href={`/dashboard/railroad/${id}/locations/new`}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Location
+          </Link>
+        </Button>
       </div>
 
       {layout.locations.length === 0 ? (
@@ -99,23 +54,15 @@ export default async function LocationsPage({
               interchanges, and sidings where trains stop and cars are spotted.
             </p>
           </div>
-          <LocationFormDialog
-            layoutId={id}
-            trigger={
-              <Button variant="outline" className="mt-2">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Your First Location
-              </Button>
-            }
-          />
+          <Button variant="outline" className="mt-2" asChild>
+            <Link href={`/dashboard/railroad/${id}/locations/new`}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Your First Location
+            </Link>
+          </Button>
         </div>
       ) : (
-        <LocationCardList
-          locations={layout.locations}
-          layoutId={id}
-          typeIcons={typeIcons}
-          typeLabels={typeLabels}
-        />
+        <LocationCardList locations={layout.locations} layoutId={id} />
       )}
     </div>
   );
