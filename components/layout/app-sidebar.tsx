@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   CreditCard,
   BookOpen,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   Sidebar,
@@ -104,6 +105,11 @@ function getRailroadMenuItems(railroadId: string) {
       href: `/dashboard/railroad/${railroadId}/crew`,
       label: "Crew",
       icon: Users,
+    },
+    {
+      href: `/dashboard/railroad/${railroadId}/import-export`,
+      label: "Import / Export",
+      icon: ArrowUpDown,
     },
     {
       href: `/dashboard/railroad/${railroadId}/guide`,
