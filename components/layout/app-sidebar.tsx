@@ -101,6 +101,11 @@ function getRailroadMenuItems(railroadId: string) {
       icon: PlayCircle,
     },
     {
+      href: `/dashboard/railroad/${railroadId}/crew`,
+      label: "Crew",
+      icon: Users,
+    },
+    {
       href: `/dashboard/railroad/${railroadId}/guide`,
       label: "Operations Guide",
       icon: BookOpen,

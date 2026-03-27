@@ -11,6 +11,7 @@ export default auth((req) => {
   const isAuthRoute = pathname.startsWith("/auth");
   const isAdminRoute = pathname.startsWith("/admin");
   const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isInviteRoute = pathname.startsWith("/invite");
   const isVerificationRoute =
     pathname === "/auth/verify" || pathname === "/auth/check-email";
 
@@ -32,6 +33,11 @@ export default auth((req) => {
     if (userRole !== "ADMIN") {
       return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
+  }
+
+  // Invite routes are public — let them through
+  if (isInviteRoute) {
+    return NextResponse.next();
   }
 
   // Protect dashboard routes — require login + verified email
