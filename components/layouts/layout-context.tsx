@@ -70,7 +70,7 @@ export function LayoutProvider({
 export function useLayout() {
   const context = React.useContext(LayoutContext);
   if (context === undefined) {
-    throw new Error("useLayout must be used within a LayoutProvider");
+    return { selectedLayout: null, layouts: [], setSelectedLayout: () => {}, isLoading: false } as LayoutContextType;
   }
   return context;
 }

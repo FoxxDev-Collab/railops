@@ -21,6 +21,21 @@ export const SETTING_KEYS = {
   // Application
   "app.maintenanceMode": { envFallback: null, sensitive: false },
   "app.url": { envFallback: "NEXT_PUBLIC_APP_URL", sensitive: false },
+
+  // Pricing — tier configuration (JSON)
+  "pricing.hobbyist.name": { envFallback: null, sensitive: false },
+  "pricing.hobbyist.price": { envFallback: null, sensitive: false },
+  "pricing.hobbyist.description": { envFallback: null, sensitive: false },
+  "pricing.hobbyist.features": { envFallback: null, sensitive: false },
+  "pricing.operator.name": { envFallback: null, sensitive: false },
+  "pricing.operator.price": { envFallback: null, sensitive: false },
+  "pricing.operator.description": { envFallback: null, sensitive: false },
+  "pricing.operator.features": { envFallback: null, sensitive: false },
+  "pricing.club.name": { envFallback: null, sensitive: false },
+  "pricing.club.price": { envFallback: null, sensitive: false },
+  "pricing.club.description": { envFallback: null, sensitive: false },
+  "pricing.club.features": { envFallback: null, sensitive: false },
+  "pricing.club.crewSeatPrice": { envFallback: null, sensitive: false },
 } as const;
 
 export type SettingKey = keyof typeof SETTING_KEYS;

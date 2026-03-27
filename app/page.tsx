@@ -22,11 +22,11 @@ import {
   Users,
   Check,
   ArrowRight,
-  CircleDot,
   ArrowDown,
   Gauge,
 } from "lucide-react";
 import { LandingHeader } from "@/components/landing/landing-header";
+import { getPricingConfig } from "@/app/actions/admin/pricing";
 
 export default async function Home() {
   const session = await auth();
@@ -38,6 +38,8 @@ export default async function Home() {
       redirect("/dashboard");
     }
   }
+
+  const pricing = await getPricingConfig();
 
   const features = [
     {
@@ -114,36 +116,7 @@ export default async function Home() {
     },
   ];
 
-  const hobbyistFeatures = [
-    "1 railroad",
-    "25 locations",
-    "25 locomotives",
-    "25 freight cars",
-    "25 trains",
-    "Waybill generation",
-    "Operating sessions",
-    "Maintenance tracking",
-  ];
-
-  const operatorFeatures = [
-    "Everything in Hobbyist",
-    "Unlimited railroads",
-    "Unlimited inventory",
-    "Unlimited trains & waybills",
-    "Print switch lists & manifests",
-    "CSV import / export",
-    "Priority support",
-  ];
-
-  const clubFeatures = [
-    "Everything in Operator",
-    "5 crew seats included",
-    "Role-based access control",
-    "Dispatcher, Yardmaster, Conductor roles",
-    "Shared session management",
-    "Crew activity log",
-    "Additional seats $5/mo each",
-  ];
+  const { hobbyist, operator, club } = pricing;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -323,20 +296,18 @@ export default async function Home() {
                 {/* Hobbyist — Free */}
                 <Card className="relative flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-xl">Hobbyist</CardTitle>
-                    <CardDescription>
-                      For getting started with a single railroad
-                    </CardDescription>
+                    <CardTitle className="text-xl">{hobbyist.name}</CardTitle>
+                    <CardDescription>{hobbyist.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
-                        $0
+                        ${hobbyist.price}
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {hobbyistFeatures.map((f) => (
+                      {hobbyist.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           <span>{f}</span>
@@ -354,7 +325,7 @@ export default async function Home() {
                   </CardContent>
                 </Card>
 
-                {/* Operator — $5/mo */}
+                {/* Operator */}
                 <Card className="relative flex flex-col border-primary shadow-lg">
                   <div className="absolute -top-3 left-6">
                     <Badge className="px-3 py-1 text-xs font-semibold">
@@ -362,20 +333,18 @@ export default async function Home() {
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-xl">Operator</CardTitle>
-                    <CardDescription>
-                      Unlimited everything for serious railroaders
-                    </CardDescription>
+                    <CardTitle className="text-xl">{operator.name}</CardTitle>
+                    <CardDescription>{operator.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
-                        $5
+                        ${operator.price}
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {operatorFeatures.map((f) => (
+                      {operator.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                           <span>{f}</span>
@@ -388,23 +357,21 @@ export default async function Home() {
                   </CardContent>
                 </Card>
 
-                {/* Club — $25/mo */}
+                {/* Club */}
                 <Card className="relative flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-xl">Club</CardTitle>
-                    <CardDescription>
-                      Multi-crew operations for clubs and groups
-                    </CardDescription>
+                    <CardTitle className="text-xl">{club.name}</CardTitle>
+                    <CardDescription>{club.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
-                        $25
+                        ${club.price}
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {clubFeatures.map((f) => (
+                      {club.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           <span>{f}</span>
@@ -427,10 +394,10 @@ export default async function Home() {
                 All plans start on the free tier. Upgrade or downgrade at any
                 time.{" "}
                 <span className="font-medium text-foreground">
-                  Club pricing: $5 operator + $5/seat &times; 4 included crew =
-                  $25/mo
+                  Club pricing: ${operator.price} operator + ${club.crewSeatPrice || "5"}/seat &times; included crew =
+                  ${club.price}/mo
                 </span>
-                . Additional seats are $5/mo each.
+                . Additional seats are ${club.crewSeatPrice || "5"}/mo each.
               </p>
             </div>
           </div>
