@@ -8,6 +8,7 @@ import { TrainClass, TrainServiceType } from "@prisma/client";
 import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteTrain } from "@/app/actions/trains";
+import { useRouter } from "next/navigation";
 import { DataTable, SortableHeader, type FilterDef } from "@/components/shared/data-table";
 
 interface Location {
@@ -179,6 +180,7 @@ interface TrainTableProps {
 }
 
 export function TrainTable({ trains, layoutId }: TrainTableProps) {
+  const router = useRouter();
   const columns = getColumns(layoutId);
   return (
     <DataTable
@@ -187,6 +189,9 @@ export function TrainTable({ trains, layoutId }: TrainTableProps) {
       searchPlaceholder="Search trains..."
       searchColumnId="trainNumber"
       filters={filters}
+      onRowClick={(train) =>
+        router.push(`/dashboard/railroad/${layoutId}/trains/${train.id}`)
+      }
     />
   );
 }

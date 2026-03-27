@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { LayoutProvider } from "@/components/layouts/layout-context";
 import { getLayoutContext } from "@/app/actions/layouts";
+import { ImpersonationBanner } from "@/components/admin/impersonation-banner";
 
 export default async function DashboardLayout({
   children,
@@ -13,9 +14,12 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider>
       <LayoutProvider initialLayout={selectedLayout} layouts={layouts}>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1 p-6">{children}</main>
+        <div className="flex min-h-screen w-full flex-col">
+          <ImpersonationBanner />
+          <div className="flex flex-1">
+            <AppSidebar />
+            <main className="flex-1 p-6">{children}</main>
+          </div>
         </div>
       </LayoutProvider>
     </SidebarProvider>

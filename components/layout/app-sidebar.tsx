@@ -17,6 +17,8 @@ import {
   Armchair,
   Container,
   Wrench,
+  ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import {
   Sidebar,
@@ -39,6 +41,8 @@ interface AppSidebarProps {
 const adminMenuItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "User Management", icon: Users },
+  { href: "/admin/billing", label: "Billing", icon: CreditCard },
+  { href: "/admin/audit", label: "Audit Log", icon: ShieldCheck },
   { href: "/admin/system", label: "System Settings", icon: Settings },
 ];
 

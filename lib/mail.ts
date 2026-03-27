@@ -1,23 +1,46 @@
 import nodemailer from "nodemailer";
+import { getSetting } from "@/lib/settings";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+/**
+ * Creates a transporter using DB settings (with env fallback).
+ * Transporter is created per-call since admin can change SMTP config.
+ */
+async function getTransporter() {
+  const [host, port, user, pass, secure] = await Promise.all([
+    getSetting("smtp.host"),
+    getSetting("smtp.port"),
+    getSetting("smtp.user"),
+    getSetting("smtp.password"),
+    getSetting("smtp.secure"),
+  ]);
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "RailOps <noreply@railops.app>";
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  return nodemailer.createTransport({
+    host: host || undefined,
+    port: Number(port) || 587,
+    secure: secure === "true",
+    auth: user && pass ? { user, pass } : undefined,
+  });
+}
+
+async function getFromEmail() {
+  return (await getSetting("smtp.from")) || "RailOps <noreply@railops.app>";
+}
+
+async function getAppUrl() {
+  return (await getSetting("app.url")) || "http://localhost:3000";
+}
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verifyUrl = `${APP_URL}/auth/verify?token=${token}`;
+  const [transporter, fromEmail, appUrl] = await Promise.all([
+    getTransporter(),
+    getFromEmail(),
+    getAppUrl(),
+  ]);
+
+  const verifyUrl = `${appUrl}/auth/verify?token=${token}`;
 
   await transporter.sendMail({
-    from: FROM_EMAIL,
+    from: fromEmail,
     to: email,
     subject: "Verify your RailOps account",
     html: `
@@ -39,10 +62,16 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetUrl = `${APP_URL}/auth/reset-password?token=${token}`;
+  const [transporter, fromEmail, appUrl] = await Promise.all([
+    getTransporter(),
+    getFromEmail(),
+    getAppUrl(),
+  ]);
+
+  const resetUrl = `${appUrl}/auth/reset-password?token=${token}`;
 
   await transporter.sendMail({
-    from: FROM_EMAIL,
+    from: fromEmail,
     to: email,
     subject: "Reset your RailOps password",
     html: `

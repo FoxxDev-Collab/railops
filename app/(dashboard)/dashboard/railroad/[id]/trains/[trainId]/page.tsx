@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight, ListOrdered } from "lucide-react";
 import { db } from "@/lib/db";
 import { getLayout } from "@/app/actions/layouts";
-import { ConsistBuilder } from "@/components/consists/consist-builder";
+import { TrainBuilder } from "@/components/consists/train-builder";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -219,7 +219,7 @@ export default async function TrainDetailPage({
           </div>
         </div>
 
-        <ConsistBuilder
+        <TrainBuilder
           trainId={trainId}
           layoutId={layoutId}
           consist={consist}

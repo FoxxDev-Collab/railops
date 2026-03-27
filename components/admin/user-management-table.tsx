@@ -38,6 +38,7 @@ import {
   resetUserPassword,
 } from "@/app/actions/admin/users";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 
 type UserWithCounts = User & {
@@ -129,7 +130,11 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.email}</TableCell>
+              <TableCell className="font-medium">
+                <Link href={`/admin/users/${user.id}`} className="hover:underline text-primary">
+                  {user.email}
+                </Link>
+              </TableCell>
               <TableCell>{user.name || "-"}</TableCell>
               <TableCell>
                 <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>

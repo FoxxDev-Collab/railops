@@ -57,8 +57,9 @@ export function TrainCardList({ trains, layoutId }: TrainCardListProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.04, duration: 0.25, ease: "easeOut" }}
         >
+          <Link href={`/dashboard/railroad/${layoutId}/trains/${train.id}`}>
           <Card
-            className={`group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 ${
+            className={`group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20 cursor-pointer ${
               !train.isActive ? "opacity-60" : ""
             }`}
           >
@@ -165,6 +166,7 @@ export function TrainCardList({ trains, layoutId }: TrainCardListProps) {
               )}
             </CardContent>
           </Card>
+          </Link>
         </motion.div>
       ))}
     </div>

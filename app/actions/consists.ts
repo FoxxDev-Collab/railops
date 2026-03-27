@@ -143,6 +143,36 @@ export async function removePosition(positionId: string) {
   return { success: true };
 }
 
+export async function reorderPositions(
+  consistId: string,
+  orderedPositionIds: string[]
+) {
+  const session = await requireAuth();
+  const userId = session.user.id;
+
+  const consist = await db.trainConsist.findFirst({
+    where: { id: consistId },
+    include: { train: true },
+  });
+  if (!consist || consist.train.userId !== userId) {
+    return { error: "Consist not found" };
+  }
+
+  await Promise.all(
+    orderedPositionIds.map((id, idx) =>
+      db.consistPosition.update({
+        where: { id },
+        data: { position: idx + 1 },
+      })
+    )
+  );
+
+  revalidatePath(
+    `/dashboard/railroad/${consist.train.layoutId}/trains/${consist.trainId}`
+  );
+  return { success: true };
+}
+
 export async function deleteConsist(consistId: string) {
   const session = await requireAuth();
   const userId = session.user.id;

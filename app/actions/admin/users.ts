@@ -6,6 +6,7 @@ import { Role, Plan } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { logAudit } from "@/lib/audit";
 
 // Authorization helper
 async function requireAdmin() {
@@ -109,6 +110,15 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
     },
   });
 
+  await logAudit({
+    action: "user.create",
+    adminId: (await auth())!.user.id,
+    adminEmail: (await auth())!.user.email!,
+    entityType: "User",
+    entityId: user.id,
+    metadata: { email, role },
+  });
+
   revalidatePath("/admin/users");
   return { success: true, user };
 }
@@ -143,18 +153,26 @@ export async function updateUser(
 
 // Toggle admin role
 export async function toggleAdminRole(userId: string) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const user = await db.user.findUnique({ where: { id: userId } });
   if (!user) {
     return { error: "User not found" };
   }
 
+  const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
   const updatedUser = await db.user.update({
     where: { id: userId },
-    data: {
-      role: user.role === "ADMIN" ? "USER" : "ADMIN",
-    },
+    data: { role: newRole },
+  });
+
+  await logAudit({
+    action: "user.role.toggle",
+    adminId: session.user.id,
+    adminEmail: session.user.email!,
+    entityType: "User",
+    entityId: userId,
+    metadata: { from: user.role, to: newRole, email: user.email },
   });
 
   revalidatePath("/admin/users");
@@ -170,8 +188,16 @@ export async function deleteUser(userId: string) {
     return { error: "Cannot delete your own account" };
   }
 
-  await db.user.delete({
-    where: { id: userId },
+  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } });
+  await db.user.delete({ where: { id: userId } });
+
+  await logAudit({
+    action: "user.delete",
+    adminId: session.user.id,
+    adminEmail: session.user.email!,
+    entityType: "User",
+    entityId: userId,
+    metadata: { deletedEmail: user?.email },
   });
 
   revalidatePath("/admin/users");
@@ -180,7 +206,7 @@ export async function deleteUser(userId: string) {
 
 // Set user plan (admin override — bypasses Stripe)
 export async function setUserPlan(userId: string, plan: Plan) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const user = await db.user.findUnique({ where: { id: userId } });
   if (!user) return { error: "User not found" };
@@ -188,6 +214,15 @@ export async function setUserPlan(userId: string, plan: Plan) {
   await db.user.update({
     where: { id: userId },
     data: { plan },
+  });
+
+  await logAudit({
+    action: "user.plan.change",
+    adminId: session.user.id,
+    adminEmail: session.user.email!,
+    entityType: "User",
+    entityId: userId,
+    metadata: { from: user.plan, to: plan, email: user.email },
   });
 
   revalidatePath("/admin/users");
@@ -214,7 +249,7 @@ export async function verifyUserEmail(userId: string) {
 
 // Reset user password (admin override)
 export async function resetUserPassword(userId: string, newPassword: string) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   if (newPassword.length < 8) return { error: "Password must be at least 8 characters" };
 
@@ -226,6 +261,15 @@ export async function resetUserPassword(userId: string, newPassword: string) {
   await db.user.update({
     where: { id: userId },
     data: { password: hashedPassword },
+  });
+
+  await logAudit({
+    action: "user.password.reset",
+    adminId: session.user.id,
+    adminEmail: session.user.email!,
+    entityType: "User",
+    entityId: userId,
+    metadata: { email: user.email },
   });
 
   revalidatePath("/admin/users");
