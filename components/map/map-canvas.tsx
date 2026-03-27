@@ -11,7 +11,7 @@ import {
   type Node,
   type Edge,
   type OnConnect,
-  type NodeDragHandler,
+  type OnNodeDrag,
   type OnSelectionChangeFunc,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -100,7 +100,7 @@ export function MapCanvas({ canvasData, onAddLocation }: MapCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const onNodeDragStop: NodeDragHandler = useCallback(
+  const onNodeDragStop: OnNodeDrag = useCallback(
     (_event, node) => {
       const gridSize = canvasData.gridSize;
       const snappedX = Math.round(node.position.x / gridSize) * gridSize;
@@ -132,6 +132,7 @@ export function MapCanvas({ canvasData, onAddLocation }: MapCanvasProps) {
         canvasId: canvasData.id,
         sourceNodeId: connection.source,
         targetNodeId: connection.target,
+        trackType: "mainline",
       });
 
       if (result.success && result.edge) {
