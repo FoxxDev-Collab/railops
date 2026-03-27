@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { motion } from "motion/react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -73,7 +72,8 @@ export function SessionForm({
     : [];
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(sessionSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(sessionSchema),
     defaultValues: {
       name: initialData?.name ?? "",
       date: initialData

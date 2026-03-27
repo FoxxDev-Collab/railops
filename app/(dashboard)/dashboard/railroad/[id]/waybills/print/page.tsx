@@ -19,7 +19,7 @@ export default async function BatchPrintWaybillsPage({
   if (!session?.user) redirect("/auth/login");
 
   const { id } = await params;
-  const layout = await getLayout(id);
+  await getLayout(id);
 
   const waybills = await db.waybill.findMany({
     where: { userId: session.user.id },

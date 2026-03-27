@@ -8,17 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import {
   Users,
-  CreditCard,
   MapPin,
-  Train,
   TrainFront,
   DollarSign,
-  TrendingUp,
   Activity,
-  Shield,
-  Settings,
-  UserCog,
-  UserPlus,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {

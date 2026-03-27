@@ -6,6 +6,7 @@ import { canExport } from "@/lib/limits";
 import { parseCSV } from "@/lib/csv/parse";
 import { validateRows, type ValidatedRow } from "@/lib/csv/validate";
 import type { ResourceType } from "@/lib/csv/columns";
+import type { LocationType, LocomotiveType, LocomotiveService, RollingStockStatus, PassengerCarType, ClassOfService, CabooseType, MOWEquipmentType, TrainClass, TrainServiceType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 async function requireImportAuth() {
@@ -94,7 +95,7 @@ async function createRecord(
         data: {
           name: data.name as string,
           code: data.code as string,
-          locationType: data.locationType as any,
+          locationType: data.locationType as LocationType,
           description: (data.description as string) || null,
           layoutId,
           userId,
@@ -128,10 +129,10 @@ async function createRecord(
           road: data.road as string,
           number: data.number as string,
           model: data.model as string,
-          locomotiveType: data.locomotiveType as any,
-          serviceType: (data.serviceType as any) ?? "ROAD_FREIGHT",
+          locomotiveType: data.locomotiveType as LocomotiveType,
+          serviceType: (data.serviceType as LocomotiveService) ?? "ROAD_FREIGHT",
           horsepower: (data.horsepower as number) ?? null,
-          status: (data.status as any) ?? "SERVICEABLE",
+          status: (data.status as RollingStockStatus) ?? "SERVICEABLE",
           dccAddress: (data.dccAddress as number) ?? null,
           decoderManufacturer: (data.decoderManufacturer as string) || null,
           decoderModel: (data.decoderModel as string) || null,
@@ -155,7 +156,7 @@ async function createRecord(
           length: (data.length as number) ?? null,
           capacity: (data.capacity as number) ?? null,
           homeRoad: (data.homeRoad as string) || null,
-          status: (data.status as any) ?? "SERVICEABLE",
+          status: (data.status as RollingStockStatus) ?? "SERVICEABLE",
           commodities: (data.commodities as string[]) ?? [],
           currentLocationId: resolveLocationId(data.currentLocation),
           layoutId,
@@ -170,12 +171,12 @@ async function createRecord(
           reportingMarks: data.reportingMarks as string,
           number: data.number as string,
           carName: (data.carName as string) || null,
-          carType: data.carType as any,
-          classOfService: (data.classOfService as any) ?? "COACH",
+          carType: data.carType as PassengerCarType,
+          classOfService: (data.classOfService as ClassOfService) ?? "COACH",
           seats: (data.seats as number) ?? null,
           berths: (data.berths as number) ?? null,
           length: (data.length as number) ?? null,
-          status: (data.status as any) ?? "SERVICEABLE",
+          status: (data.status as RollingStockStatus) ?? "SERVICEABLE",
           currentLocationId: resolveLocationId(data.currentLocation),
           layoutId,
           userId,
@@ -188,10 +189,10 @@ async function createRecord(
         data: {
           reportingMarks: data.reportingMarks as string,
           number: data.number as string,
-          cabooseType: (data.cabooseType as any) ?? "STANDARD",
+          cabooseType: (data.cabooseType as CabooseType) ?? "STANDARD",
           road: (data.road as string) || null,
           length: (data.length as number) ?? null,
-          status: (data.status as any) ?? "SERVICEABLE",
+          status: (data.status as RollingStockStatus) ?? "SERVICEABLE",
           currentLocationId: resolveLocationId(data.currentLocation),
           layoutId,
           userId,
@@ -204,10 +205,10 @@ async function createRecord(
         data: {
           reportingMarks: data.reportingMarks as string,
           number: data.number as string,
-          equipmentType: data.equipmentType as any,
+          equipmentType: data.equipmentType as MOWEquipmentType,
           description: (data.description as string) || null,
           length: (data.length as number) ?? null,
-          status: (data.status as any) ?? "SERVICEABLE",
+          status: (data.status as RollingStockStatus) ?? "SERVICEABLE",
           currentLocationId: resolveLocationId(data.currentLocation),
           layoutId,
           userId,
@@ -222,8 +223,8 @@ async function createRecord(
         data: {
           trainNumber: data.trainNumber as string,
           trainName: (data.trainName as string) || null,
-          trainClass: (data.trainClass as any) ?? "MANIFEST",
-          serviceType: (data.serviceType as any) ?? "FREIGHT",
+          trainClass: (data.trainClass as TrainClass) ?? "MANIFEST",
+          serviceType: (data.serviceType as TrainServiceType) ?? "FREIGHT",
           departureTime: (data.departureTime as string) || null,
           symbol: (data.symbol as string) || null,
           description: (data.description as string) || null,

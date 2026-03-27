@@ -36,7 +36,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { createIndustry, updateIndustry } from "@/app/actions/locations";
 
 const industrySchema = z.object({
@@ -178,7 +177,8 @@ export function IndustryForm({
   const isEdit = !!initialData;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(industrySchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(industrySchema),
     defaultValues: {
       name: initialData?.name ?? "",
       type: initialData?.type ?? "",

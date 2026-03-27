@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -13,7 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Search,
   ChevronLeft,
   ChevronRight,
   User,

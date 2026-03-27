@@ -170,7 +170,8 @@ export function FreightCarForm({
   const isEdit = !!initialData;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(freightCarSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(freightCarSchema),
     defaultValues: {
       reportingMarks: initialData?.reportingMarks ?? "",
       number: initialData?.number ?? "",

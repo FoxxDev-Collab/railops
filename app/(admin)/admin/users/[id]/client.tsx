@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Shield,
   CreditCard,
   Trash2,
   UserCog,
@@ -20,7 +19,7 @@ import {
   PlayCircle,
   Eye,
 } from "lucide-react";
-import { toggleAdminRole, setUserPlan, verifyUserEmail, deleteUser } from "@/app/actions/admin/users";
+import { toggleAdminRole, verifyUserEmail, deleteUser } from "@/app/actions/admin/users";
 import { adminCancelSubscription, adminGrantPlan } from "@/app/actions/admin/billing";
 import { startImpersonation } from "@/app/actions/admin/impersonate";
 import type { Plan, UserRole as Role } from "@prisma/client";

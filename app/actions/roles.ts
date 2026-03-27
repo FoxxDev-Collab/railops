@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requirePermission } from "@/lib/crew/context";
-import { CREW_SECTIONS, DEFAULT_ROLE_NAMES } from "@/lib/crew/permissions";
+import { CREW_SECTIONS } from "@/lib/crew/permissions";
 
 async function requireAuth() {
   const session = await auth();

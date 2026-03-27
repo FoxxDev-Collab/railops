@@ -2,7 +2,7 @@
 
 import { Map, Plus } from "lucide-react";
 import Link from "next/link";
-import { useLayout, LayoutData } from "./layout-context";
+import { useLayout } from "./layout-context";
 import {
   Select,
   SelectContent,

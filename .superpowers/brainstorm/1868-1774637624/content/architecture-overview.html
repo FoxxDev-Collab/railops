@@ -1,0 +1,86 @@
+<h2>Layout Editor — Architecture Overview</h2>
+<p class="subtitle">Three-layer system: Editor → Detail Views → Session Display</p>
+
+<div class="mockup">
+  <div class="mockup-header">System Architecture</div>
+  <div class="mockup-body" style="padding: 24px; font-family: monospace; font-size: 13px; line-height: 1.8;">
+    <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+      <!-- Layer 1 -->
+      <div style="flex: 1; border: 2px solid #3b82f6; border-radius: 8px; padding: 16px;">
+        <div style="color: #3b82f6; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Layer 1: Railroad Overview Editor</div>
+        <div style="color: #94a3b8; font-size: 12px;">
+          <div style="background: #1e293b; padding: 8px; border-radius: 4px; margin-bottom: 6px;">
+            <span style="color: #22c55e;">React Flow</span> canvas
+          </div>
+          <div>• Location nodes (drag, place, snap-to-grid)</div>
+          <div>• Track edges (click-to-connect, magnetic snap)</div>
+          <div>• Toolbar: add location, draw track, zoom controls</div>
+          <div>• Minimap + pan/zoom</div>
+          <div>• Custom node types per LocationType</div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #334155;">
+            <span style="color: #f59e0b;">Data:</span> LayoutCanvas model (node positions, edge paths)
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 2 -->
+      <div style="flex: 1; border: 2px solid #8b5cf6; border-radius: 8px; padding: 16px;">
+        <div style="color: #8b5cf6; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Layer 2: Location Detail View</div>
+        <div style="color: #94a3b8; font-size: 12px;">
+          <div style="background: #1e293b; padding: 8px; border-radius: 4px; margin-bottom: 6px;">
+            <span style="color: #22c55e;">Konva</span> canvas (react-konva)
+          </div>
+          <div>• Yard track diagrams (arrival, class, departure)</div>
+          <div>• Industry spurs and sidings</div>
+          <div>• Car positions on tracks</div>
+          <div>• Turnout/switch indicators</div>
+          <div>• Click-to-zoom from overview</div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #334155;">
+            <span style="color: #f59e0b;">Data:</span> LocationCanvas model (track geometry, car slots)
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 3 -->
+      <div style="flex: 1; border: 2px solid #ec4899; border-radius: 8px; padding: 16px;">
+        <div style="color: #ec4899; font-weight: bold; margin-bottom: 8px; font-size: 14px;">Layer 3: Session Display</div>
+        <div style="color: #94a3b8; font-size: 12px;">
+          <div style="background: #1e293b; padding: 8px; border-radius: 4px; margin-bottom: 6px;">
+            <span style="color: #22c55e;">Read-only overlay</span> on same canvases
+          </div>
+          <div>• Train position markers (animated)</div>
+          <div>• Active switch list highlights</div>
+          <div>• Car movement indicators</div>
+          <div>• Dispatcher click-to-interact</div>
+          <div>• Crew polling (5-10s refresh)</div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #334155;">
+            <span style="color: #f59e0b;">Data:</span> OperatingSession + SessionTrain state
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Flow -->
+    <div style="border: 2px solid #334155; border-radius: 8px; padding: 16px;">
+      <div style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px;">Data Flow</div>
+      <div style="display: flex; align-items: center; gap: 12px; color: #94a3b8; font-size: 12px;">
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Prisma Schema</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Server Actions</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">React Flow / Konva</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Auto-save (debounced)</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Prisma DB</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; color: #94a3b8; font-size: 12px; margin-top: 8px;">
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Session Mode</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Dispatcher updates via Server Actions</div>
+        <div>→</div>
+        <div style="background: #1e293b; padding: 8px 12px; border-radius: 4px;">Crew polls GET endpoint (5-10s)</div>
+      </div>
+    </div>
+  </div>
+</div>

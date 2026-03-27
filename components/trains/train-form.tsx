@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { TrainClass, TrainServiceType } from "@prisma/client";
 import { toast } from "sonner";
-import { motion } from "motion/react";
 import { ArrowLeft, Loader2, Power, PowerOff } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -105,7 +104,8 @@ export function TrainForm({
   const isEdit = !!initialData;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(trainSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(trainSchema),
     defaultValues: {
       trainNumber: initialData?.trainNumber ?? "",
       trainName: initialData?.trainName ?? "",
@@ -137,8 +137,6 @@ export function TrainForm({
       router.push(backUrl);
     }
   }
-
-  const isActive = form.watch("isActive");
 
   return (
     <div className="space-y-6">

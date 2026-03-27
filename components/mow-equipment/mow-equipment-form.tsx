@@ -91,7 +91,8 @@ export function MOWEquipmentForm({
   const isEdit = !!initialData;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(mowEquipmentSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(mowEquipmentSchema),
     defaultValues: {
       reportingMarks: initialData?.reportingMarks ?? "",
       number: initialData?.number ?? "",

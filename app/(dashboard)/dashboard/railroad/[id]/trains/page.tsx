@@ -20,12 +20,6 @@ export default async function TrainsPage({
   const { id } = await params;
   const layout = await getLayout(id);
 
-  const locationOptions = layout.locations.map((l) => ({
-    id: l.id,
-    name: l.name,
-    code: l.code,
-  }));
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

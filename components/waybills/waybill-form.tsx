@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, type Control, type UseFormWatch } from "react-hook-form";
 import { z } from "zod";
 import { LoadStatus } from "@prisma/client";
 import { toast } from "sonner";
@@ -126,8 +126,8 @@ function PanelSection({
   canRemove,
 }: {
   index: number;
-  control: any;
-  watch: any;
+  control: Control<FormValues>;
+  watch: UseFormWatch<FormValues>;
   locations: LocationOption[];
   onRemove: () => void;
   canRemove: boolean;
@@ -438,7 +438,8 @@ export function WaybillForm({
   };
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(waybillFormSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(waybillFormSchema),
     defaultValues: {
       freightCarId: initialData?.carCard?.freightCarId ?? null,
       isReturnable: initialData?.isReturnable ?? true,
@@ -700,7 +701,7 @@ export function WaybillForm({
               </AnimatePresence>
               {fields.length === 1 && (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  No additional panels. Click "Add Panel" to add a second leg.
+                  No additional panels. Click &ldquo;Add Panel&rdquo; to add a second leg.
                 </p>
               )}
             </CardContent>

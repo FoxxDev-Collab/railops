@@ -1,6 +1,6 @@
 "use client";
 
-import { User, UserRole as Role, Plan } from "@prisma/client";
+import { User, Plan } from "@prisma/client";
 import {
   Table,
   TableBody,

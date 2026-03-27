@@ -48,7 +48,6 @@ export function CrewMembersTable({
   owner,
   roles,
   layoutId,
-  isOwner,
   canEditCrew,
 }: CrewMembersTableProps) {
   const [changingRole, setChangingRole] = useState<string | null>(null);

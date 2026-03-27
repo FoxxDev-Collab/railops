@@ -116,7 +116,8 @@ export function LocomotiveForm({
   const isEdit = !!initialData;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(locomotiveSchema) as any,
+    // @ts-expect-error zodResolver typing mismatch with zod v4
+    resolver: zodResolver(locomotiveSchema),
     defaultValues: {
       road: initialData?.road ?? "",
       number: initialData?.number ?? "",

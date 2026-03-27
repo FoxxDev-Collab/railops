@@ -13,15 +13,16 @@ export function VerifyEmailResult() {
   const [status, setStatus] = useState<{
     success?: string;
     error?: string;
-  } | null>(null);
+  } | null>(token ? null : { error: "Missing verification token." });
 
   useEffect(() => {
-    if (!token) {
-      setStatus({ error: "Missing verification token." });
-      return;
-    }
+    if (!token) return;
 
-    verifyEmail(token).then(setStatus);
+    let cancelled = false;
+    verifyEmail(token).then((result) => {
+      if (!cancelled) setStatus(result);
+    });
+    return () => { cancelled = true; };
   }, [token]);
 
   if (!status) {
