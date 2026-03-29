@@ -7,6 +7,7 @@ import { MapToolbar } from "./map-toolbar";
 import { MapProperties } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
 import { MapTabBar } from "./map-tab-bar";
+import { TrackLayoutCanvas } from "./track-layout-canvas";
 import { SessionOverlay } from "./session-overlay";
 import { useMapStore } from "./use-map-store";
 import { deleteCanvasElement } from "@/app/actions/canvas";
@@ -36,6 +37,7 @@ interface CanvasData {
     targetNodeId: string;
     trackType: string;
     label: string | null;
+    pathData: Record<string, unknown>;
   }>;
 }
 
@@ -211,12 +213,15 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
           )}
 
           {activeTab === "track-layout" && (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <p className="font-mono text-sm text-muted-foreground">Track Layout</p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground/60">Coming soon</p>
-              </div>
-            </div>
+            <TrackLayoutCanvas
+              canvasId={canvasData.id}
+              nodes={canvasData.nodes}
+              edges={canvasData.edges.map((e) => ({
+                ...e,
+                pathData: (e.pathData ?? {}) as { waypoints?: { x: number; y: number }[] } & Record<string, unknown>,
+              }))}
+              gridSize={canvasData.gridSize}
+            />
           )}
 
           {activeTab === "yard-detail" && (

@@ -48,6 +48,14 @@ const createCanvasEdgeSchema = z.object({
   targetNodeId: z.string(),
   trackType: z.enum(["mainline", "branch", "spur"]).default("mainline"),
   label: z.string().optional(),
+  pathData: z.object({ waypoints: z.array(z.object({ x: z.number(), y: z.number() })) }).optional(),
+});
+
+const updateCanvasEdgeSchema = z.object({
+  id: z.string(),
+  pathData: z.object({ waypoints: z.array(z.object({ x: z.number(), y: z.number() })) }).optional(),
+  trackType: z.enum(["mainline", "branch", "spur"]).optional(),
+  label: z.string().optional().nullable(),
 });
 
 const deleteCanvasElementSchema = z.object({
@@ -222,10 +230,30 @@ export async function createCanvasEdge(values: z.infer<typeof createCanvasEdgeSc
       targetNodeId: validated.targetNodeId,
       trackType: validated.trackType,
       label: validated.label,
+      pathData: validated.pathData ?? {},
     },
   });
 
   return { success: true, edge };
+}
+
+export async function updateCanvasEdge(values: z.infer<typeof updateCanvasEdgeSchema>) {
+  const user = await getAuthenticatedUser();
+  const validated = updateCanvasEdgeSchema.parse(values);
+  const edge = await db.canvasEdge.findUnique({
+    where: { id: validated.id },
+    include: { canvas: { select: { layout: { select: { id: true } } } } },
+  });
+  if (!edge) return { error: "Edge not found" };
+  await verifyLayoutAccess(edge.canvas.layout.id, user.id);
+
+  const data: Record<string, unknown> = {};
+  if (validated.pathData !== undefined) data.pathData = validated.pathData;
+  if (validated.trackType !== undefined) data.trackType = validated.trackType;
+  if (validated.label !== undefined) data.label = validated.label;
+
+  const updated = await db.canvasEdge.update({ where: { id: validated.id }, data });
+  return { success: true, edge: updated };
 }
 
 export async function deleteCanvasElement(values: z.infer<typeof deleteCanvasElementSchema>) {
