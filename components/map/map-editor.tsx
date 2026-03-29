@@ -8,6 +8,7 @@ import { MapPropertiesRouter } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
 import { MapTabBar } from "./map-tab-bar";
 import { TrackLayoutCanvas } from "./track-layout-canvas";
+import { YardDetailCanvas } from "./yard-detail-canvas";
 import { SessionOverlay } from "./session-overlay";
 import { useMapStore } from "./use-map-store";
 import { deleteCanvasElement } from "@/app/actions/canvas";
@@ -56,6 +57,7 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
   const isFullscreen = useMapStore((s) => s.isFullscreen);
   const saveStatus = useMapStore((s) => s.saveStatus);
   const activeTab = useMapStore((s) => s.activeTab);
+  const yardDetailLocationId = useMapStore((s) => s.yardDetailLocationId);
   const [addLocationPos, setAddLocationPos] = useState<{ x: number; y: number } | null>(null);
   const canvasRef = useRef<MapCanvasHandle>(null);
 
@@ -240,11 +242,14 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
             />
           )}
 
-          {activeTab === "yard-detail" && (
+          {activeTab === "yard-detail" && yardDetailLocationId && (
+            <YardDetailCanvas locationId={yardDetailLocationId} />
+          )}
+          {activeTab === "yard-detail" && !yardDetailLocationId && (
             <div className="flex h-full items-center justify-center">
               <div className="text-center">
                 <p className="font-mono text-sm text-muted-foreground">Yard Detail</p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground/60">Select a location to view yard details</p>
+                <p className="mt-1 font-mono text-xs text-muted-foreground/60">Select a location from the dropdown above</p>
               </div>
             </div>
           )}
