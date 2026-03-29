@@ -47,6 +47,9 @@ interface YardStore {
   canvasId: string | null;
   setCanvasId: (id: string | null) => void;
 
+  locationId: string | null;
+  setLocationId: (id: string | null) => void;
+
   drawingPoints: { x: number; y: number }[];
   setDrawingPoints: (points: { x: number; y: number }[]) => void;
   addDrawingPoint: (point: { x: number; y: number }) => void;
@@ -82,6 +85,9 @@ export const useYardStore = create<YardStore>((set) => ({
 
   canvasId: null,
   setCanvasId: (id) => set({ canvasId: id }),
+
+  locationId: null,
+  setLocationId: (id) => set({ locationId: id }),
 
   drawingPoints: [],
   setDrawingPoints: (points) => set({ drawingPoints: points }),

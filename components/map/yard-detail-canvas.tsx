@@ -101,6 +101,7 @@ export function YardDetailCanvas({ locationId }: YardDetailCanvasProps) {
       .then((data) => {
         if (cancelled) return;
         setCanvasId(data.canvas.id);
+        useYardStore.getState().setLocationId(locationId);
 
         const stored = (data.canvas.trackElements ?? []) as unknown as (
           | TrackElement
