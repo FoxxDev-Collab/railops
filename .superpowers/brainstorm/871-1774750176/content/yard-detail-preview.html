@@ -1,0 +1,261 @@
+<h2>Yard Detail Mode — Full Preview</h2>
+<p class="subtitle">Full editor for drawing tracks, turnouts, and industries within a single yard/location</p>
+
+<div style="border:1px solid #333; border-radius:8px; overflow:hidden; font-family:'Courier New', monospace; font-size:11px;">
+
+  <!-- Tab bar -->
+  <div style="display:flex; border-bottom:1px solid #d4c9a8; background:#f0ece0;">
+    <div style="padding:8px 20px; color:#888; cursor:pointer; border-bottom:2px solid transparent;">Locations</div>
+    <div style="padding:8px 20px; color:#888; cursor:pointer; border-bottom:2px solid transparent;">Track Layout</div>
+    <div style="padding:8px 20px; color:#222; font-weight:bold; border-bottom:2px solid #222; background:#fafaf5;">Yard Detail</div>
+    <div style="flex:1;"></div>
+    <!-- Location selector -->
+    <div style="padding:6px 12px; display:flex; align-items:center; gap:6px;">
+      <span style="color:#888; font-size:9px;">VIEWING:</span>
+      <span style="padding:2px 10px; background:#fafaf5; border:1px solid #bbb; border-radius:3px; color:#222; font-weight:bold; font-size:10px;">Summit Yard ▾</span>
+    </div>
+    <div style="padding:8px 12px; color:#999; font-size:9px; display:flex; align-items:center; gap:4px;">
+      <span style="color:#4a8a4a;">&#10003;</span> Saved
+    </div>
+  </div>
+
+  <div style="display:flex; height:480px;">
+
+    <!-- Toolbar -->
+    <div style="width:44px; background:#f0ece0; border-right:1px solid #d4c9a8; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;" title="Select">V</div>
+      <div style="width:32px; height:32px; background:#222; border:1px solid #222; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:9px; font-weight:bold;" title="Draw Track">T</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:8px;" title="Add Turnout">⑂</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;" title="Add Industry">▣</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;" title="Pan">H</div>
+      <div style="flex:1;"></div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">+</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">−</div>
+    </div>
+
+    <!-- Main canvas -->
+    <div style="flex:1; background:#fafaf5; position:relative; overflow:hidden;">
+      <!-- Grid -->
+      <svg width="100%" height="100%" style="position:absolute; top:0; left:0; opacity:0.1;">
+        <pattern id="grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="0.5" fill="#888"/>
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+      </svg>
+
+      <svg width="100%" height="100%" viewBox="0 0 640 480" style="position:relative;">
+
+        <!-- ========== LEAD TRACK (main through-line) ========== -->
+        <line x1="0" y1="120" x2="640" y2="120" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Lead ticks -->
+        <g stroke="#222" stroke-width="1.3" opacity="0.7">
+          <line x1="20" y1="115" x2="20" y2="125"/>
+          <line x1="40" y1="115" x2="40" y2="125"/>
+          <line x1="60" y1="115" x2="60" y2="125"/>
+          <line x1="80" y1="115" x2="80" y2="125"/>
+          <line x1="100" y1="115" x2="100" y2="125"/>
+          <line x1="120" y1="115" x2="120" y2="125"/>
+          <line x1="140" y1="115" x2="140" y2="125"/>
+          <line x1="160" y1="115" x2="160" y2="125"/>
+          <line x1="180" y1="115" x2="180" y2="125"/>
+          <line x1="200" y1="115" x2="200" y2="125"/>
+          <line x1="220" y1="115" x2="220" y2="125"/>
+          <line x1="240" y1="115" x2="240" y2="125"/>
+          <line x1="260" y1="115" x2="260" y2="125"/>
+          <line x1="280" y1="115" x2="280" y2="125"/>
+          <line x1="300" y1="115" x2="300" y2="125"/>
+          <line x1="320" y1="115" x2="320" y2="125"/>
+          <line x1="340" y1="115" x2="340" y2="125"/>
+          <line x1="360" y1="115" x2="360" y2="125"/>
+          <line x1="380" y1="115" x2="380" y2="125"/>
+          <line x1="400" y1="115" x2="400" y2="125"/>
+          <line x1="420" y1="115" x2="420" y2="125"/>
+          <line x1="440" y1="115" x2="440" y2="125"/>
+          <line x1="460" y1="115" x2="460" y2="125"/>
+          <line x1="480" y1="115" x2="480" y2="125"/>
+          <line x1="500" y1="115" x2="500" y2="125"/>
+          <line x1="520" y1="115" x2="520" y2="125"/>
+          <line x1="540" y1="115" x2="540" y2="125"/>
+          <line x1="560" y1="115" x2="560" y2="125"/>
+          <line x1="580" y1="115" x2="580" y2="125"/>
+          <line x1="600" y1="115" x2="600" y2="125"/>
+          <line x1="620" y1="115" x2="620" y2="125"/>
+        </g>
+        <text x="10" y="108" fill="#222" font-family="'Courier New', monospace" font-size="8" font-weight="bold" opacity="0.5">LEAD</text>
+
+        <!-- ========== TURNOUT 1 → Arrival Track ========== -->
+        <!-- Turnout symbol -->
+        <circle cx="120" cy="120" r="5" fill="#fafaf5" stroke="#222" stroke-width="1.5"/>
+        <line x1="117" y1="120" x2="123" y2="120" stroke="#222" stroke-width="1.5"/>
+        <!-- Diverging route indicator -->
+        <path d="M120,120 L130,140" stroke="#222" stroke-width="1" opacity="0.4"/>
+
+        <!-- Arrival Track -->
+        <path d="M125,125 Q140,170 160,180 L520,180" fill="none" stroke="#3b6fb5" stroke-width="2" stroke-linecap="round"/>
+        <!-- Arrival ticks -->
+        <g stroke="#3b6fb5" stroke-width="1.2" opacity="0.6">
+          <line x1="170" y1="175" x2="170" y2="185"/>
+          <line x1="200" y1="175" x2="200" y2="185"/>
+          <line x1="230" y1="175" x2="230" y2="185"/>
+          <line x1="260" y1="175" x2="260" y2="185"/>
+          <line x1="290" y1="175" x2="290" y2="185"/>
+          <line x1="320" y1="175" x2="320" y2="185"/>
+          <line x1="350" y1="175" x2="350" y2="185"/>
+          <line x1="380" y1="175" x2="380" y2="185"/>
+          <line x1="410" y1="175" x2="410" y2="185"/>
+          <line x1="440" y1="175" x2="440" y2="185"/>
+          <line x1="470" y1="175" x2="470" y2="185"/>
+          <line x1="500" y1="175" x2="500" y2="185"/>
+        </g>
+        <text x="530" y="183" fill="#3b6fb5" font-family="Georgia, serif" font-size="9" font-style="italic">Arrival</text>
+        <text x="530" y="193" fill="#888" font-family="'Courier New', monospace" font-size="7">cap: 8</text>
+
+        <!-- ========== TURNOUT 2 → Classification Tracks ========== -->
+        <circle cx="200" cy="120" r="5" fill="#fafaf5" stroke="#222" stroke-width="1.5"/>
+        <line x1="197" y1="120" x2="203" y2="120" stroke="#222" stroke-width="1.5"/>
+        <path d="M200,120 L210,140" stroke="#222" stroke-width="1" opacity="0.4"/>
+
+        <!-- Classification Track 1 -->
+        <path d="M205,125 Q220,230 240,240 L520,240" fill="none" stroke="#b5873b" stroke-width="2" stroke-linecap="round"/>
+        <g stroke="#b5873b" stroke-width="1.2" opacity="0.6">
+          <line x1="250" y1="235" x2="250" y2="245"/>
+          <line x1="280" y1="235" x2="280" y2="245"/>
+          <line x1="310" y1="235" x2="310" y2="245"/>
+          <line x1="340" y1="235" x2="340" y2="245"/>
+          <line x1="370" y1="235" x2="370" y2="245"/>
+          <line x1="400" y1="235" x2="400" y2="245"/>
+          <line x1="430" y1="235" x2="430" y2="245"/>
+          <line x1="460" y1="235" x2="460" y2="245"/>
+          <line x1="490" y1="235" x2="490" y2="245"/>
+        </g>
+        <text x="530" y="243" fill="#b5873b" font-family="Georgia, serif" font-size="9" font-style="italic">Class. 1</text>
+        <text x="530" y="253" fill="#888" font-family="'Courier New', monospace" font-size="7">cap: 12</text>
+
+        <!-- Classification Track 2 (selected) -->
+        <path d="M205,125 Q225,285 250,300 L520,300" fill="none" stroke="#b5873b" stroke-width="2" stroke-linecap="round"/>
+        <!-- Selection highlight -->
+        <path d="M205,125 Q225,285 250,300 L520,300" fill="none" stroke="#222" stroke-width="5" opacity="0.1"/>
+        <g stroke="#b5873b" stroke-width="1.2" opacity="0.6">
+          <line x1="260" y1="295" x2="260" y2="305"/>
+          <line x1="290" y1="295" x2="290" y2="305"/>
+          <line x1="320" y1="295" x2="320" y2="305"/>
+          <line x1="350" y1="295" x2="350" y2="305"/>
+          <line x1="380" y1="295" x2="380" y2="305"/>
+          <line x1="410" y1="295" x2="410" y2="305"/>
+          <line x1="440" y1="295" x2="440" y2="305"/>
+          <line x1="470" y1="295" x2="470" y2="305"/>
+          <line x1="500" y1="295" x2="500" y2="305"/>
+        </g>
+        <text x="530" y="303" fill="#b5873b" font-family="Georgia, serif" font-size="9" font-style="italic">Class. 2</text>
+        <text x="530" y="313" fill="#888" font-family="'Courier New', monospace" font-size="7">cap: 12</text>
+
+        <!-- ========== TURNOUT 3 → Departure Track ========== -->
+        <circle cx="300" cy="120" r="5" fill="#fafaf5" stroke="#222" stroke-width="1.5"/>
+        <line x1="297" y1="120" x2="303" y2="120" stroke="#222" stroke-width="1.5"/>
+        <path d="M300,120 L310,140" stroke="#222" stroke-width="1" opacity="0.4"/>
+
+        <!-- Departure Track -->
+        <path d="M305,125 Q320,350 340,360 L520,360" fill="none" stroke="#3ba855" stroke-width="2" stroke-linecap="round"/>
+        <g stroke="#3ba855" stroke-width="1.2" opacity="0.6">
+          <line x1="350" y1="355" x2="350" y2="365"/>
+          <line x1="380" y1="355" x2="380" y2="365"/>
+          <line x1="410" y1="355" x2="410" y2="365"/>
+          <line x1="440" y1="355" x2="440" y2="365"/>
+          <line x1="470" y1="355" x2="470" y2="365"/>
+          <line x1="500" y1="355" x2="500" y2="365"/>
+        </g>
+        <text x="530" y="363" fill="#3ba855" font-family="Georgia, serif" font-size="9" font-style="italic">Departure</text>
+        <text x="530" y="373" fill="#888" font-family="'Courier New', monospace" font-size="7">cap: 6</text>
+
+        <!-- ========== INDUSTRY SPUR: Lumber Co ========== -->
+        <!-- Turnout off lead -->
+        <circle cx="420" cy="120" r="4" fill="#fafaf5" stroke="#888" stroke-width="1"/>
+        <!-- Spur track (dashed) -->
+        <path d="M424,120 Q440,100 460,80 L540,80" fill="none" stroke="#888" stroke-width="1.5" stroke-dasharray="6,3" stroke-linecap="round"/>
+        <!-- Industry building -->
+        <rect x="545" y="68" width="70" height="24" rx="3" fill="#fafaf5" stroke="#5a7a5a" stroke-width="1.5"/>
+        <text x="580" y="83" text-anchor="middle" fill="#5a7a5a" font-family="Georgia, serif" font-size="9" font-style="italic">Lumber Co</text>
+        <!-- Spots indicator -->
+        <text x="580" y="60" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="7">2 spots</text>
+
+        <!-- ========== INDUSTRY SPUR: Feed & Grain ========== -->
+        <circle cx="480" cy="120" r="4" fill="#fafaf5" stroke="#888" stroke-width="1"/>
+        <path d="M484,116 Q500,90 520,50 L560,50" fill="none" stroke="#888" stroke-width="1.5" stroke-dasharray="6,3" stroke-linecap="round"/>
+        <rect x="565" y="38" width="70" height="24" rx="3" fill="#fafaf5" stroke="#5a7a5a" stroke-width="1.5"/>
+        <text x="600" y="53" text-anchor="middle" fill="#5a7a5a" font-family="Georgia, serif" font-size="9" font-style="italic">Feed & Grain</text>
+        <text x="600" y="30" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="7">1 spot</text>
+
+        <!-- ========== ENGINE SERVICE (bottom) ========== -->
+        <circle cx="80" cy="120" r="4" fill="#fafaf5" stroke="#888" stroke-width="1"/>
+        <path d="M80,125 Q80,400 100,420 L300,420" fill="none" stroke="#7a5ab5" stroke-width="1.5" stroke-linecap="round"/>
+        <g stroke="#7a5ab5" stroke-width="1" opacity="0.5">
+          <line x1="110" y1="415" x2="110" y2="425"/>
+          <line x1="140" y1="415" x2="140" y2="425"/>
+          <line x1="170" y1="415" x2="170" y2="425"/>
+          <line x1="200" y1="415" x2="200" y2="425"/>
+          <line x1="230" y1="415" x2="230" y2="425"/>
+          <line x1="260" y1="415" x2="260" y2="425"/>
+          <line x1="290" y1="415" x2="290" y2="425"/>
+        </g>
+        <text x="310" y="423" fill="#7a5ab5" font-family="Georgia, serif" font-size="9" font-style="italic">Engine Svc</text>
+        <text x="310" y="433" fill="#888" font-family="'Courier New', monospace" font-size="7">cap: 3</text>
+
+        <!-- Direction arrows at lead ends -->
+        <polygon points="0,115 12,120 0,125" fill="#222" opacity="0.3"/>
+        <text x="15" y="110" fill="#888" font-family="'Courier New', monospace" font-size="7">← W</text>
+        <polygon points="640,115 628,120 640,125" fill="#222" opacity="0.3"/>
+        <text x="610" y="110" fill="#888" font-family="'Courier New', monospace" font-size="7">E →</text>
+
+      </svg>
+
+      <!-- Tool hint -->
+      <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); background:#222; color:#f0ece0; padding:6px 14px; border-radius:4px; font-size:10px; font-family:'Courier New', monospace;">
+        Draw Track active · click to start, drag to shape, click to end
+      </div>
+    </div>
+
+    <!-- Properties panel -->
+    <div style="width:220px; background:#f0ece0; border-left:1px solid #d4c9a8; padding:12px; font-size:10px; overflow-y:auto;">
+      <div style="color:#222; font-weight:bold; margin-bottom:10px; font-size:11px;">Properties</div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">SELECTED TRACK</div>
+      <div style="color:#b5873b; font-weight:bold; margin-bottom:10px;">Classification 2</div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">TRACK TYPE</div>
+      <div style="display:flex; flex-wrap:wrap; gap:3px; margin-bottom:10px;">
+        <span style="padding:2px 6px; border:1px solid #bbb; border-radius:3px; font-size:8px; color:#888;">ARR</span>
+        <span style="padding:2px 6px; border:1px solid #b5873b; border-radius:3px; font-size:8px; background:#b5873b; color:#fff;">CLS</span>
+        <span style="padding:2px 6px; border:1px solid #bbb; border-radius:3px; font-size:8px; color:#888;">DEP</span>
+        <span style="padding:2px 6px; border:1px solid #bbb; border-radius:3px; font-size:8px; color:#888;">ENG</span>
+        <span style="padding:2px 6px; border:1px solid #bbb; border-radius:3px; font-size:8px; color:#888;">RIP</span>
+        <span style="padding:2px 6px; border:1px solid #bbb; border-radius:3px; font-size:8px; color:#888;">CAB</span>
+      </div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">NAME</div>
+      <input style="width:100%; padding:4px 6px; border:1px solid #bbb; border-radius:3px; background:#fafaf5; font-family:'Courier New', monospace; font-size:10px; color:#222; margin-bottom:10px;" value="Classification 2"/>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">CAPACITY</div>
+      <input style="width:60px; padding:4px 6px; border:1px solid #bbb; border-radius:3px; background:#fafaf5; font-family:'Courier New', monospace; font-size:10px; color:#222; margin-bottom:10px;" value="12" type="number"/>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">LENGTH</div>
+      <input style="width:80px; padding:4px 6px; border:1px solid #bbb; border-radius:3px; background:#fafaf5; font-family:'Courier New', monospace; font-size:10px; color:#222; margin-bottom:10px;" value="48&quot;" placeholder="e.g. 48&quot;"/>
+
+      <div style="border-top:1px solid #d4c9a8; margin-top:8px; padding-top:10px;">
+        <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">CONNECTS FROM</div>
+        <div style="color:#444; margin-bottom:8px;">Turnout #2 <span style="color:#aaa;">on Lead</span></div>
+
+        <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">CARS PRESENT</div>
+        <div style="color:#444; font-size:9px; margin-bottom:2px;">BN 45721 <span style="color:#888;">(boxcar)</span></div>
+        <div style="color:#444; font-size:9px; margin-bottom:2px;">UP 92104 <span style="color:#888;">(gondola)</span></div>
+        <div style="color:#444; font-size:9px; margin-bottom:2px;">ATSF 8803 <span style="color:#888;">(hopper)</span></div>
+        <div style="color:#aaa; font-size:9px;">3 of 12 spots filled</div>
+      </div>
+
+      <div style="border-top:1px solid #d4c9a8; margin-top:10px; padding-top:10px;">
+        <button style="width:100%; padding:6px; background:#c44; color:#fff; border:none; border-radius:3px; font-family:'Courier New', monospace; font-size:10px; cursor:pointer;">Delete Track</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:16px; color:#888; font-size:12px; text-align:center;">Yard Detail shows one location at a time · tracks auto-create YardTrack records · industries auto-create Industry records</p>

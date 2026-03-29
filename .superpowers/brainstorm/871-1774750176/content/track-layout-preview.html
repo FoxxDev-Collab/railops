@@ -1,0 +1,186 @@
+<h2>Track Layout Mode — Full Preview</h2>
+<p class="subtitle">Survey/topo map style with the app's tab bar, toolbar, and properties panel</p>
+
+<div style="border:1px solid #333; border-radius:8px; overflow:hidden; font-family:'Courier New', monospace; font-size:11px;">
+
+  <!-- Tab bar -->
+  <div style="display:flex; border-bottom:1px solid #d4c9a8; background:#f0ece0;">
+    <div style="padding:8px 20px; color:#888; cursor:pointer; border-bottom:2px solid transparent;">Locations</div>
+    <div style="padding:8px 20px; color:#222; font-weight:bold; border-bottom:2px solid #222; background:#fafaf5;">Track Layout</div>
+    <div style="padding:8px 20px; color:#888; cursor:pointer; border-bottom:2px solid transparent;">Yard Detail</div>
+    <div style="flex:1;"></div>
+    <div style="padding:8px 12px; color:#999; font-size:9px; display:flex; align-items:center; gap:4px;">
+      <span style="color:#4a8a4a;">&#10003;</span> Saved
+    </div>
+  </div>
+
+  <div style="display:flex; height:420px;">
+
+    <!-- Toolbar -->
+    <div style="width:44px; background:#f0ece0; border-right:1px solid #d4c9a8; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">V</div>
+      <div style="width:32px; height:32px; background:#222; border:1px solid #222; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:9px; font-weight:bold;">T</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">H</div>
+      <div style="flex:1;"></div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">+</div>
+      <div style="width:32px; height:32px; background:#fff; border:1px solid #bbb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#666; font-size:9px;">−</div>
+    </div>
+
+    <!-- Main canvas -->
+    <div style="flex:1; background:#fafaf5; position:relative; overflow:hidden;">
+      <!-- Grid dots -->
+      <svg width="100%" height="100%" style="position:absolute; top:0; left:0; opacity:0.15;">
+        <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="0.5" fill="#888"/>
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#dots)"/>
+      </svg>
+
+      <svg width="100%" height="100%" viewBox="0 0 600 420" style="position:relative;">
+        <!-- Subtle topo contours -->
+        <ellipse cx="300" cy="210" rx="250" ry="120" fill="none" stroke="#d4c9a8" stroke-width="0.5" opacity="0.3"/>
+        <ellipse cx="280" cy="200" rx="180" ry="80" fill="none" stroke="#d4c9a8" stroke-width="0.5" opacity="0.2"/>
+
+        <!-- === MAINLINE: Summit → Valley Jct === -->
+        <!-- Track line -->
+        <path d="M80,200 C140,200 160,180 220,160 S340,120 400,140 S480,200 540,190" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Ticks along mainline -->
+        <g stroke="#222" stroke-width="1.5" opacity="0.8">
+          <line x1="100" y1="195" x2="100" y2="205"/>
+          <line x1="120" y1="193" x2="119" y2="203"/>
+          <line x1="140" y1="190" x2="138" y2="200"/>
+          <line x1="160" y1="183" x2="157" y2="193"/>
+          <line x1="180" y1="174" x2="176" y2="184"/>
+          <line x1="200" y1="166" x2="197" y2="176"/>
+          <line x1="220" y1="160" x2="218" y2="170"/>
+          <line x1="240" y1="155" x2="238" y2="165"/>
+          <line x1="260" y1="148" x2="258" y2="158"/>
+          <line x1="280" y1="140" x2="278" y2="150"/>
+          <line x1="300" y1="132" x2="299" y2="142"/>
+          <line x1="320" y1="126" x2="319" y2="136"/>
+          <line x1="340" y1="122" x2="340" y2="132"/>
+          <line x1="360" y1="123" x2="360" y2="133"/>
+          <line x1="380" y1="130" x2="379" y2="140"/>
+          <line x1="400" y1="140" x2="400" y2="150"/>
+          <line x1="420" y1="150" x2="419" y2="160"/>
+          <line x1="440" y1="162" x2="438" y2="172"/>
+          <line x1="460" y1="174" x2="457" y2="184"/>
+          <line x1="480" y1="185" x2="478" y2="195"/>
+          <line x1="500" y1="190" x2="498" y2="200"/>
+          <line x1="520" y1="192" x2="519" y2="202"/>
+        </g>
+
+        <!-- === BRANCH: Cedar Jct → Cedar Mine === -->
+        <path d="M300,132 C310,100 330,70 380,55 S440,50 480,60" fill="none" stroke="#444" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- Branch ticks -->
+        <g stroke="#444" stroke-width="1.2" opacity="0.7">
+          <line x1="310" y1="101" x2="306" y2="109"/>
+          <line x1="325" y1="81" x2="320" y2="88"/>
+          <line x1="345" y1="66" x2="340" y2="73"/>
+          <line x1="365" y1="56" x2="362" y2="64"/>
+          <line x1="390" y1="52" x2="388" y2="60"/>
+          <line x1="415" y1="50" x2="414" y2="58"/>
+          <line x1="440" y1="51" x2="439" y2="59"/>
+          <line x1="460" y1="55" x2="458" y2="63"/>
+        </g>
+
+        <!-- === SPUR: Mill Spur off mainline === -->
+        <path d="M200,166 Q210,200 230,240 Q245,270 260,290" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3" stroke-linecap="round"/>
+
+        <!-- === SPUR: Team Track off Cedar Mine === -->
+        <path d="M480,60 Q500,65 510,85" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3" stroke-linecap="round"/>
+
+        <!-- === LOCATIONS (open circles, serif italic labels) === -->
+        <!-- Summit (origin) -->
+        <circle cx="80" cy="200" r="7" fill="#fafaf5" stroke="#222" stroke-width="2"/>
+        <text x="80" y="222" text-anchor="middle" fill="#222" font-family="Georgia, serif" font-size="11" font-style="italic" font-weight="bold">Summit</text>
+        <text x="80" y="233" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="8">YARD</text>
+
+        <!-- Valley Junction -->
+        <circle cx="540" cy="190" r="7" fill="#fafaf5" stroke="#222" stroke-width="2"/>
+        <text x="540" y="212" text-anchor="middle" fill="#222" font-family="Georgia, serif" font-size="11" font-style="italic" font-weight="bold">Valley Jct</text>
+        <text x="540" y="223" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="8">INTERCHANGE</text>
+
+        <!-- Cedar Junction (branch point on mainline) -->
+        <circle cx="300" cy="132" r="6" fill="#fafaf5" stroke="#222" stroke-width="2"/>
+        <text x="288" y="152" text-anchor="middle" fill="#222" font-family="Georgia, serif" font-size="10" font-style="italic">Cedar Jct</text>
+        <text x="288" y="162" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="7">JUNCTION</text>
+
+        <!-- Cedar Mine (branch terminus) -->
+        <circle cx="480" cy="60" r="6" fill="#fafaf5" stroke="#444" stroke-width="1.5"/>
+        <text x="480" y="45" text-anchor="middle" fill="#444" font-family="Georgia, serif" font-size="10" font-style="italic">Cedar Mine</text>
+        <text x="480" y="35" text-anchor="middle" fill="#888" font-family="'Courier New', monospace" font-size="7">SIDING</text>
+
+        <!-- Mill (spur terminus) -->
+        <circle cx="260" cy="290" r="4.5" fill="#fafaf5" stroke="#888" stroke-width="1.2"/>
+        <text x="278" y="294" fill="#888" font-family="Georgia, serif" font-size="9" font-style="italic">Sawmill</text>
+
+        <!-- Team Track (spur off Cedar Mine) -->
+        <circle cx="510" cy="85" r="4" fill="#fafaf5" stroke="#888" stroke-width="1"/>
+        <text x="528" y="89" fill="#888" font-family="Georgia, serif" font-size="8" font-style="italic">Team Trk</text>
+
+        <!-- === WAYPOINTS (small dots) === -->
+        <circle cx="220" cy="160" r="3" fill="#222" opacity="0.25"/>
+        <circle cx="400" cy="140" r="3" fill="#222" opacity="0.25"/>
+        <!-- Branch waypoints -->
+        <circle cx="340" cy="68" r="2.5" fill="#444" opacity="0.25"/>
+        <circle cx="430" cy="50" r="2.5" fill="#444" opacity="0.25"/>
+        <!-- Selected waypoint (being dragged) -->
+        <circle cx="220" cy="160" r="5" fill="none" stroke="#222" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+        <!-- === TRACK LABELS === -->
+        <text x="180" y="145" fill="#222" font-family="'Courier New', monospace" font-size="8" font-weight="bold" opacity="0.6" transform="rotate(-12,180,145)">Summit Main</text>
+        <text x="370" y="42" fill="#444" font-family="'Courier New', monospace" font-size="7" opacity="0.6" transform="rotate(-8,370,42)">Cedar Branch</text>
+
+        <!-- === MINIMAP === -->
+        <rect x="490" y="330" width="100" height="70" rx="4" fill="#f0ece0" stroke="#d4c9a8" stroke-width="1" opacity="0.9"/>
+        <line x1="500" y1="365" x2="580" y2="360" stroke="#222" stroke-width="1"/>
+        <line x1="545" y1="360" x2="565" y2="345" stroke="#444" stroke-width="0.7"/>
+        <circle cx="500" cy="365" r="2" fill="#222"/>
+        <circle cx="580" cy="360" r="2" fill="#222"/>
+        <circle cx="565" cy="345" r="1.5" fill="#444"/>
+        <!-- Viewport indicator -->
+        <rect x="510" y="348" width="40" height="25" rx="1" fill="none" stroke="#222" stroke-width="0.8" stroke-dasharray="2,2"/>
+      </svg>
+
+      <!-- Tool hint -->
+      <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); background:#222; color:#f0ece0; padding:6px 14px; border-radius:4px; font-size:10px; font-family:'Courier New', monospace;">
+        Click a location to start · drag to place waypoints · click destination to finish
+      </div>
+    </div>
+
+    <!-- Properties panel -->
+    <div style="width:220px; background:#f0ece0; border-left:1px solid #d4c9a8; padding:12px; font-size:10px; overflow-y:auto;">
+      <div style="color:#222; font-weight:bold; margin-bottom:10px; font-size:11px;">Properties</div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">SELECTED TRACK</div>
+      <div style="color:#222; font-weight:bold; margin-bottom:10px;">Summit Main</div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">TYPE</div>
+      <div style="display:flex; gap:4px; margin-bottom:10px;">
+        <span style="padding:2px 8px; border:1px solid #222; border-radius:3px; font-size:9px; background:#222; color:#f0ece0;">Mainline</span>
+        <span style="padding:2px 8px; border:1px solid #bbb; border-radius:3px; font-size:9px; color:#888;">Branch</span>
+        <span style="padding:2px 8px; border:1px solid #bbb; border-radius:3px; font-size:9px; color:#888;">Spur</span>
+      </div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">FROM</div>
+      <div style="color:#222; margin-bottom:10px;">Summit <span style="color:#888; font-size:9px;">YARD</span></div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">TO</div>
+      <div style="color:#222; margin-bottom:10px;">Valley Jct <span style="color:#888; font-size:9px;">INTERCHANGE</span></div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">WAYPOINTS</div>
+      <div style="color:#222; margin-bottom:10px;">2 points</div>
+
+      <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:3px;">LABEL</div>
+      <input style="width:100%; padding:4px 6px; border:1px solid #bbb; border-radius:3px; background:#fafaf5; font-family:'Courier New', monospace; font-size:10px; color:#222;" value="Summit Main"/>
+
+      <div style="border-top:1px solid #d4c9a8; margin-top:12px; padding-top:12px;">
+        <div style="color:#888; font-size:9px; letter-spacing:0.05em; margin-bottom:6px;">VIA LOCATIONS</div>
+        <div style="color:#444; margin-bottom:3px;">→ Cedar Jct <span style="color:#aaa; font-size:8px;">(passes through)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:16px; color:#888; font-size:12px; text-align:center;">Dark mode inverts the palette: dark background, light strokes, same cartographic symbols</p>

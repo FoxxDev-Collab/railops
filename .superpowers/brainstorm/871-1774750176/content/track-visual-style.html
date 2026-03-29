@@ -1,0 +1,238 @@
+<h2>Track Visual Style</h2>
+<p class="subtitle">Which railroad map style fits best? Think RR Tycoon / train map aesthetics.</p>
+
+<div class="cards" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="padding:0; overflow:hidden;">
+    <div style="background:#f5f0e6; padding:24px; min-height:220px; position:relative;">
+      <!-- Style A: Classic Railroad Map -->
+      <svg width="100%" height="180" viewBox="0 0 360 180">
+        <!-- Mainline track with ties -->
+        <line x1="40" y1="90" x2="320" y2="90" stroke="#5c4033" stroke-width="6" stroke-linecap="round"/>
+        <line x1="40" y1="90" x2="320" y2="90" stroke="#5c4033" stroke-width="2" stroke-dasharray="2,12" stroke-dashoffset="7"/>
+        <!-- Cross ties -->
+        <g stroke="#5c4033" stroke-width="2.5" opacity="0.7">
+          <line x1="60" y1="82" x2="60" y2="98"/>
+          <line x1="78" y1="82" x2="78" y2="98"/>
+          <line x1="96" y1="82" x2="96" y2="98"/>
+          <line x1="114" y1="82" x2="114" y2="98"/>
+          <line x1="132" y1="82" x2="132" y2="98"/>
+          <line x1="150" y1="82" x2="150" y2="98"/>
+          <line x1="168" y1="82" x2="168" y2="98"/>
+          <line x1="186" y1="82" x2="186" y2="98"/>
+          <line x1="204" y1="82" x2="204" y2="98"/>
+          <line x1="222" y1="82" x2="222" y2="98"/>
+          <line x1="240" y1="82" x2="240" y2="98"/>
+          <line x1="258" y1="82" x2="258" y2="98"/>
+          <line x1="276" y1="82" x2="276" y2="98"/>
+          <line x1="294" y1="82" x2="294" y2="98"/>
+        </g>
+
+        <!-- Branch line curving off -->
+        <path d="M200,90 Q220,90 240,60 Q260,30 300,30" fill="none" stroke="#8b7355" stroke-width="4" stroke-linecap="round"/>
+        <g stroke="#8b7355" stroke-width="2" opacity="0.6">
+          <line x1="212" y1="83" x2="208" y2="93"/>
+          <line x1="224" y1="73" x2="218" y2="82"/>
+          <line x1="238" y1="57" x2="232" y2="65"/>
+          <line x1="255" y1="38" x2="248" y2="44"/>
+          <line x1="272" y1="31" x2="268" y2="39"/>
+          <line x1="288" y1="28" x2="284" y2="36"/>
+        </g>
+
+        <!-- Spur (dashed, thin) -->
+        <path d="M120,90 Q120,120 140,140" fill="none" stroke="#a09080" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,5"/>
+
+        <!-- Location dots -->
+        <circle cx="40" cy="90" r="10" fill="#2d2418" stroke="#f5f0e6" stroke-width="2"/>
+        <circle cx="320" cy="90" r="10" fill="#2d2418" stroke="#f5f0e6" stroke-width="2"/>
+        <circle cx="300" cy="30" r="8" fill="#2d2418" stroke="#f5f0e6" stroke-width="2"/>
+        <circle cx="140" cy="140" r="6" fill="#5c4033" stroke="#f5f0e6" stroke-width="2"/>
+
+        <!-- Labels -->
+        <text x="40" y="115" text-anchor="middle" fill="#2d2418" font-family="monospace" font-size="9" font-weight="bold">SUMMIT</text>
+        <text x="320" y="115" text-anchor="middle" fill="#2d2418" font-family="monospace" font-size="9" font-weight="bold">VALLEY JCT</text>
+        <text x="300" y="20" text-anchor="middle" fill="#2d2418" font-family="monospace" font-size="8">CEDAR MINE</text>
+        <text x="155" y="155" fill="#5c4033" font-family="monospace" font-size="7">Mill Spur</text>
+
+        <!-- Waypoints -->
+        <circle cx="150" cy="90" r="3" fill="#8b7355" opacity="0.5"/>
+        <circle cx="240" cy="60" r="3" fill="#8b7355" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>A — Vintage Railroad Map</h3>
+      <p>Warm parchment tones, visible crossties on mainline, brown palette. Classic RR Tycoon feel. Locations as solid station dots with labels.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="padding:0; overflow:hidden;">
+    <div style="background:#0d1117; padding:24px; min-height:220px; position:relative;">
+      <!-- Style B: Modern Transit Map -->
+      <svg width="100%" height="180" viewBox="0 0 360 180">
+        <!-- Mainline - thick bold line -->
+        <line x1="40" y1="90" x2="320" y2="90" stroke="#e8e8e8" stroke-width="5" stroke-linecap="round"/>
+        <!-- Rail lines (double rail) -->
+        <line x1="40" y1="87" x2="320" y2="87" stroke="#888" stroke-width="1"/>
+        <line x1="40" y1="93" x2="320" y2="93" stroke="#888" stroke-width="1"/>
+
+        <!-- Branch -->
+        <path d="M200,90 Q220,90 240,60 Q260,30 300,30" fill="none" stroke="#4da6ff" stroke-width="3.5" stroke-linecap="round"/>
+
+        <!-- Spur -->
+        <path d="M120,90 Q120,120 140,140" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,4"/>
+
+        <!-- Location markers -->
+        <rect x="28" y="78" width="24" height="24" rx="4" fill="#1a1a2e" stroke="#e8e8e8" stroke-width="2"/>
+        <text x="40" y="94" text-anchor="middle" fill="#e8e8e8" font-family="monospace" font-size="8" font-weight="bold">SM</text>
+
+        <rect x="308" y="78" width="24" height="24" rx="4" fill="#1a1a2e" stroke="#e8e8e8" stroke-width="2"/>
+        <text x="320" y="94" text-anchor="middle" fill="#e8e8e8" font-family="monospace" font-size="8" font-weight="bold">VJ</text>
+
+        <rect x="290" y="20" width="20" height="20" rx="4" fill="#1a1a2e" stroke="#4da6ff" stroke-width="2"/>
+        <text x="300" y="34" text-anchor="middle" fill="#4da6ff" font-family="monospace" font-size="7" font-weight="bold">CM</text>
+
+        <circle cx="140" cy="140" r="5" fill="#333" stroke="#666" stroke-width="1.5"/>
+
+        <!-- Labels -->
+        <text x="40" y="115" text-anchor="middle" fill="#aaa" font-family="monospace" font-size="9">SUMMIT</text>
+        <text x="320" y="115" text-anchor="middle" fill="#aaa" font-family="monospace" font-size="9">VALLEY JCT</text>
+        <text x="300" y="15" text-anchor="middle" fill="#4da6ff" font-family="monospace" font-size="8">CEDAR MINE</text>
+        <text x="155" y="152" fill="#666" font-family="monospace" font-size="7">Mill Spur</text>
+
+        <!-- Waypoints -->
+        <circle cx="150" cy="90" r="3" fill="none" stroke="#555" stroke-width="1"/>
+        <circle cx="240" cy="60" r="3" fill="none" stroke="#555" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>B — Modern Schematic</h3>
+      <p>Dark background, clean bold lines, transit-map clarity. Mainline is white, branches are colored. Matches the app's dark mode well.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)" style="padding:0; overflow:hidden;">
+    <div style="background:#1a2332; padding:24px; min-height:220px; position:relative;">
+      <!-- Style C: RR Tycoon Game Style -->
+      <svg width="100%" height="180" viewBox="0 0 360 180">
+        <!-- Terrain hint -->
+        <rect x="0" y="0" width="360" height="180" fill="#1a2332"/>
+
+        <!-- Mainline - game-style double rail with bright ties -->
+        <line x1="40" y1="90" x2="320" y2="90" stroke="#c0c0c0" stroke-width="8" stroke-linecap="round" opacity="0.15"/>
+        <line x1="40" y1="88" x2="320" y2="88" stroke="#d4d4d4" stroke-width="1.5"/>
+        <line x1="40" y1="92" x2="320" y2="92" stroke="#d4d4d4" stroke-width="1.5"/>
+        <!-- Bright ties -->
+        <g stroke="#8b6914" stroke-width="3" opacity="0.8">
+          <line x1="55" y1="84" x2="55" y2="96"/>
+          <line x1="70" y1="84" x2="70" y2="96"/>
+          <line x1="85" y1="84" x2="85" y2="96"/>
+          <line x1="100" y1="84" x2="100" y2="96"/>
+          <line x1="115" y1="84" x2="115" y2="96"/>
+          <line x1="130" y1="84" x2="130" y2="96"/>
+          <line x1="145" y1="84" x2="145" y2="96"/>
+          <line x1="160" y1="84" x2="160" y2="96"/>
+          <line x1="175" y1="84" x2="175" y2="96"/>
+          <line x1="190" y1="84" x2="190" y2="96"/>
+          <line x1="205" y1="84" x2="205" y2="96"/>
+          <line x1="220" y1="84" x2="220" y2="96"/>
+          <line x1="235" y1="84" x2="235" y2="96"/>
+          <line x1="250" y1="84" x2="250" y2="96"/>
+          <line x1="265" y1="84" x2="265" y2="96"/>
+          <line x1="280" y1="84" x2="280" y2="96"/>
+          <line x1="295" y1="84" x2="295" y2="96"/>
+        </g>
+
+        <!-- Branch - same double-rail style, different color -->
+        <path d="M200,88 Q220,88 240,58 Q260,28 300,28" fill="none" stroke="#7ab3e0" stroke-width="1.2"/>
+        <path d="M200,92 Q220,92 240,62 Q260,32 300,32" fill="none" stroke="#7ab3e0" stroke-width="1.2"/>
+        <path d="M200,90 Q220,90 240,60 Q260,30 300,30" fill="none" stroke="#7ab3e0" stroke-width="6" opacity="0.1"/>
+
+        <!-- Spur -->
+        <path d="M120,90 Q120,120 140,140" fill="none" stroke="#8a8a6a" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- Station buildings (game style) -->
+        <g>
+          <rect x="28" y="72" width="24" height="16" rx="2" fill="#c4956a" stroke="#8b6914" stroke-width="1"/>
+          <polygon points="28,72 40,64 52,72" fill="#8b4513" stroke="#8b6914" stroke-width="0.5"/>
+          <text x="40" y="108" text-anchor="middle" fill="#e8d5a3" font-family="monospace" font-size="9" font-weight="bold">SUMMIT</text>
+        </g>
+        <g>
+          <rect x="308" y="72" width="24" height="16" rx="2" fill="#c4956a" stroke="#8b6914" stroke-width="1"/>
+          <polygon points="308,72 320,64 332,72" fill="#8b4513" stroke="#8b6914" stroke-width="0.5"/>
+          <text x="320" y="108" text-anchor="middle" fill="#e8d5a3" font-family="monospace" font-size="9" font-weight="bold">VALLEY JCT</text>
+        </g>
+        <g>
+          <rect x="290" y="18" width="20" height="12" rx="2" fill="#7a9a7a" stroke="#4a6a4a" stroke-width="1"/>
+          <text x="300" y="14" text-anchor="middle" fill="#7ab3e0" font-family="monospace" font-size="8">CEDAR MINE</text>
+        </g>
+
+        <!-- Waypoints as small diamonds -->
+        <rect x="147" y="87" width="6" height="6" rx="1" fill="#8b6914" opacity="0.6" transform="rotate(45,150,90)"/>
+        <rect x="237" y="57" width="6" height="6" rx="1" fill="#5a8ab5" opacity="0.6" transform="rotate(45,240,60)"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>C — RR Tycoon Game Style</h3>
+      <p>Dark background with warm accents. Double-rail rendering with wooden ties, station buildings as icons, game-inspired palette. Waypoints as small diamonds.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="d" onclick="toggleSelect(this)" style="padding:0; overflow:hidden;">
+    <div style="background:#fafaf5; padding:24px; min-height:220px; position:relative;">
+      <!-- Style D: USGS Topo / Survey Map -->
+      <svg width="100%" height="180" viewBox="0 0 360 180">
+        <!-- Subtle topo contours -->
+        <ellipse cx="180" cy="100" rx="150" ry="60" fill="none" stroke="#d4c9a8" stroke-width="0.5" opacity="0.4"/>
+        <ellipse cx="180" cy="100" rx="120" ry="45" fill="none" stroke="#d4c9a8" stroke-width="0.5" opacity="0.3"/>
+
+        <!-- Mainline - classic map symbol: solid with perpendicular ticks -->
+        <line x1="40" y1="90" x2="320" y2="90" stroke="#222" stroke-width="2.5"/>
+        <!-- Ticks (railroad map symbol) -->
+        <g stroke="#222" stroke-width="1.5">
+          <line x1="65" y1="85" x2="65" y2="95"/>
+          <line x1="90" y1="85" x2="90" y2="95"/>
+          <line x1="115" y1="85" x2="115" y2="95"/>
+          <line x1="140" y1="85" x2="140" y2="95"/>
+          <line x1="165" y1="85" x2="165" y2="95"/>
+          <line x1="190" y1="85" x2="190" y2="95"/>
+          <line x1="215" y1="85" x2="215" y2="95"/>
+          <line x1="240" y1="85" x2="240" y2="95"/>
+          <line x1="265" y1="85" x2="265" y2="95"/>
+          <line x1="290" y1="85" x2="290" y2="95"/>
+        </g>
+
+        <!-- Branch -->
+        <path d="M200,90 Q220,90 240,60 Q260,30 300,30" fill="none" stroke="#444" stroke-width="1.8"/>
+        <g stroke="#444" stroke-width="1.2">
+          <line x1="215" y1="80" x2="210" y2="90"/>
+          <line x1="232" y1="66" x2="226" y2="74"/>
+          <line x1="252" y1="40" x2="246" y2="47"/>
+          <line x1="275" y1="30" x2="272" y2="38"/>
+        </g>
+
+        <!-- Spur -->
+        <path d="M120,90 Q120,120 140,140" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3"/>
+
+        <!-- Station circles -->
+        <circle cx="40" cy="90" r="6" fill="#fff" stroke="#222" stroke-width="2"/>
+        <circle cx="320" cy="90" r="6" fill="#fff" stroke="#222" stroke-width="2"/>
+        <circle cx="300" cy="30" r="5" fill="#fff" stroke="#444" stroke-width="1.5"/>
+        <circle cx="140" cy="140" r="3.5" fill="#fff" stroke="#888" stroke-width="1"/>
+
+        <!-- Labels (survey style) -->
+        <text x="40" y="108" text-anchor="middle" fill="#222" font-family="serif" font-size="9" font-style="italic">Summit</text>
+        <text x="320" y="108" text-anchor="middle" fill="#222" font-family="serif" font-size="9" font-style="italic">Valley Jct</text>
+        <text x="300" y="20" text-anchor="middle" fill="#444" font-family="serif" font-size="8" font-style="italic">Cedar Mine</text>
+        <text x="155" y="152" fill="#888" font-family="serif" font-size="7" font-style="italic">Mill Spur</text>
+
+        <!-- Waypoints -->
+        <circle cx="150" cy="90" r="2" fill="#222" opacity="0.3"/>
+        <circle cx="240" cy="60" r="2" fill="#444" opacity="0.3"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>D — Survey / Topo Map</h3>
+      <p>Light background, USGS-style railroad symbols (line with perpendicular ticks), serif italic labels. Classic cartographic look. Clean and authoritative.</p>
+    </div>
+  </div>
+</div>
