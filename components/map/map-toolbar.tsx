@@ -1,26 +1,54 @@
 "use client";
 
-import { useMapStore, type Tool } from "./use-map-store";
-import { MousePointer2, Plus, Slash, Hand, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { useMapStore, type Tool, type MapTab } from "./use-map-store";
+import {
+  MousePointer2, Plus, Slash, Hand, ZoomIn, ZoomOut, Maximize,
+  GitBranch, Factory
+} from "lucide-react";
 import { useReactFlow } from "@xyflow/react";
 
-const tools: { id: Tool; icon: typeof MousePointer2; label: string; shortcut: string }[] = [
-  { id: "select", icon: MousePointer2, label: "Select", shortcut: "V" },
-  { id: "add-location", icon: Plus, label: "Add Location", shortcut: "L" },
-  { id: "draw-track", icon: Slash, label: "Draw Track", shortcut: "T" },
-  { id: "pan", icon: Hand, label: "Pan", shortcut: "H" },
+interface ToolDef {
+  id: Tool;
+  icon: typeof MousePointer2;
+  label: string;
+  shortcut: string;
+  tabs: MapTab[];
+}
+
+const tools: ToolDef[] = [
+  { id: "select", icon: MousePointer2, label: "Select", shortcut: "V", tabs: ["locations", "track-layout", "yard-detail"] },
+  { id: "add-location", icon: Plus, label: "Add Location", shortcut: "L", tabs: ["locations"] },
+  { id: "draw-track", icon: Slash, label: "Draw Track", shortcut: "T", tabs: ["locations", "track-layout", "yard-detail"] },
+  { id: "add-turnout", icon: GitBranch, label: "Add Turnout", shortcut: "F", tabs: ["yard-detail"] },
+  { id: "add-industry", icon: Factory, label: "Add Industry", shortcut: "I", tabs: ["yard-detail"] },
+  { id: "pan", icon: Hand, label: "Pan", shortcut: "H", tabs: ["locations", "track-layout", "yard-detail"] },
 ];
 
 export function MapToolbar() {
+  const activeTab = useMapStore((s) => s.activeTab);
   const tool = useMapStore((s) => s.tool);
   const setTool = useMapStore((s) => s.setTool);
   const isFullscreen = useMapStore((s) => s.isFullscreen);
   const toggleFullscreen = useMapStore((s) => s.toggleFullscreen);
-  const { zoomIn, zoomOut, fitView } = useReactFlow();
+
+  let zoomIn = () => {};
+  let zoomOut = () => {};
+  let fitView = (_opts?: { padding?: number }) => {};
+
+  try {
+    const rf = useReactFlow();
+    zoomIn = rf.zoomIn;
+    zoomOut = rf.zoomOut;
+    fitView = rf.fitView;
+  } catch {
+    // Not inside ReactFlow context
+  }
+
+  const visibleTools = tools.filter((t) => t.tabs.includes(activeTab));
 
   return (
     <div className="flex w-14 flex-col items-center border-r border-border bg-card py-3 gap-2">
-      {tools.map((t) => (
+      {visibleTools.map((t) => (
         <button
           key={t.id}
           onClick={() => setTool(t.id)}
@@ -37,36 +65,16 @@ export function MapToolbar() {
 
       <div className="flex-1" />
 
-      <button
-        onClick={() => fitView({ padding: 0.2 })}
-        title="Fit to content (Ctrl+0)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      >
+      <button onClick={() => fitView({ padding: 0.2 })} title="Fit to content" className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground">
         <Maximize className="h-4 w-4" />
       </button>
-      <button
-        onClick={() => zoomIn()}
-        title="Zoom in (+)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      >
+      <button onClick={() => zoomIn()} title="Zoom in" className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground">
         <ZoomIn className="h-4 w-4" />
       </button>
-      <button
-        onClick={() => zoomOut()}
-        title="Zoom out (-)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-      >
+      <button onClick={() => zoomOut()} title="Zoom out" className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground">
         <ZoomOut className="h-4 w-4" />
       </button>
-      <button
-        onClick={toggleFullscreen}
-        title="Toggle fullscreen"
-        className={`flex h-9 w-9 items-center justify-center rounded-md transition-colors ${
-          isFullscreen
-            ? "bg-primary text-primary-foreground"
-            : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-        }`}
-      >
+      <button onClick={toggleFullscreen} title="Toggle fullscreen" className={`flex h-9 w-9 items-center justify-center rounded-md transition-colors ${isFullscreen ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}>
         <Maximize className="h-4 w-4" />
       </button>
     </div>
