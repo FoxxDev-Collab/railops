@@ -5,6 +5,33 @@ import { useNodes, useEdges } from "@xyflow/react";
 import type { LocationNodeData } from "./location-node";
 import type { TrackEdgeData } from "./track-edge";
 import Link from "next/link";
+import { TrackLayoutProperties } from "./track-layout-properties";
+
+interface MapPropertiesWrapperProps {
+  layoutId: string;
+  activeTab: string;
+  edges?: Array<{
+    id: string;
+    sourceNodeId: string;
+    targetNodeId: string;
+    trackType: string;
+    label: string | null;
+    pathData: Record<string, unknown>;
+  }>;
+  nodeMap?: Map<string, { id: string; name: string; locationType: string }>;
+}
+
+export function MapPropertiesRouter({ layoutId, activeTab, edges, nodeMap }: MapPropertiesWrapperProps) {
+  if (activeTab === "track-layout" && edges && nodeMap) {
+    return (
+      <TrackLayoutProperties
+        edges={edges.map((e) => ({ ...e, pathData: e.pathData as { waypoints?: { x: number; y: number }[] } }))}
+        nodeMap={nodeMap}
+      />
+    );
+  }
+  return <MapProperties layoutId={layoutId} />;
+}
 
 export function MapProperties({ layoutId }: { layoutId: string }) {
   const selectedNodeId = useMapStore((s) => s.selectedNodeId);

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import { MapCanvas, type MapCanvasHandle } from "./map-canvas";
 import { MapToolbar } from "./map-toolbar";
-import { MapProperties } from "./map-properties";
+import { MapPropertiesRouter } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
 import { MapTabBar } from "./map-tab-bar";
 import { TrackLayoutCanvas } from "./track-layout-canvas";
@@ -58,6 +58,22 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
   const activeTab = useMapStore((s) => s.activeTab);
   const [addLocationPos, setAddLocationPos] = useState<{ x: number; y: number } | null>(null);
   const canvasRef = useRef<MapCanvasHandle>(null);
+
+  // Build node map for track layout properties
+  const nodeMap = useMemo(
+    () =>
+      new Map(
+        canvasData.nodes.map((n) => [
+          n.id,
+          {
+            id: n.locationId,
+            name: n.location.name,
+            locationType: n.location.locationType,
+          },
+        ])
+      ),
+    [canvasData.nodes]
+  );
 
   // Build locations list for tab bar
   const locationsList = useMemo(
@@ -242,7 +258,7 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
             onCancel={() => setAddLocationPos(null)}
           />
         ) : (
-          <MapProperties layoutId={layoutId} />
+          <MapPropertiesRouter layoutId={layoutId} activeTab={activeTab} edges={canvasData.edges} nodeMap={nodeMap} />
         )}
       </div>
     </div>
