@@ -6,6 +6,7 @@ import type { LocationNodeData } from "./location-node";
 import type { TrackEdgeData } from "./track-edge";
 import Link from "next/link";
 import { TrackLayoutProperties } from "./track-layout-properties";
+import { YardProperties } from "./yard-properties";
 
 interface MapPropertiesWrapperProps {
   layoutId: string;
@@ -30,13 +31,15 @@ export function MapPropertiesRouter({ layoutId, activeTab, edges, nodeMap }: Map
       />
     );
   }
+  if (activeTab === "yard-detail") {
+    return <YardProperties />;
+  }
   return <MapProperties layoutId={layoutId} />;
 }
 
 export function MapProperties({ layoutId }: { layoutId: string }) {
   const selectedNodeId = useMapStore((s) => s.selectedNodeId);
   const selectedEdgeId = useMapStore((s) => s.selectedEdgeId);
-  const setDetailLocation = useMapStore((s) => s.setDetailLocation);
   const nodes = useNodes();
   const edges = useEdges();
 
@@ -109,7 +112,10 @@ export function MapProperties({ layoutId }: { layoutId: string }) {
 
         <div className="mt-4 pt-4 border-t border-border space-y-2">
           <button
-            onClick={() => setDetailLocation(data.locationId)}
+            onClick={() => {
+              useMapStore.getState().setYardDetailLocation(data.locationId);
+              useMapStore.getState().setActiveTab("yard-detail");
+            }}
             className="w-full rounded-md bg-primary px-3 py-2 text-center font-bold text-primary-foreground hover:opacity-90 transition-opacity"
           >
             View Detail →

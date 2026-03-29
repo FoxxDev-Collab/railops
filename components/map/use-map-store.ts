@@ -22,9 +22,6 @@ interface MapStore {
   drawSourceNodeId: string | null;
   setDrawSource: (id: string | null) => void;
 
-  detailLocationId: string | null;
-  setDetailLocation: (id: string | null) => void;
-
   isFullscreen: boolean;
   toggleFullscreen: () => void;
 
@@ -55,9 +52,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
   drawSourceNodeId: null,
   setDrawSource: (id) => set({ drawSourceNodeId: id }),
-
-  detailLocationId: null,
-  setDetailLocation: (id) => set({ detailLocationId: id }),
 
   isFullscreen: false,
   toggleFullscreen: () => set((s) => ({ isFullscreen: !s.isFullscreen })),

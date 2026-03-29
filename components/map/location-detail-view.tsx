@@ -43,11 +43,10 @@ export function LocationDetailView({
   yardTracks,
   industries,
 }: LocationDetailViewProps) {
-  const setDetailLocation = useMapStore((s) => s.setDetailLocation);
-
   const handleBack = useCallback(() => {
-    setDetailLocation(null);
-  }, [setDetailLocation]);
+    useMapStore.getState().setYardDetailLocation(null);
+    useMapStore.getState().setActiveTab("locations");
+  }, []);
 
   return (
     <div className="flex h-full flex-col bg-background">
