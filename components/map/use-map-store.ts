@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
-export type Tool = "select" | "add-location" | "draw-track" | "pan";
+export type Tool = "select" | "add-location" | "draw-track" | "pan" | "add-turnout" | "add-industry";
+
+export type MapTab = "locations" | "track-layout" | "yard-detail";
 
 interface UndoEntry {
   type: "move" | "add-node" | "delete-node" | "add-edge" | "delete-edge";
@@ -31,6 +33,11 @@ interface MapStore {
   pushUndo: (entry: UndoEntry) => void;
   undo: () => UndoEntry | undefined;
   redo: () => UndoEntry | undefined;
+
+  activeTab: MapTab;
+  setActiveTab: (tab: MapTab) => void;
+  yardDetailLocationId: string | null;
+  setYardDetailLocation: (id: string | null) => void;
 
   saveStatus: "saved" | "saving" | "unsaved";
   setSaveStatus: (status: "saved" | "saving" | "unsaved") => void;
@@ -82,6 +89,11 @@ export const useMapStore = create<MapStore>((set, get) => ({
     }));
     return entry;
   },
+
+  activeTab: "locations",
+  setActiveTab: (tab) => set({ activeTab: tab, tool: "select", drawSourceNodeId: null }),
+  yardDetailLocationId: null,
+  setYardDetailLocation: (id) => set({ yardDetailLocationId: id }),
 
   saveStatus: "saved",
   setSaveStatus: (status) => set({ saveStatus: status }),
