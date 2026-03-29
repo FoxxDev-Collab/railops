@@ -19,7 +19,7 @@ export function MapToolbar() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   return (
-    <div className="flex w-14 flex-col items-center border-r border-slate-700 bg-[#0f172a] py-3 gap-2">
+    <div className="flex w-14 flex-col items-center border-r border-border bg-card py-3 gap-2">
       {tools.map((t) => (
         <button
           key={t.id}
@@ -27,8 +27,8 @@ export function MapToolbar() {
           title={`${t.label} (${t.shortcut})`}
           className={`flex h-9 w-9 items-center justify-center rounded-md transition-colors ${
             tool === t.id
-              ? "bg-blue-600 text-white"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           }`}
         >
           <t.icon className="h-4 w-4" />
@@ -40,21 +40,21 @@ export function MapToolbar() {
       <button
         onClick={() => fitView({ padding: 0.2 })}
         title="Fit to content (Ctrl+0)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       >
         <Maximize className="h-4 w-4" />
       </button>
       <button
         onClick={() => zoomIn()}
         title="Zoom in (+)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       >
         <ZoomIn className="h-4 w-4" />
       </button>
       <button
         onClick={() => zoomOut()}
         title="Zoom out (-)"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+        className="flex h-9 w-9 items-center justify-center rounded-md bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       >
         <ZoomOut className="h-4 w-4" />
       </button>
@@ -63,8 +63,8 @@ export function MapToolbar() {
         title="Toggle fullscreen"
         className={`flex h-9 w-9 items-center justify-center rounded-md transition-colors ${
           isFullscreen
-            ? "bg-blue-600 text-white"
-            : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+            ? "bg-primary text-primary-foreground"
+            : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         }`}
       >
         <Maximize className="h-4 w-4" />

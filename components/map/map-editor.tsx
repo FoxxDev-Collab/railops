@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
-import { MapCanvas } from "./map-canvas";
+import { MapCanvas, type MapCanvasHandle } from "./map-canvas";
 import { MapToolbar } from "./map-toolbar";
 import { MapProperties } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
@@ -11,6 +11,7 @@ import { SessionOverlay } from "./session-overlay";
 import { useMapStore } from "./use-map-store";
 import { deleteCanvasElement } from "@/app/actions/canvas";
 import { toast } from "sonner";
+import type { LocationNodeData } from "./location-node";
 
 interface CanvasData {
   id: string;
@@ -55,6 +56,7 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
   const detailLocationId = useMapStore((s) => s.detailLocationId);
   const setDetailLocation = useMapStore((s) => s.setDetailLocation);
   const [addLocationPos, setAddLocationPos] = useState<{ x: number; y: number } | null>(null);
+  const canvasRef = useRef<MapCanvasHandle>(null);
 
   const detailNode = detailLocationId
     ? canvasData.nodes.find((n) => n.locationId === detailLocationId)
@@ -123,9 +125,38 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
     }
   }, []);
 
-  const handleLocationCreated = useCallback(() => {
+  const handleLocationCreated = useCallback((node: {
+    id: string;
+    locationId: string;
+    x: number;
+    y: number;
+    location: {
+      name: string;
+      locationType: string;
+      industries: { id: string; name: string }[];
+      yardTracks: { id: string; name: string; trackType: string }[];
+    };
+  }) => {
+    // Insert the new node into ReactFlow state
+    canvasRef.current?.addNode({
+      id: node.id,
+      type: "location",
+      position: { x: node.x, y: node.y },
+      data: {
+        locationId: node.locationId,
+        name: node.location.name,
+        locationType: node.location.locationType,
+        industriesCount: node.location.industries.length,
+        yardTracksCount: node.location.yardTracks.length,
+      } satisfies LocationNodeData,
+    });
+
+    // Also add to canvasData.nodes so detail view can find it
+    canvasData.nodes.push(node);
+
+    useMapStore.getState().pushUndo({ type: "add-node", data: { nodeId: node.id } });
     setAddLocationPos(null);
-  }, []);
+  }, [canvasData]);
 
   return (
     <div className={`flex h-full ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
@@ -145,7 +176,7 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
         </div>
       ) : (
         <div className="relative flex-1">
-          <MapCanvas canvasData={canvasData} onAddLocation={setAddLocationPos} />
+          <MapCanvas ref={canvasRef} canvasData={canvasData} onAddLocation={setAddLocationPos} />
 
           {activeSessionId && (
             <SessionOverlay
@@ -155,20 +186,20 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
           )}
 
           {/* Save status indicator */}
-          <div className="absolute top-3 right-3 z-10 rounded-md border border-slate-700 bg-[#0f172a] px-2.5 py-1 font-mono text-xs">
-            {saveStatus === "saved" && <span className="text-green-400">✓ Saved</span>}
-            {saveStatus === "saving" && <span className="text-amber-400">Saving...</span>}
-            {saveStatus === "unsaved" && <span className="text-slate-400">Unsaved</span>}
+          <div className="absolute top-3 right-3 z-10 rounded-md border border-border bg-card px-2.5 py-1 font-mono text-xs">
+            {saveStatus === "saved" && <span className="text-green-600 dark:text-green-400">Saved</span>}
+            {saveStatus === "saving" && <span className="text-amber-600 dark:text-amber-400">Saving...</span>}
+            {saveStatus === "unsaved" && <span className="text-muted-foreground">Unsaved</span>}
           </div>
 
           {/* Tool hint */}
           {tool === "add-location" && !addLocationPos && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-primary px-3 py-1.5 font-mono text-xs text-primary-foreground shadow-lg">
               Click on the canvas to place a new location
             </div>
           )}
           {tool === "draw-track" && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-blue-600 px-3 py-1.5 font-mono text-xs text-white shadow-lg">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-md bg-primary px-3 py-1.5 font-mono text-xs text-primary-foreground shadow-lg">
               Click a location to start, then click another to connect
             </div>
           )}

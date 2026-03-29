@@ -6,15 +6,15 @@ import { useMapStore } from "./use-map-store";
 
 const TYPE_CONFIG: Record<
   string,
-  { color: string; icon: string; borderColor: string }
+  { icon: string; accent: string }
 > = {
-  YARD: { color: "#78350f", icon: "🏗️", borderColor: "#f59e0b" },
-  PASSENGER_STATION: { color: "#312e81", icon: "🚉", borderColor: "#8b5cf6" },
-  INTERCHANGE: { color: "#064e3b", icon: "↔", borderColor: "#10b981" },
-  JUNCTION: { color: "#831843", icon: "⑂", borderColor: "#ec4899" },
-  STAGING: { color: "#1e3a5f", icon: "🔀", borderColor: "#3b82f6" },
-  TEAM_TRACK: { color: "#3f3f46", icon: "📦", borderColor: "#a1a1aa" },
-  SIDING: { color: "#365314", icon: "🏭", borderColor: "#22c55e" },
+  YARD: { icon: "Y", accent: "oklch(0.7991 0.1411 70.3123)" },
+  PASSENGER_STATION: { icon: "P", accent: "oklch(0.6261 0.1859 259.5957)" },
+  INTERCHANGE: { icon: "X", accent: "oklch(0.8314 0.1385 192.9377)" },
+  JUNCTION: { icon: "J", accent: "oklch(0.6406 0.1996 307.0231)" },
+  STAGING: { icon: "S", accent: "oklch(0.6261 0.1859 259.5957)" },
+  TEAM_TRACK: { icon: "T", accent: "oklch(0.7119 0.0129 286.0684)" },
+  SIDING: { icon: "D", accent: "oklch(0.8314 0.1385 192.9377)" },
 };
 
 export interface LocationNodeData {
@@ -47,32 +47,40 @@ function LocationNodeComponent({ id, data, selected }: NodeProps) {
   };
 
   const stats: string[] = [];
-  if (nodeData.yardTracksCount > 0) stats.push(`${nodeData.yardTracksCount} tracks`);
-  if (nodeData.industriesCount > 0) stats.push(`${nodeData.industriesCount} industries`);
+  if (nodeData.yardTracksCount > 0) stats.push(`${nodeData.yardTracksCount}T`);
+  if (nodeData.industriesCount > 0) stats.push(`${nodeData.industriesCount}I`);
 
   return (
     <div
       onClick={handleClick}
-      className="rounded-lg border-2 px-3 py-2 font-mono text-xs cursor-pointer transition-shadow"
+      className="rounded-lg border-2 px-3 py-2 font-mono text-xs cursor-pointer transition-all bg-card text-card-foreground"
       style={{
-        backgroundColor: "#1e293b",
-        borderColor: selected || isDrawSource ? "#ffffff" : config.borderColor,
-        boxShadow: isDrawSource ? `0 0 12px ${config.borderColor}` : undefined,
+        borderColor: selected || isDrawSource ? "var(--ring)" : config.accent,
+        boxShadow: isDrawSource
+          ? `0 0 16px ${config.accent}`
+          : selected
+            ? "0 0 0 2px var(--ring)"
+            : "none",
         minWidth: 140,
       }}
     >
-      <Handle type="target" position={Position.Top} className="!bg-slate-500 !w-2 !h-2" />
-      <Handle type="target" position={Position.Left} className="!bg-slate-500 !w-2 !h-2" />
-      <Handle type="source" position={Position.Bottom} className="!bg-slate-500 !w-2 !h-2" />
-      <Handle type="source" position={Position.Right} className="!bg-slate-500 !w-2 !h-2" />
+      <Handle type="target" position={Position.Top} className="!bg-muted-foreground !w-2 !h-2" />
+      <Handle type="target" position={Position.Left} className="!bg-muted-foreground !w-2 !h-2" />
+      <Handle type="source" position={Position.Bottom} className="!bg-muted-foreground !w-2 !h-2" />
+      <Handle type="source" position={Position.Right} className="!bg-muted-foreground !w-2 !h-2" />
 
-      <div className="font-bold text-slate-100 flex items-center gap-1.5">
-        <span>{config.icon}</span>
+      <div className="font-bold text-foreground flex items-center gap-1.5">
+        <span
+          className="inline-flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold"
+          style={{ backgroundColor: config.accent, color: "#fff" }}
+        >
+          {config.icon}
+        </span>
         <span>{nodeData.name}</span>
       </div>
-      <div className="text-slate-500 text-[10px] mt-0.5">
-        {nodeData.locationType}
-        {stats.length > 0 && ` • ${stats.join(", ")}`}
+      <div className="text-muted-foreground text-[10px] mt-0.5">
+        {nodeData.locationType.replace(/_/g, " ")}
+        {stats.length > 0 && ` / ${stats.join(" ")}`}
       </div>
     </div>
   );

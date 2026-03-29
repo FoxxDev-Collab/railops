@@ -70,36 +70,36 @@ export function AddLocationForm({ layoutId, position, onCreated, onCancel }: Add
   };
 
   return (
-    <div className="w-[260px] border-l border-slate-700 bg-[#0f172a] p-4 font-mono text-xs">
-      <div className="text-slate-200 font-bold mb-3">New Location</div>
+    <div className="w-[260px] border-l border-border bg-card p-4 font-mono text-xs">
+      <div className="text-foreground font-bold mb-3">New Location</div>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="text-slate-500 block mb-1">NAME</label>
+          <label className="text-muted-foreground block mb-1 tracking-wider text-[10px]">NAME</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Cedar Valley Yard"
             autoFocus
-            className="w-full rounded-md border border-slate-600 bg-slate-800 px-2 py-1.5 text-slate-200 placeholder:text-slate-600 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
           />
         </div>
         <div>
-          <label className="text-slate-500 block mb-1">CODE</label>
+          <label className="text-muted-foreground block mb-1 tracking-wider text-[10px]">CODE</label>
           <input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="CVY"
-            className="w-full rounded-md border border-slate-600 bg-slate-800 px-2 py-1.5 text-slate-200 placeholder:text-slate-600 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:border-ring focus:outline-none"
           />
         </div>
         <div>
-          <label className="text-slate-500 block mb-1">TYPE</label>
+          <label className="text-muted-foreground block mb-1 tracking-wider text-[10px]">TYPE</label>
           <select
             value={locationType}
             onChange={(e) => setLocationType(e.target.value)}
-            className="w-full rounded-md border border-slate-600 bg-slate-800 px-2 py-1.5 text-slate-200 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground focus:border-ring focus:outline-none"
           >
             {LOCATION_TYPES.map((lt) => (
               <option key={lt.value} value={lt.value}>
@@ -112,14 +112,14 @@ export function AddLocationForm({ layoutId, position, onCreated, onCancel }: Add
           <button
             type="submit"
             disabled={isSubmitting || !name.trim() || !code.trim()}
-            className="flex-1 rounded-md bg-blue-600 px-3 py-2 font-bold text-white hover:bg-blue-500 disabled:opacity-50 transition-colors"
+            className="flex-1 rounded-md bg-primary px-3 py-2 font-bold text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
             {isSubmitting ? "Adding..." : "Add"}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-md bg-slate-800 px-3 py-2 text-slate-400 hover:bg-slate-700 transition-colors"
+            className="flex-1 rounded-md bg-secondary px-3 py-2 text-secondary-foreground hover:bg-accent transition-colors"
           >
             Cancel
           </button>

@@ -49,10 +49,11 @@ function TrackEdgeComponent({
         id={id}
         path={edgePath}
         style={{
-          stroke: selected ? "#ffffff" : "#475569",
+          stroke: selected ? "var(--ring)" : "var(--muted-foreground)",
           strokeWidth: trackStyle.strokeWidth,
           strokeDasharray: trackStyle.strokeDasharray,
           strokeLinecap: "round",
+          opacity: selected ? 1 : 0.6,
         }}
       />
       {edgeData.label && (
@@ -63,7 +64,7 @@ function TrackEdgeComponent({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: "all",
             }}
-            className="bg-slate-900/80 text-slate-400 text-[10px] font-mono px-1.5 py-0.5 rounded"
+            className="bg-card/90 text-muted-foreground text-[10px] font-mono px-1.5 py-0.5 rounded border border-border"
           >
             {edgeData.label}
           </div>

@@ -48,40 +48,40 @@ export function SessionOverlay({ sessionId, isDispatcher }: SessionOverlayProps)
   return (
     <>
       {/* Session banner */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between bg-gradient-to-r from-red-900 via-red-800 to-red-900 px-4 py-1.5">
-        <div className="flex items-center gap-2 font-mono text-xs font-bold text-red-300">
-          <span className="inline-block h-2 w-2 rounded-full bg-red-400 animate-pulse" />
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between bg-destructive/90 backdrop-blur-sm px-4 py-1.5 border-b border-destructive">
+        <div className="flex items-center gap-2 font-mono text-xs font-bold text-destructive-foreground">
+          <span className="inline-block h-2 w-2 rounded-full bg-destructive-foreground animate-pulse" />
           LIVE SESSION — {state.sessionName}
         </div>
-        <div className="font-mono text-[11px] text-red-300">
-          {state.trains.length} train{state.trains.length !== 1 ? "s" : ""} •{" "}
-          {isDispatcher ? "Dispatcher" : "Crew"} • Poll: {pollInterval / 1000}s
+        <div className="font-mono text-[11px] text-destructive-foreground/80">
+          {state.trains.length} train{state.trains.length !== 1 ? "s" : ""} ·{" "}
+          {isDispatcher ? "Dispatcher" : "Crew"} · {pollInterval / 1000}s
         </div>
       </div>
 
       {/* Train list overlay (bottom-left) */}
-      <div className="absolute bottom-4 left-16 z-20 rounded-lg border border-slate-700 bg-[#0f172a]/90 p-3 font-mono text-xs backdrop-blur-sm">
-        <div className="text-slate-400 font-bold mb-2">Active Trains</div>
+      <div className="absolute bottom-4 left-16 z-20 rounded-lg border border-border bg-card/95 p-3 font-mono text-xs backdrop-blur-sm shadow-lg">
+        <div className="text-muted-foreground font-bold mb-2 tracking-wider text-[10px]">ACTIVE TRAINS</div>
         {state.trains.map((train) => (
           <div
             key={train.id}
-            className="flex items-center gap-2 py-1 text-slate-300"
+            className="flex items-center gap-2 py-1 text-foreground"
           >
             <span
               className={`inline-block h-2.5 w-2.5 rounded-full ${
                 train.status === "EN_ROUTE"
-                  ? "bg-green-400"
+                  ? "bg-green-500"
                   : train.status === "HOLD"
-                    ? "bg-amber-400"
-                    : "bg-slate-500"
+                    ? "bg-amber-500"
+                    : "bg-muted-foreground"
               }`}
             />
             <span className="font-bold">{train.trainName}</span>
-            <span className="text-slate-500">{train.status}</span>
+            <span className="text-muted-foreground">{train.status}</span>
           </div>
         ))}
         {state.trains.length === 0 && (
-          <div className="text-slate-500">No trains assigned</div>
+          <div className="text-muted-foreground">No trains assigned</div>
         )}
       </div>
     </>
