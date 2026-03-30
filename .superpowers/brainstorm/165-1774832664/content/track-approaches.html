@@ -1,0 +1,218 @@
+<h2>Track Layout Approach</h2>
+<p class="subtitle">How should users build their yard layouts? Pick the approach that feels right.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:24px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <!-- Schematic template approach -->
+      <svg viewBox="0 0 400 180" width="100%" style="max-width:380px;">
+        <defs>
+          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="10" cy="10" r="0.5" fill="#334"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="180" fill="url(#grid)"/>
+
+        <!-- Template yard shape -->
+        <text x="200" y="20" text-anchor="middle" fill="#6a7" font-size="10" font-family="monospace">TEMPLATE: Medium Classification Yard</text>
+
+        <!-- Lead track -->
+        <line x1="10" y1="90" x2="80" y2="90" stroke="#8a8" stroke-width="3"/>
+        <text x="45" y="82" text-anchor="middle" fill="#6a7" font-size="7" font-family="monospace">LEAD</text>
+
+        <!-- Turnout fan -->
+        <line x1="80" y1="90" x2="120" y2="50" stroke="#aaa" stroke-width="2"/>
+        <line x1="80" y1="90" x2="120" y2="70" stroke="#aaa" stroke-width="2"/>
+        <line x1="80" y1="90" x2="120" y2="90" stroke="#aaa" stroke-width="2"/>
+        <line x1="80" y1="90" x2="120" y2="110" stroke="#aaa" stroke-width="2"/>
+        <line x1="80" y1="90" x2="120" y2="130" stroke="#aaa" stroke-width="2"/>
+
+        <!-- Classification tracks -->
+        <line x1="120" y1="50" x2="350" y2="50" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="120" y1="70" x2="350" y2="70" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="120" y1="90" x2="350" y2="90" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="120" y1="110" x2="350" y2="110" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="120" y1="130" x2="350" y2="130" stroke="#d4a" stroke-width="2.5"/>
+
+        <!-- Track labels -->
+        <text x="235" y="46" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">Track 1</text>
+        <text x="235" y="66" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">Track 2</text>
+        <text x="235" y="86" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">Track 3</text>
+        <text x="235" y="106" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">Track 4</text>
+        <text x="235" y="126" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">Track 5</text>
+
+        <!-- Capacity badges -->
+        <rect x="355" y="43" width="30" height="14" rx="3" fill="#2a2a4e"/>
+        <text x="370" y="53" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">8 cars</text>
+        <rect x="355" y="63" width="30" height="14" rx="3" fill="#2a2a4e"/>
+        <text x="370" y="73" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">8 cars</text>
+        <rect x="355" y="83" width="30" height="14" rx="3" fill="#2a2a4e"/>
+        <text x="370" y="93" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">8 cars</text>
+        <rect x="355" y="103" width="30" height="14" rx="3" fill="#2a2a4e"/>
+        <text x="370" y="113" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">6 cars</text>
+        <rect x="355" y="123" width="30" height="14" rx="3" fill="#2a2a4e"/>
+        <text x="370" y="133" text-anchor="middle" fill="#d4a" font-size="7" font-family="monospace">6 cars</text>
+
+        <text x="200" y="170" text-anchor="middle" fill="#556" font-size="8" font-family="monospace">Pick a template → customize tracks, labels, capacity</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>A — Pre-built Yard Templates</h3>
+      <p>Users pick from templates (small yard, classification yard, staging, interchange) and customize track names, counts, capacity, and types. No drawing — just configure.</p>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:8px;">Fastest to ship. Clean output guaranteed. Limited flexibility.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:24px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <!-- Snap-together pieces -->
+      <svg viewBox="0 0 400 180" width="100%" style="max-width:380px;">
+        <defs>
+          <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="10" cy="10" r="0.5" fill="#334"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="180" fill="url(#grid2)"/>
+
+        <!-- Piece palette on left -->
+        <rect x="5" y="5" width="80" height="170" rx="4" fill="#1e1e3a" stroke="#334" stroke-width="1"/>
+        <text x="45" y="20" text-anchor="middle" fill="#778" font-size="7" font-family="monospace">PIECES</text>
+
+        <!-- Straight piece -->
+        <rect x="12" y="28" width="66" height="22" rx="2" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <line x1="18" y1="39" x2="72" y2="39" stroke="#8a8" stroke-width="2.5"/>
+        <text x="45" y="46" text-anchor="middle" fill="#667" font-size="5" font-family="monospace">Straight</text>
+
+        <!-- Curve piece -->
+        <rect x="12" y="55" width="66" height="22" rx="2" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <path d="M18,72 Q45,58 72,66" stroke="#8a8" stroke-width="2.5" fill="none"/>
+        <text x="45" y="73" text-anchor="middle" fill="#667" font-size="5" font-family="monospace">Curve</text>
+
+        <!-- Turnout piece -->
+        <rect x="12" y="82" width="66" height="22" rx="2" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <line x1="18" y1="93" x2="50" y2="93" stroke="#8a8" stroke-width="2"/>
+        <line x1="50" y1="93" x2="72" y2="93" stroke="#8a8" stroke-width="2"/>
+        <line x1="50" y1="93" x2="72" y2="85" stroke="#d4a" stroke-width="1.5"/>
+        <text x="45" y="100" text-anchor="middle" fill="#667" font-size="5" font-family="monospace">Turnout</text>
+
+        <!-- Bumper piece -->
+        <rect x="12" y="109" width="66" height="22" rx="2" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <line x1="18" y1="120" x2="60" y2="120" stroke="#8a8" stroke-width="2"/>
+        <rect x="60" y="116" width="4" height="8" fill="#d44"/>
+        <text x="45" y="127" text-anchor="middle" fill="#667" font-size="5" font-family="monospace">Bumper</text>
+
+        <!-- Canvas area showing snapped pieces -->
+        <text x="240" y="20" text-anchor="middle" fill="#6a7" font-size="9" font-family="monospace">Drag & snap pieces together</text>
+
+        <!-- Assembled yard from pieces -->
+        <!-- Lead -->
+        <line x1="100" y1="90" x2="170" y2="90" stroke="#8a8" stroke-width="3"/>
+        <!-- Turnout -->
+        <circle cx="170" cy="90" r="3" fill="#fa0" stroke="#fa0" stroke-width="1"/>
+        <line x1="170" y1="90" x2="200" y2="60" stroke="#aaa" stroke-width="2"/>
+        <line x1="170" y1="90" x2="200" y2="90" stroke="#aaa" stroke-width="2"/>
+        <!-- Snap indicators -->
+        <circle cx="200" cy="60" r="4" fill="none" stroke="#4af" stroke-width="1" stroke-dasharray="2,2">
+          <animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Connected straights -->
+        <line x1="200" y1="60" x2="350" y2="60" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="200" y1="90" x2="350" y2="90" stroke="#d4a" stroke-width="2.5"/>
+        <!-- Bumpers -->
+        <rect x="350" y="56" width="4" height="8" fill="#d44" rx="1"/>
+        <rect x="350" y="86" width="4" height="8" fill="#d44" rx="1"/>
+
+        <!-- Second turnout -->
+        <circle cx="170" cy="90" r="3" fill="#fa0"/>
+        <line x1="170" y1="90" x2="200" y2="120" stroke="#aaa" stroke-width="2"/>
+        <line x1="200" y1="120" x2="350" y2="120" stroke="#d4a" stroke-width="2.5"/>
+        <rect x="350" y="116" width="4" height="8" fill="#d44" rx="1"/>
+
+        <text x="240" y="165" text-anchor="middle" fill="#556" font-size="8" font-family="monospace">Pieces snap to grid • Connections auto-detect</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>B — Snap-Together Track Pieces</h3>
+      <p>Drag pre-made pieces (straight, curve, turnout, bumper) from a palette onto a grid. Pieces snap together at endpoints. Build any yard shape from components.</p>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:8px;">More flexible than templates. Still constrained enough to look clean. Medium complexity.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:24px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <!-- Hybrid approach -->
+      <svg viewBox="0 0 400 180" width="100%" style="max-width:380px;">
+        <defs>
+          <pattern id="grid3" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="10" cy="10" r="0.5" fill="#334"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="180" fill="url(#grid3)"/>
+
+        <!-- Step 1: Choose template -->
+        <rect x="5" y="5" width="125" height="170" rx="4" fill="#1e1e3a" stroke="#334" stroke-width="1"/>
+        <text x="67" y="20" text-anchor="middle" fill="#6a7" font-size="8" font-family="monospace">① Pick a template</text>
+
+        <!-- Mini template thumbnails -->
+        <rect x="12" y="28" width="110" height="40" rx="3" fill="#252545" stroke="#4af" stroke-width="1.5"/>
+        <text x="67" y="38" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">Classification Yard</text>
+        <line x1="20" y1="50" x2="40" y2="50" stroke="#8a8" stroke-width="1.5"/>
+        <line x1="40" y1="50" x2="55" y2="44" stroke="#aaa" stroke-width="1"/>
+        <line x1="40" y1="50" x2="55" y2="50" stroke="#aaa" stroke-width="1"/>
+        <line x1="40" y1="50" x2="55" y2="56" stroke="#aaa" stroke-width="1"/>
+        <line x1="55" y1="44" x2="115" y2="44" stroke="#d4a" stroke-width="1"/>
+        <line x1="55" y1="50" x2="115" y2="50" stroke="#d4a" stroke-width="1"/>
+        <line x1="55" y1="56" x2="115" y2="56" stroke="#d4a" stroke-width="1"/>
+
+        <rect x="12" y="73" width="110" height="40" rx="3" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <text x="67" y="83" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">Staging Yard</text>
+        <line x1="20" y1="97" x2="115" y2="97" stroke="#d4a" stroke-width="1"/>
+        <line x1="20" y1="101" x2="115" y2="101" stroke="#d4a" stroke-width="1"/>
+
+        <rect x="12" y="118" width="110" height="40" rx="3" fill="#252545" stroke="#445" stroke-width="0.5"/>
+        <text x="67" y="128" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">Engine Terminal</text>
+        <line x1="20" y1="142" x2="60" y2="142" stroke="#8a8" stroke-width="1.5"/>
+        <path d="M60,142 Q80,135 100,142" stroke="#aaa" stroke-width="1" fill="none"/>
+        <line x1="60" y1="142" x2="100" y2="142" stroke="#aaa" stroke-width="1"/>
+
+        <!-- Arrow -->
+        <text x="145" y="95" fill="#4af" font-size="18">→</text>
+
+        <!-- Step 2: Customize -->
+        <rect x="165" y="5" width="230" height="170" rx="4" fill="#1e1e3a" stroke="#334" stroke-width="1"/>
+        <text x="280" y="20" text-anchor="middle" fill="#6a7" font-size="8" font-family="monospace">② Customize: add/remove tracks, rename, resize</text>
+
+        <!-- Editable yard -->
+        <line x1="175" y1="80" x2="220" y2="80" stroke="#8a8" stroke-width="3"/>
+        <circle cx="220" cy="80" r="3" fill="#fa0"/>
+
+        <line x1="220" y1="80" x2="245" y2="50" stroke="#aaa" stroke-width="2"/>
+        <line x1="220" y1="80" x2="245" y2="70" stroke="#aaa" stroke-width="2"/>
+        <line x1="220" y1="80" x2="245" y2="90" stroke="#aaa" stroke-width="2"/>
+        <line x1="220" y1="80" x2="245" y2="110" stroke="#aaa" stroke-width="2"/>
+
+        <line x1="245" y1="50" x2="370" y2="50" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="245" y1="70" x2="370" y2="70" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="245" y1="90" x2="370" y2="90" stroke="#d4a" stroke-width="2.5"/>
+        <line x1="245" y1="110" x2="370" y2="110" stroke="#d4a" stroke-width="2.5"/>
+
+        <!-- Edit indicators -->
+        <rect x="372" y="44" width="18" height="12" rx="2" fill="#2a4a2a" stroke="#4a4" stroke-width="0.5"/>
+        <text x="381" y="53" text-anchor="middle" fill="#4f4" font-size="6">+</text>
+
+        <!-- Dashed "add track" -->
+        <line x1="245" y1="130" x2="370" y2="130" stroke="#445" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <text x="307" y="145" text-anchor="middle" fill="#556" font-size="7" font-family="monospace">+ Add track</text>
+
+        <!-- Rename indicator -->
+        <rect x="280" y="62" width="60" height="14" rx="2" fill="#1a1a3e" stroke="#4af" stroke-width="1"/>
+        <text x="310" y="72" text-anchor="middle" fill="#4af" font-size="7" font-family="monospace">Track 2 ✎</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>C — Templates + Customization</h3>
+      <p>Start from a template, then add/remove individual tracks, rename them, adjust capacity, and reorder. The layout auto-renders as a clean schematic. Best of both worlds.</p>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:8px;">Fast start with templates. Still flexible. Output always looks professional.</p>
+    </div>
+  </div>
+</div>

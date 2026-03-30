@@ -8,7 +8,7 @@ import { MapPropertiesRouter } from "./map-properties";
 import { AddLocationForm } from "./add-location-form";
 import { MapTabBar } from "./map-tab-bar";
 import { TrackLayoutCanvas } from "./track-layout-canvas";
-import { YardDetailCanvas } from "./yard-detail-canvas";
+import { YardPieceEditor } from "./yard-piece-editor";
 import { SessionOverlay } from "./session-overlay";
 import { useMapStore } from "./use-map-store";
 import { deleteCanvasElement } from "@/app/actions/canvas";
@@ -126,16 +126,6 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
         case "h":
           setTool("pan");
           break;
-        case "f":
-          if (currentTab === "yard-detail") {
-            setTool("add-turnout");
-          }
-          break;
-        case "i":
-          if (currentTab === "yard-detail") {
-            setTool("add-industry");
-          }
-          break;
         case "escape":
           setTool("select");
           setAddLocationPos(null);
@@ -243,7 +233,7 @@ function MapEditorInner({ canvasData, layoutId, activeSessionId, isDispatcher, i
           )}
 
           {activeTab === "yard-detail" && yardDetailLocationId && (
-            <YardDetailCanvas locationId={yardDetailLocationId} />
+            <YardPieceEditor locationId={yardDetailLocationId} />
           )}
           {activeTab === "yard-detail" && !yardDetailLocationId && (
             <div className="flex h-full items-center justify-center">

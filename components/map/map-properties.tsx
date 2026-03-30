@@ -6,7 +6,6 @@ import type { LocationNodeData } from "./location-node";
 import type { TrackEdgeData } from "./track-edge";
 import Link from "next/link";
 import { TrackLayoutProperties } from "./track-layout-properties";
-import { YardProperties } from "./yard-properties";
 
 interface MapPropertiesWrapperProps {
   layoutId: string;

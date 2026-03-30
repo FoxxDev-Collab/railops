@@ -3,7 +3,6 @@
 import { useMapStore, type Tool, type MapTab } from "./use-map-store";
 import {
   MousePointer2, Plus, Slash, Hand, ZoomIn, ZoomOut, Maximize,
-  GitBranch, Factory
 } from "lucide-react";
 import { useReactFlow } from "@xyflow/react";
 
@@ -18,9 +17,7 @@ interface ToolDef {
 const tools: ToolDef[] = [
   { id: "select", icon: MousePointer2, label: "Select", shortcut: "V", tabs: ["locations", "track-layout", "yard-detail"] },
   { id: "add-location", icon: Plus, label: "Add Location", shortcut: "L", tabs: ["locations"] },
-  { id: "draw-track", icon: Slash, label: "Draw Track", shortcut: "T", tabs: ["locations", "track-layout", "yard-detail"] },
-  { id: "add-turnout", icon: GitBranch, label: "Add Turnout", shortcut: "F", tabs: ["yard-detail"] },
-  { id: "add-industry", icon: Factory, label: "Add Industry", shortcut: "I", tabs: ["yard-detail"] },
+  { id: "draw-track", icon: Slash, label: "Draw Track", shortcut: "T", tabs: ["locations", "track-layout"] },
   { id: "pan", icon: Hand, label: "Pan", shortcut: "H", tabs: ["locations", "track-layout", "yard-detail"] },
 ];
 

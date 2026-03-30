@@ -1,0 +1,224 @@
+<h2>Track Rendering Style</h2>
+<p class="subtitle">What should the yard schematic look like? This sets the visual identity of the whole feature.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;padding:24px;display:flex;align-items:center;justify-content:center;min-height:220px;">
+      <!-- Blueprint / engineering style -->
+      <svg viewBox="0 0 400 200" width="100%" style="max-width:380px;">
+        <defs>
+          <pattern id="bp-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1a3a5a" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="200" fill="#0a1628"/>
+        <rect width="400" height="200" fill="url(#bp-grid)"/>
+
+        <!-- Border frame -->
+        <rect x="4" y="4" width="392" height="192" fill="none" stroke="#1a4a7a" stroke-width="1"/>
+        <rect x="8" y="8" width="384" height="184" fill="none" stroke="#1a4a7a" stroke-width="0.3"/>
+
+        <!-- Lead track -->
+        <line x1="30" y1="100" x2="100" y2="100" stroke="#4a9eff" stroke-width="2.5"/>
+        <!-- Tie marks on lead -->
+        <line x1="40" y1="96" x2="40" y2="104" stroke="#4a9eff" stroke-width="0.8"/>
+        <line x1="55" y1="96" x2="55" y2="104" stroke="#4a9eff" stroke-width="0.8"/>
+        <line x1="70" y1="96" x2="70" y2="104" stroke="#4a9eff" stroke-width="0.8"/>
+        <line x1="85" y1="96" x2="85" y2="104" stroke="#4a9eff" stroke-width="0.8"/>
+
+        <!-- Turnout -->
+        <circle cx="100" cy="100" r="4" fill="none" stroke="#ffaa00" stroke-width="1"/>
+        <line x1="100" y1="100" x2="140" y2="55" stroke="#4a9eff" stroke-width="1.5"/>
+        <line x1="100" y1="100" x2="140" y2="78" stroke="#4a9eff" stroke-width="1.5"/>
+        <line x1="100" y1="100" x2="140" y2="100" stroke="#4a9eff" stroke-width="1.5"/>
+        <line x1="100" y1="100" x2="140" y2="123" stroke="#4a9eff" stroke-width="1.5"/>
+        <line x1="100" y1="100" x2="140" y2="145" stroke="#4a9eff" stroke-width="1.5"/>
+
+        <!-- Classification tracks with ties -->
+        <g stroke="#4a9eff">
+          <line x1="140" y1="55" x2="340" y2="55" stroke-width="2"/>
+          <line x1="140" y1="78" x2="340" y2="78" stroke-width="2"/>
+          <line x1="140" y1="100" x2="340" y2="100" stroke-width="2"/>
+          <line x1="140" y1="123" x2="340" y2="123" stroke-width="2"/>
+          <line x1="140" y1="145" x2="340" y2="145" stroke-width="2"/>
+        </g>
+
+        <!-- Bumpers -->
+        <g stroke="#ff4444" stroke-width="2">
+          <line x1="340" y1="49" x2="340" y2="61"/>
+          <line x1="340" y1="72" x2="340" y2="84"/>
+          <line x1="340" y1="94" x2="340" y2="106"/>
+          <line x1="340" y1="117" x2="340" y2="129"/>
+          <line x1="340" y1="139" x2="340" y2="151"/>
+        </g>
+
+        <!-- Labels in blueprint style -->
+        <text x="65" y="88" text-anchor="middle" fill="#4a9eff" font-size="8" font-family="'Courier New',monospace" opacity="0.8">LEAD</text>
+        <text x="240" y="49" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace" opacity="0.7">CL-1  [8 cars]</text>
+        <text x="240" y="72" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace" opacity="0.7">CL-2  [8 cars]</text>
+        <text x="240" y="94" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace" opacity="0.7">CL-3  [10 cars]</text>
+        <text x="240" y="117" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace" opacity="0.7">CL-4  [6 cars]</text>
+        <text x="240" y="139" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace" opacity="0.7">CL-5  [6 cars]</text>
+
+        <!-- Title block -->
+        <rect x="280" y="170" width="110" height="22" fill="#0a1628" stroke="#1a4a7a" stroke-width="0.5"/>
+        <text x="335" y="184" text-anchor="middle" fill="#4a9eff" font-size="7" font-family="'Courier New',monospace">RIVERSIDE YARD</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>A — Blueprint / Engineering</h3>
+      <p>Dark background, cyan lines, monospace labels, grid overlay. Classic technical drawing feel. Tie marks on rails. Clean and authoritative.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf8f2;padding:24px;display:flex;align-items:center;justify-content:center;min-height:220px;">
+      <!-- Clean schematic / transit map style -->
+      <svg viewBox="0 0 400 200" width="100%" style="max-width:380px;">
+        <rect width="400" height="200" fill="#faf8f2"/>
+
+        <!-- Lead track -->
+        <line x1="30" y1="100" x2="100" y2="100" stroke="#2d2d2d" stroke-width="4" stroke-linecap="round"/>
+
+        <!-- Turnout dot -->
+        <circle cx="100" cy="100" r="5" fill="#e63946"/>
+
+        <!-- Diverging lines -->
+        <line x1="100" y1="100" x2="140" y2="55" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="100" x2="140" y2="78" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="100" x2="140" y2="100" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="100" x2="140" y2="123" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="100" x2="140" y2="145" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Classification tracks - colored by type -->
+        <line x1="140" y1="55" x2="340" y2="55" stroke="#457b9d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="140" y1="78" x2="340" y2="78" stroke="#457b9d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="140" y1="100" x2="340" y2="100" stroke="#457b9d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="140" y1="123" x2="340" y2="123" stroke="#e9c46a" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="140" y1="145" x2="340" y2="145" stroke="#2a9d8f" stroke-width="3.5" stroke-linecap="round"/>
+
+        <!-- Bumper circles -->
+        <circle cx="340" cy="55" r="4" fill="#457b9d"/>
+        <circle cx="340" cy="78" r="4" fill="#457b9d"/>
+        <circle cx="340" cy="100" r="4" fill="#457b9d"/>
+        <circle cx="340" cy="123" r="4" fill="#e9c46a"/>
+        <circle cx="340" cy="145" r="4" fill="#2a9d8f"/>
+
+        <!-- Labels - clean sans-serif -->
+        <text x="65" y="92" text-anchor="middle" fill="#2d2d2d" font-size="9" font-family="system-ui" font-weight="600">Lead</text>
+        <text x="350" y="58" fill="#457b9d" font-size="8" font-family="system-ui" font-weight="500">Track 1</text>
+        <text x="350" y="81" fill="#457b9d" font-size="8" font-family="system-ui" font-weight="500">Track 2</text>
+        <text x="350" y="103" fill="#457b9d" font-size="8" font-family="system-ui" font-weight="500">Track 3</text>
+        <text x="350" y="126" fill="#e9c46a" font-size="8" font-family="system-ui" font-weight="500">RIP</text>
+        <text x="350" y="148" fill="#2a9d8f" font-size="8" font-family="system-ui" font-weight="500">Engine</text>
+
+        <!-- Capacity pills -->
+        <rect x="240" y="44" width="32" height="14" rx="7" fill="#457b9d" opacity="0.15"/>
+        <text x="256" y="54" text-anchor="middle" fill="#457b9d" font-size="7" font-family="system-ui" font-weight="600">8 cars</text>
+        <rect x="240" y="67" width="32" height="14" rx="7" fill="#457b9d" opacity="0.15"/>
+        <text x="256" y="77" text-anchor="middle" fill="#457b9d" font-size="7" font-family="system-ui" font-weight="600">8 cars</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>B — Clean Schematic / Transit Map</h3>
+      <p>Light background, bold rounded lines, color-coded by track type, pill-shaped capacity badges. Modern and approachable, like a transit diagram.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:24px;display:flex;align-items:center;justify-content:center;min-height:220px;">
+      <!-- Model railroad / realistic style -->
+      <svg viewBox="0 0 400 200" width="100%" style="max-width:380px;">
+        <defs>
+          <pattern id="ballast" width="4" height="4" patternUnits="userSpaceOnUse">
+            <rect width="4" height="4" fill="#3a3530"/>
+            <circle cx="1" cy="1" r="0.6" fill="#4a4540" opacity="0.6"/>
+            <circle cx="3" cy="3" r="0.5" fill="#504a40" opacity="0.4"/>
+          </pattern>
+          <linearGradient id="rail" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#888"/>
+            <stop offset="50%" stop-color="#aaa"/>
+            <stop offset="100%" stop-color="#777"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="200" fill="#1b1b1f"/>
+
+        <!-- Ground texture -->
+        <rect x="0" y="0" width="400" height="200" fill="#252520" opacity="0.5"/>
+
+        <!-- Lead track with ballast + dual rails + ties -->
+        <g>
+          <!-- Ballast bed -->
+          <rect x="28" y="91" width="74" height="18" rx="3" fill="url(#ballast)" opacity="0.7"/>
+          <!-- Ties -->
+          <g stroke="#5a4a3a" stroke-width="1.5">
+            <line x1="35" y1="93" x2="35" y2="107"/>
+            <line x1="45" y1="93" x2="45" y2="107"/>
+            <line x1="55" y1="93" x2="55" y2="107"/>
+            <line x1="65" y1="93" x2="65" y2="107"/>
+            <line x1="75" y1="93" x2="75" y2="107"/>
+            <line x1="85" y1="93" x2="85" y2="107"/>
+            <line x1="95" y1="93" x2="95" y2="107"/>
+          </g>
+          <!-- Rails (dual) -->
+          <line x1="30" y1="96" x2="100" y2="96" stroke="url(#rail)" stroke-width="1.5"/>
+          <line x1="30" y1="104" x2="100" y2="104" stroke="url(#rail)" stroke-width="1.5"/>
+        </g>
+
+        <!-- Classification tracks with ballast -->
+        <g>
+          <!-- Track 1 -->
+          <rect x="138" y="46" width="204" height="16" rx="2" fill="url(#ballast)" opacity="0.6"/>
+          <line x1="140" y1="51" x2="340" y2="51" stroke="url(#rail)" stroke-width="1.2"/>
+          <line x1="140" y1="57" x2="340" y2="57" stroke="url(#rail)" stroke-width="1.2"/>
+          <!-- Track 2 -->
+          <rect x="138" y="69" width="204" height="16" rx="2" fill="url(#ballast)" opacity="0.6"/>
+          <line x1="140" y1="74" x2="340" y2="74" stroke="url(#rail)" stroke-width="1.2"/>
+          <line x1="140" y1="80" x2="340" y2="80" stroke="url(#rail)" stroke-width="1.2"/>
+          <!-- Track 3 -->
+          <rect x="138" y="92" width="204" height="16" rx="2" fill="url(#ballast)" opacity="0.6"/>
+          <line x1="140" y1="97" x2="340" y2="97" stroke="url(#rail)" stroke-width="1.2"/>
+          <line x1="140" y1="103" x2="340" y2="103" stroke="url(#rail)" stroke-width="1.2"/>
+          <!-- Track 4 -->
+          <rect x="138" y="115" width="204" height="16" rx="2" fill="url(#ballast)" opacity="0.6"/>
+          <line x1="140" y1="120" x2="340" y2="120" stroke="url(#rail)" stroke-width="1.2"/>
+          <line x1="140" y1="126" x2="340" y2="126" stroke="url(#rail)" stroke-width="1.2"/>
+          <!-- Track 5 -->
+          <rect x="138" y="138" width="204" height="16" rx="2" fill="url(#ballast)" opacity="0.6"/>
+          <line x1="140" y1="143" x2="340" y2="143" stroke="url(#rail)" stroke-width="1.2"/>
+          <line x1="140" y1="149" x2="340" y2="149" stroke="url(#rail)" stroke-width="1.2"/>
+        </g>
+
+        <!-- Turnout area -->
+        <line x1="100" y1="100" x2="140" y2="54" stroke="#888" stroke-width="1.2"/>
+        <line x1="100" y1="100" x2="140" y2="77" stroke="#888" stroke-width="1.2"/>
+        <line x1="100" y1="100" x2="140" y2="100" stroke="#888" stroke-width="1.2"/>
+        <line x1="100" y1="100" x2="140" y2="123" stroke="#888" stroke-width="1.2"/>
+        <line x1="100" y1="100" x2="140" y2="146" stroke="#888" stroke-width="1.2"/>
+
+        <!-- Bumpers (realistic) -->
+        <g fill="#aa3333">
+          <rect x="338" y="49" width="6" height="10" rx="1"/>
+          <rect x="338" y="72" width="6" height="10" rx="1"/>
+          <rect x="338" y="95" width="6" height="10" rx="1"/>
+          <rect x="338" y="118" width="6" height="10" rx="1"/>
+          <rect x="338" y="141" width="6" height="10" rx="1"/>
+        </g>
+
+        <!-- Labels with dark bg -->
+        <rect x="43" y="80" width="36" height="12" rx="2" fill="#1b1b1f" opacity="0.85"/>
+        <text x="61" y="89" text-anchor="middle" fill="#ccc" font-size="7" font-family="system-ui">Lead</text>
+
+        <text x="355" y="57" fill="#aaa" font-size="7" font-family="system-ui">Tk 1</text>
+        <text x="355" y="80" fill="#aaa" font-size="7" font-family="system-ui">Tk 2</text>
+        <text x="355" y="103" fill="#aaa" font-size="7" font-family="system-ui">Tk 3</text>
+        <text x="355" y="126" fill="#aaa" font-size="7" font-family="system-ui">Tk 4</text>
+        <text x="355" y="149" fill="#aaa" font-size="7" font-family="system-ui">Tk 5</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>C — Realistic / Model Railroad</h3>
+      <p>Dual rails, ballast texture, wooden ties, realistic bumpers. Feels like looking at a model railroad from above. More visual detail, more immersive.</p>
+    </div>
+  </div>
+</div>

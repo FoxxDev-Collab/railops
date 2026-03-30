@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yard Editor Vision — RailOps</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-2: #232733;
+    --border: #2e3345;
+    --text: #e4e7ef;
+    --text-secondary: #8b90a0;
+    --accent: #4a9eff;
+    --accent-dim: rgba(74, 158, 255, 0.15);
+    --track-main: #c8cdd8;
+    --track-classification: #4a9eff;
+    --track-arrival: #34d399;
+    --track-departure: #f59e0b;
+    --track-engine: #a78bfa;
+    --track-rip: #f87171;
+    --turnout: #ff8c42;
+    --bumper: #ef4444;
+    --endpoint-glow: #4a9eff;
+    --grid-dot: #1e2130;
+    --selection: rgba(74, 158, 255, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ─── Top Bar ─── */
+  .top-bar {
+    height: 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    z-index: 10;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .breadcrumb span { color: var(--text-secondary); }
+  .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--text); }
+  .breadcrumb .current { color: var(--text); font-weight: 600; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 3px;
+  }
+
+  .tool-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+
+  .tool-btn:hover { background: var(--surface-2); color: var(--text); }
+  .tool-btn.active { background: var(--accent-dim); color: var(--accent); }
+
+  .zoom-display {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  .divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* ─── Main Layout ─── */
+  .editor-layout {
+    display: flex;
+    height: calc(100vh - 48px);
+  }
+
+  /* ─── Canvas ─── */
+  .canvas-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .canvas-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ─── Radial Picker ─── */
+  .radial-picker {
+    position: absolute;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .radial-ring {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    pointer-events: none;
+  }
+
+  .radial-item {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    pointer-events: all;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .radial-item.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .radial-item:hover {
+    border-color: var(--accent);
+    background: var(--surface-2);
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 4px 24px rgba(74, 158, 255, 0.2);
+  }
+
+  .radial-item svg { width: 24px; height: 24px; }
+  .radial-item .label {
+    font-size: 7px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .radial-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 16px rgba(74, 158, 255, 0.6);
+    pointer-events: none;
+  }
+
+  /* ─── Properties Panel ─── */
+  .properties-panel {
+    width: 280px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .panel-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .prop-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .prop-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .prop-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .prop-value {
+    font-size: 12px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    min-width: 120px;
+    text-align: right;
+  }
+
+  .prop-value.editable {
+    cursor: text;
+  }
+
+  .prop-value.editable:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .track-type-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .legend-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .legend-line {
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* ─── Status Bar ─── */
+  .status-bar {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .status-item { display: flex; align-items: center; gap: 4px; }
+  .status-key {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-family: monospace;
+  }
+
+  /* ─── Endpoint Glow Animation ─── */
+  @keyframes endpointPulse {
+    0%, 100% { r: 5; opacity: 0.8; }
+    50% { r: 8; opacity: 0.4; }
+  }
+
+  @keyframes endpointGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* ─── Tooltip ─── */
+  .piece-tooltip {
+    position: absolute;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text);
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    z-index: 30;
+    white-space: nowrap;
+  }
+
+  .piece-tooltip .tt-name { font-weight: 600; margin-bottom: 2px; }
+  .piece-tooltip .tt-desc { color: var(--text-secondary); font-size: 10px; }
+
+  /* ─── Section Label ─── */
+  .mockup-label {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 0 0 8px 8px;
+    z-index: 50;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-label">Interactive Mockup — Yard Detail Editor</div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="breadcrumb">
+    <a href="#">Sierra Northern</a>
+    <span>›</span>
+    <a href="#">Map</a>
+    <span>›</span>
+    <span class="current">Riverside Yard</span>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool-btn active" title="Select">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2l9 5.5L7.5 9l-1.5 5L3 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tool-btn" title="Pan">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M8 2l-2 2m2-2l2 2M8 14l-2-2m2 2l2-2M2 8l2-2m-2 2l2 2M14 8l-2-2m2 2l-2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+    </button>
+    <div class="divider"></div>
+    <button class="tool-btn" title="Undo">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 7h6a3 3 0 010 6H8M4 7l3-3M4 7l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tool-btn" title="Redo">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 7H6a3 3 0 000 6h2M12 7l-3-3M12 7l-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="divider"></div>
+    <span class="zoom-display">100%</span>
+    <button class="tool-btn" title="Zoom In">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 10.5L14 14M5 7h4M7 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tool-btn" title="Zoom Out">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 10.5L14 14M5 7h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="divider"></div>
+    <button class="tool-btn" title="Fit to View">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v2h-2M10 2v2h2M6 14v-2h-2M10 14v-2h2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="editor-layout">
+
+  <!-- Canvas Area -->
+  <div class="canvas-area" id="canvasArea">
+    <svg class="canvas-svg" viewBox="0 0 1200 700" id="mainCanvas">
+      <defs>
+        <!-- Grid pattern -->
+        <pattern id="gridDots" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="0.8" fill="#1e2130"/>
+        </pattern>
+        <!-- Track endpoint glow -->
+        <radialGradient id="endpointGlow">
+          <stop offset="0%" stop-color="#4a9eff" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#4a9eff" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Selection highlight -->
+        <filter id="selectedGlow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Background grid -->
+      <rect width="1200" height="700" fill="var(--bg)"/>
+      <rect width="1200" height="700" fill="url(#gridDots)"/>
+
+      <!-- ═══ BUILT YARD LAYOUT ═══ -->
+
+      <!-- Mainline entry (left side) -->
+      <g class="track-segment" data-type="mainline">
+        <line x1="0" y1="350" x2="160" y2="350" stroke="var(--track-main)" stroke-width="4" stroke-linecap="round"/>
+        <text x="80" y="338" text-anchor="middle" fill="var(--text-secondary)" font-size="10" font-family="system-ui" font-weight="500">← Mainline West</text>
+      </g>
+
+      <!-- Lead Track -->
+      <g class="track-segment" data-type="lead">
+        <line x1="160" y1="350" x2="340" y2="350" stroke="var(--track-main)" stroke-width="3.5" stroke-linecap="round"/>
+        <rect x="220" y="337" width="50" height="16" rx="8" fill="rgba(200,205,216,0.1)"/>
+        <text x="245" y="348" text-anchor="middle" fill="var(--track-main)" font-size="9" font-family="system-ui" font-weight="600">LEAD</text>
+      </g>
+
+      <!-- ─── Turnout 1: Main fan ─── -->
+      <circle cx="340" cy="350" r="6" fill="var(--turnout)" opacity="0.9"/>
+      <circle cx="340" cy="350" r="10" fill="var(--turnout)" opacity="0.15"/>
+
+      <!-- Arrival tracks (top, green) -->
+      <g class="track-segment" data-type="arrival">
+        <path d="M340,350 Q380,350 400,280" stroke="var(--track-arrival)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="400" y1="280" x2="780" y2="280" stroke="var(--track-arrival)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="780" cy="280" r="5" fill="var(--bumper)"/>
+        <rect x="540" y="267" width="80" height="16" rx="8" fill="rgba(52,211,153,0.1)"/>
+        <text x="580" y="278" text-anchor="middle" fill="var(--track-arrival)" font-size="9" font-family="system-ui" font-weight="600">ARRIVAL 1</text>
+        <rect x="700" y="267" width="50" height="16" rx="8" fill="rgba(52,211,153,0.08)"/>
+        <text x="725" y="278" text-anchor="middle" fill="var(--track-arrival)" font-size="8" font-family="system-ui" opacity="0.8">12 cars</text>
+      </g>
+
+      <g class="track-segment" data-type="arrival">
+        <path d="M340,350 Q370,350 390,310" stroke="var(--track-arrival)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="390" y1="310" x2="780" y2="310" stroke="var(--track-arrival)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="780" cy="310" r="5" fill="var(--bumper)"/>
+        <rect x="540" y="297" width="80" height="16" rx="8" fill="rgba(52,211,153,0.1)"/>
+        <text x="580" y="308" text-anchor="middle" fill="var(--track-arrival)" font-size="9" font-family="system-ui" font-weight="600">ARRIVAL 2</text>
+        <rect x="700" y="297" width="50" height="16" rx="8" fill="rgba(52,211,153,0.08)"/>
+        <text x="725" y="308" text-anchor="middle" fill="var(--track-arrival)" font-size="8" font-family="system-ui" opacity="0.8">10 cars</text>
+      </g>
+
+      <!-- Classification tracks (middle, blue) - one is SELECTED -->
+      <g class="track-segment selected" data-type="classification" filter="url(#selectedGlow)">
+        <line x1="340" y1="350" x2="780" y2="350" stroke="var(--track-classification)" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="780" cy="350" r="5" fill="var(--bumper)"/>
+        <rect x="520" y="337" width="110" height="16" rx="8" fill="rgba(74,158,255,0.15)" stroke="var(--accent)" stroke-width="1"/>
+        <text x="575" y="348" text-anchor="middle" fill="var(--track-classification)" font-size="9" font-family="system-ui" font-weight="600">CLASS 1 — East</text>
+        <rect x="700" y="337" width="50" height="16" rx="8" fill="rgba(74,158,255,0.08)"/>
+        <text x="725" y="348" text-anchor="middle" fill="var(--track-classification)" font-size="8" font-family="system-ui" opacity="0.8">8 cars</text>
+      </g>
+
+      <g class="track-segment" data-type="classification">
+        <path d="M340,350 Q370,350 390,385" stroke="var(--track-classification)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="390" y1="385" x2="780" y2="385" stroke="var(--track-classification)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="780" cy="385" r="5" fill="var(--bumper)"/>
+        <rect x="540" y="372" width="90" height="16" rx="8" fill="rgba(74,158,255,0.1)"/>
+        <text x="585" y="383" text-anchor="middle" fill="var(--track-classification)" font-size="9" font-family="system-ui" font-weight="600">CLASS 2 — West</text>
+        <rect x="700" y="372" width="50" height="16" rx="8" fill="rgba(74,158,255,0.08)"/>
+        <text x="725" y="383" text-anchor="middle" fill="var(--track-classification)" font-size="8" font-family="system-ui" opacity="0.8">8 cars</text>
+      </g>
+
+      <g class="track-segment" data-type="classification">
+        <path d="M340,350 Q370,355 400,415" stroke="var(--track-classification)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="400" y1="415" x2="780" y2="415" stroke="var(--track-classification)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="780" cy="415" r="5" fill="var(--bumper)"/>
+        <rect x="540" y="402" width="110" height="16" rx="8" fill="rgba(74,158,255,0.1)"/>
+        <text x="595" y="413" text-anchor="middle" fill="var(--track-classification)" font-size="9" font-family="system-ui" font-weight="600">CLASS 3 — Local</text>
+        <rect x="700" y="402" width="50" height="16" rx="8" fill="rgba(74,158,255,0.08)"/>
+        <text x="725" y="413" text-anchor="middle" fill="var(--track-classification)" font-size="8" font-family="system-ui" opacity="0.8">6 cars</text>
+      </g>
+
+      <!-- Departure track (bottom-ish, yellow) -->
+      <g class="track-segment" data-type="departure">
+        <path d="M340,350 Q370,360 410,450" stroke="var(--track-departure)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="410" y1="450" x2="780" y2="450" stroke="var(--track-departure)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="780" cy="450" r="5" fill="var(--bumper)"/>
+        <rect x="540" y="437" width="90" height="16" rx="8" fill="rgba(245,158,11,0.1)"/>
+        <text x="585" y="448" text-anchor="middle" fill="var(--track-departure)" font-size="9" font-family="system-ui" font-weight="600">DEPARTURE</text>
+        <rect x="700" y="437" width="50" height="16" rx="8" fill="rgba(245,158,11,0.08)"/>
+        <text x="725" y="448" text-anchor="middle" fill="var(--track-departure)" font-size="8" font-family="system-ui" opacity="0.8">14 cars</text>
+      </g>
+
+      <!-- ─── Turnout 2: Engine facility spur ─── -->
+      <circle cx="240" cy="350" r="5" fill="var(--turnout)" opacity="0.9"/>
+      <circle cx="240" cy="350" r="8" fill="var(--turnout)" opacity="0.15"/>
+
+      <!-- Engine service track (purple) -->
+      <g class="track-segment" data-type="engine">
+        <path d="M240,350 Q260,350 280,480" stroke="var(--track-engine)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="280" y1="480" x2="500" y2="480" stroke="var(--track-engine)" stroke-width="3" stroke-linecap="round"/>
+
+        <!-- Turntable! -->
+        <circle cx="540" cy="480" r="28" fill="none" stroke="var(--track-engine)" stroke-width="2" opacity="0.6"/>
+        <circle cx="540" cy="480" r="30" fill="none" stroke="var(--track-engine)" stroke-width="0.5" opacity="0.3" stroke-dasharray="3,3"/>
+        <line x1="512" y1="480" x2="568" y2="480" stroke="var(--track-engine)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="540" cy="480" r="4" fill="var(--track-engine)" opacity="0.5"/>
+
+        <!-- Roundhouse stalls -->
+        <line x1="568" y1="480" x2="620" y2="460" stroke="var(--track-engine)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="568" y1="480" x2="620" y2="480" stroke="var(--track-engine)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="568" y1="480" x2="620" y2="500" stroke="var(--track-engine)" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- Roundhouse building -->
+        <path d="M615,455 A45,45 0 0,1 615,505" stroke="var(--track-engine)" stroke-width="2" fill="rgba(167,139,250,0.08)" stroke-linecap="round"/>
+
+        <!-- Stall bumpers -->
+        <circle cx="620" cy="460" r="3.5" fill="var(--bumper)"/>
+        <circle cx="620" cy="480" r="3.5" fill="var(--bumper)"/>
+        <circle cx="620" cy="500" r="3.5" fill="var(--bumper)"/>
+
+        <rect x="310" y="467" width="100" height="16" rx="8" fill="rgba(167,139,250,0.1)"/>
+        <text x="360" y="478" text-anchor="middle" fill="var(--track-engine)" font-size="9" font-family="system-ui" font-weight="600">ENGINE SVC</text>
+
+        <rect x="530" y="520" width="70" height="16" rx="8" fill="rgba(167,139,250,0.08)"/>
+        <text x="565" y="531" text-anchor="middle" fill="var(--track-engine)" font-size="8" font-family="system-ui" font-weight="500">Turntable</text>
+      </g>
+
+      <!-- RIP track (red, short spur) -->
+      <g class="track-segment" data-type="rip">
+        <path d="M340,350 Q355,360 370,450 Q375,465 390,475" stroke="var(--track-rip)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="390" y1="475" x2="500" y2="550" stroke="var(--track-rip)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="8,4"/>
+        <circle cx="500" cy="550" r="4" fill="var(--bumper)"/>
+        <rect x="410" y="500" width="50" height="16" rx="8" fill="rgba(248,113,113,0.1)"/>
+        <text x="435" y="511" text-anchor="middle" fill="var(--track-rip)" font-size="9" font-family="system-ui" font-weight="600">RIP</text>
+        <rect x="410" y="518" width="50" height="14" rx="7" fill="rgba(248,113,113,0.06)"/>
+        <text x="435" y="528" text-anchor="middle" fill="var(--track-rip)" font-size="7" font-family="system-ui" opacity="0.7">3 cars</text>
+      </g>
+
+      <!-- Mainline exit (right side) -->
+      <g class="track-segment" data-type="mainline">
+        <path d="M780,280 Q820,280 850,310 Q870,330 900,350" stroke="var(--track-main)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.4"/>
+        <line x1="900" y1="350" x2="1050" y2="350" stroke="var(--track-main)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="1050" y1="350" x2="1200" y2="350" stroke="var(--track-main)" stroke-width="4" stroke-linecap="round"/>
+        <text x="1120" y="338" text-anchor="middle" fill="var(--text-secondary)" font-size="10" font-family="system-ui" font-weight="500">Mainline East →</text>
+      </g>
+
+      <!-- ═══ OPEN ENDPOINTS (pulsing, clickable) ═══ -->
+
+      <!-- Open endpoint on right mainline exit -->
+      <g class="open-endpoint" style="cursor:pointer">
+        <circle cx="1200" cy="350" r="12" fill="url(#endpointGlow)">
+          <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="1200" cy="350" r="5" fill="var(--endpoint-glow)" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- Open endpoint on a roundhouse stall -->
+      <g class="open-endpoint" style="cursor:pointer">
+        <circle cx="620" cy="460" r="10" fill="url(#endpointGlow)">
+          <animate attributeName="r" values="7;12;7" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- Selection indicator on CLASS 1 -->
+      <rect x="335" y="342" width="452" height="16" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+
+    </svg>
+
+    <!-- ═══ RADIAL PIECE PICKER (shown at an endpoint) ═══ -->
+    <div class="radial-picker" style="left: calc(50% + 340px); top: 68%;" id="radialPicker">
+      <div class="radial-ring">
+        <div class="radial-center"></div>
+
+        <!-- Straight -->
+        <div class="radial-item show" style="top: 10%; left: 50%; transition-delay: 0.02s;" id="ri-straight">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="2" y1="12" x2="22" y2="12" stroke="#c8cdd8" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span class="label">Straight</span>
+        </div>
+
+        <!-- Curve Right -->
+        <div class="radial-item show" style="top: 25%; left: 85%; transition-delay: 0.06s;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4,18 Q4,6 18,6" stroke="#c8cdd8" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          <span class="label">Curve R</span>
+        </div>
+
+        <!-- Turnout Right -->
+        <div class="radial-item show" style="top: 60%; left: 92%; transition-delay: 0.10s;">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="2" y1="14" x2="22" y2="14" stroke="#c8cdd8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="14" x2="22" y2="6" stroke="#ff8c42" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="2" fill="#ff8c42"/></svg>
+          <span class="label">Turnout R</span>
+        </div>
+
+        <!-- Bumper -->
+        <div class="radial-item show" style="top: 85%; left: 65%; transition-delay: 0.14s;">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="2" y1="12" x2="18" y2="12" stroke="#c8cdd8" stroke-width="2.5" stroke-linecap="round"/><rect x="18" y="7" width="3" height="10" rx="1" fill="#ef4444"/></svg>
+          <span class="label">Bumper</span>
+        </div>
+
+        <!-- Curve Left -->
+        <div class="radial-item show" style="top: 25%; left: 15%; transition-delay: 0.04s;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20,18 Q20,6 6,6" stroke="#c8cdd8" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          <span class="label">Curve L</span>
+        </div>
+
+        <!-- Turnout Left -->
+        <div class="radial-item show" style="top: 60%; left: 8%; transition-delay: 0.08s;">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="2" y1="14" x2="22" y2="14" stroke="#c8cdd8" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="14" x2="2" y2="6" stroke="#ff8c42" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2" fill="#ff8c42"/></svg>
+          <span class="label">Turnout L</span>
+        </div>
+
+        <!-- More... -->
+        <div class="radial-item show" style="top: 85%; left: 35%; transition-delay: 0.12s;">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="#8b90a0"/><circle cx="12" cy="12" r="1.5" fill="#8b90a0"/><circle cx="18" cy="12" r="1.5" fill="#8b90a0"/></svg>
+          <span class="label">More...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tooltip on hover -->
+    <div class="piece-tooltip" style="left: calc(50% + 370px); top: 53%;">
+      <div class="tt-name">Straight Track</div>
+      <div class="tt-desc">Extends track in current direction</div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-item">
+        <span class="status-key">Click</span> endpoint to build
+      </span>
+      <span class="status-item">
+        <span class="status-key">⌫</span> delete selected
+      </span>
+      <span class="status-item">
+        <span class="status-key">⌘Z</span> undo
+      </span>
+      <span class="status-item">
+        <span class="status-key">Scroll</span> zoom
+      </span>
+    </div>
+  </div>
+
+  <!-- Properties Panel -->
+  <div class="properties-panel">
+    <div class="panel-title">Selected Track</div>
+
+    <div class="prop-group">
+      <div class="prop-row">
+        <span class="prop-label">Name</span>
+        <span class="prop-value editable" contenteditable="true">Class 1 — East</span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Type</span>
+        <span class="prop-value">
+          <span class="track-type-badge" style="background:rgba(74,158,255,0.15);color:var(--track-classification);">
+            <span class="color-dot" style="background:var(--track-classification)"></span>
+            Classification
+          </span>
+        </span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Capacity</span>
+        <span class="prop-value editable" contenteditable="true">8 cars</span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Length</span>
+        <span class="prop-value">3 straights</span>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+
+    <div class="panel-title">Yard Summary</div>
+    <div class="prop-group">
+      <div class="prop-row">
+        <span class="prop-label">Total tracks</span>
+        <span class="prop-value">8</span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Turnouts</span>
+        <span class="prop-value">2</span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Total capacity</span>
+        <span class="prop-value">61 cars</span>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+
+    <div class="panel-title">Track Types</div>
+    <div class="legend-section">
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-main)"></div>
+        Lead / Main
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-arrival)"></div>
+        Arrival
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-classification)"></div>
+        Classification
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-departure)"></div>
+        Departure
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-engine)"></div>
+        Engine Service
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:var(--track-rip);background-image:repeating-linear-gradient(90deg,transparent,transparent 4px,var(--bg) 4px,var(--bg) 6px)"></div>
+        RIP (Bad Order)
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

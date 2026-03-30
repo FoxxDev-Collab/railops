@@ -1,7 +1,7 @@
 export const TOPO_TRACK_STYLES = {
-  mainline: { strokeWidth: 2.5, tickSpacing: 20, tickLength: 10, dash: undefined },
-  branch: { strokeWidth: 1.8, tickSpacing: 25, tickLength: 8, dash: undefined },
-  spur: { strokeWidth: 1.2, tickSpacing: 0, tickLength: 0, dash: "6,3" },
+  mainline: { strokeWidth: 4, tickSpacing: 20, tickLength: 10, dash: undefined },
+  branch: { strokeWidth: 2.5, tickSpacing: 25, tickLength: 8, dash: "8,4" },
+  spur: { strokeWidth: 1.5, tickSpacing: 0, tickLength: 0, dash: "4,3" },
 } as const;
 
 export const YARD_TRACK_COLORS: Record<string, { light: string; dark: string; label: string }> = {
@@ -25,3 +25,16 @@ export const LOCATION_SIZES: Record<string, number> = {
   TEAM_TRACK: 5,
   SIDING: 4.5,
 } as const;
+
+export function getEdgeColor(trackType: string, isDark: boolean): string {
+  switch (trackType) {
+    case "mainline":
+      return isDark ? "#c8cdd8" : "#3a3f4b";
+    case "branch":
+      return isDark ? "#94a3b8" : "#64748b";
+    case "spur":
+      return isDark ? "#78716c" : "#57534e";
+    default:
+      return isDark ? "#c8cdd8" : "#3a3f4b";
+  }
+}

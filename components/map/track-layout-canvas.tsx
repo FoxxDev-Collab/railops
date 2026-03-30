@@ -10,7 +10,7 @@ import {
   type WheelEvent,
 } from "react";
 import { TrackPath, type Point } from "./svg/track-path";
-import { LOCATION_SIZES } from "./svg/topo-colors";
+import { LOCATION_SIZES, getEdgeColor } from "./svg/topo-colors";
 import { useMapStore } from "./use-map-store";
 import { createCanvasEdge } from "@/app/actions/canvas";
 import { toast } from "sonner";
@@ -80,6 +80,7 @@ export function TrackLayoutCanvas({
   const [localEdges, setLocalEdges] = useState<CanvasEdge[]>(initialEdges);
   const [drawingWaypoints, setDrawingWaypoints] = useState<Point[]>([]);
   const [mousePos, setMousePos] = useState<Point | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   // Viewport: pan/zoom via viewBox
   const [viewBox, setViewBox] = useState({ x: -200, y: -200, w: 1200, h: 800 });
@@ -90,6 +91,12 @@ export function TrackLayoutCanvas({
   useEffect(() => {
     setLocalEdges(initialEdges);
   }, [initialEdges]);
+
+  // Detect dark mode on mount
+  useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    setIsDark(isDarkMode);
+  }, []);
 
   // Node lookup map
   const nodeMap = useMemo(() => {
@@ -427,7 +434,7 @@ export function TrackLayoutCanvas({
             <TrackPath
               points={points}
               trackType={edge.trackType as "mainline" | "branch" | "spur"}
-              color="currentColor"
+              color={getEdgeColor(edge.trackType, isDark)}
               selected={selectedEdgeId === edge.id}
             />
 
