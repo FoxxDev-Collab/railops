@@ -31,7 +31,7 @@ export function MapPropertiesRouter({ layoutId, activeTab, edges, nodeMap }: Map
     );
   }
   if (activeTab === "yard-detail") {
-    return <YardProperties />;
+    return null;
   }
   return <MapProperties layoutId={layoutId} />;
 }
