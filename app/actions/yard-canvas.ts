@@ -115,26 +115,48 @@ export async function getYardCanvasData(locationId: string) {
 // ─────────────────────────────────────────────
 
 const saveYardCanvasSchema = z.object({
-  canvasId: z.string(),
-  locationId: z.string(),
-  trackElements: z.array(z.unknown()),
-  viewport: z.object({ x: z.number(), y: z.number(), zoom: z.number() }).optional(),
+  canvasId: z.string().optional(),
+  locationId: z.string().optional(),
+  viewport: z.object({ x: z.number(), y: z.number(), zoom: z.number() }),
+  trackElements: z.unknown(),
 });
 
 export async function saveYardCanvas(values: z.infer<typeof saveYardCanvasSchema>) {
   const user = await getAuthenticatedUser();
   const parsed = saveYardCanvasSchema.parse(values);
-  await verifyLocationAccess(parsed.locationId, user.id!);
 
-  const data: Record<string, unknown> = {
-    trackElements: parsed.trackElements,
+  // Determine the locationId — either provided directly or looked up via canvasId
+  let locationId = parsed.locationId;
+  if (!locationId && parsed.canvasId) {
+    const existing = await db.locationCanvas.findUnique({
+      where: { id: parsed.canvasId },
+      select: { locationId: true },
+    });
+    if (!existing) throw new Error("Canvas not found");
+    locationId = existing.locationId;
+  }
+  if (!locationId) throw new Error("Either canvasId or locationId is required");
+
+  await verifyLocationAccess(locationId, user.id!);
+
+  const data = {
+    trackElements: parsed.trackElements as Prisma.InputJsonValue,
+    viewport: parsed.viewport as Prisma.InputJsonValue,
   };
-  if (parsed.viewport) data.viewport = parsed.viewport;
 
-  const canvas = await db.locationCanvas.update({
-    where: { id: parsed.canvasId },
-    data,
-  });
+  let canvas;
+  if (parsed.canvasId) {
+    canvas = await db.locationCanvas.update({
+      where: { id: parsed.canvasId },
+      data,
+    });
+  } else {
+    canvas = await db.locationCanvas.upsert({
+      where: { locationId },
+      update: data,
+      create: { locationId, ...data },
+    });
+  }
 
   return { success: true, canvas };
 }
