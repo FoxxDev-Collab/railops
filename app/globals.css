@@ -125,6 +125,19 @@
   --shadow-xl: 0rem 0.3rem 0.75rem 0.1rem hsl(240 3.8000% 46.1000% / 0.15), 0rem 8px 10px -0.9px hsl(240 3.8000% 46.1000% / 0.15);
   --shadow-2xl: 0rem 0.3rem 0.75rem 0.1rem hsl(240 3.8000% 46.1000% / 0.38);
   --tracking-normal: 0em;
+  --track-lead: #3a3f4b;
+  --track-arrival: #059669;
+  --track-classification: #2563eb;
+  --track-departure: #d97706;
+  --track-engine: #7c3aed;
+  --track-rip: #dc2626;
+  --track-caboose: #ea580c;
+  --track-runaround: #64748b;
+  --track-switcher: #57534e;
+  --track-turnout: #c2410c;
+  --track-bumper: #dc2626;
+  --track-endpoint: #2563eb;
+  --track-selection: #2563eb;
 }
 
 .dark {
@@ -180,6 +193,19 @@
   --shadow-lg: 0rem 0.5rem 1rem 0rem hsl(240 3.8000% 46.1000% / 0.10), 0rem 4px 6px -1px hsl(240 3.8000% 46.1000% / 0.10);
   --shadow-xl: 0rem 0.5rem 1rem 0rem hsl(240 3.8000% 46.1000% / 0.10), 0rem 8px 10px -1px hsl(240 3.8000% 46.1000% / 0.10);
   --shadow-2xl: 0rem 0.5rem 1rem 0rem hsl(240 3.8000% 46.1000% / 0.25);
+  --track-lead: #c8cdd8;
+  --track-arrival: #34d399;
+  --track-classification: #4a9eff;
+  --track-departure: #f59e0b;
+  --track-engine: #a78bfa;
+  --track-rip: #f87171;
+  --track-caboose: #fb923c;
+  --track-runaround: #94a3b8;
+  --track-switcher: #78716c;
+  --track-turnout: #ff8c42;
+  --track-bumper: #ef4444;
+  --track-endpoint: #4a9eff;
+  --track-selection: #4a9eff;
 }
 
 @layer base {
@@ -190,4 +216,12 @@
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
+}
+
+.turnout-dot {
+  fill: var(--track-turnout);
+}
+
+.bumper-stop {
+  fill: var(--track-bumper);
 }
