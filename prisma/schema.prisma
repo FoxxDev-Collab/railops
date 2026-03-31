@@ -103,6 +103,17 @@ enum MOWEquipmentType {
   OTHER
 }
 
+enum SilhouetteCategory {
+  DIESEL_GP
+  DIESEL_SD
+  DIESEL_ERA
+  STEAM
+  FREIGHT_CAR
+  PASSENGER_CAR
+  CABOOSE
+  MOW
+}
+
 enum TrainClass {
   MANIFEST
   UNIT
@@ -446,6 +457,29 @@ model YardTrack {
 }
 
 // ─────────────────────────────────────────────
+// SILHOUETTES
+// ─────────────────────────────────────────────
+
+model Silhouette {
+  id        String              @id @default(cuid())
+  name      String
+  slug      String              @unique
+  category  SilhouetteCategory
+  filePath  String
+  darkPath  String
+
+  locomotives   Locomotive[]
+  freightCars   FreightCar[]
+  passengerCars PassengerCar[]
+  cabooses      Caboose[]
+  mowEquipment  MOWEquipment[]
+
+  createdAt DateTime @default(now())
+
+  @@index([category])
+}
+
+// ─────────────────────────────────────────────
 // ROLLING STOCK
 // ─────────────────────────────────────────────
 
@@ -469,6 +503,8 @@ model Locomotive {
   fuelType            String?
   canPull             Int?
   imageUrl            String?
+  silhouetteId        String?
+  silhouette          Silhouette?        @relation(fields: [silhouetteId], references: [id], onDelete: SetNull)
 
   currentLocationId   String?
   currentLocation     Location?          @relation("LocomotiveCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
@@ -503,6 +539,8 @@ model FreightCar {
   status         RollingStockStatus @default(SERVICEABLE)
   commodities    String[]
   imageUrl       String?
+  silhouetteId   String?
+  silhouette     Silhouette?      @relation(fields: [silhouetteId], references: [id], onDelete: SetNull)
 
   currentLocationId String?
   currentLocation   Location?        @relation("FreightCarCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
@@ -537,6 +575,8 @@ model PassengerCar {
   length         Float?
   status         RollingStockStatus @default(SERVICEABLE)
   imageUrl       String?
+  silhouetteId   String?
+  silhouette     Silhouette?      @relation(fields: [silhouetteId], references: [id], onDelete: SetNull)
 
   currentLocationId String?
   currentLocation   Location?        @relation("PassengerCarCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
@@ -566,6 +606,8 @@ model MOWEquipment {
   length         Float?
   status         RollingStockStatus @default(SERVICEABLE)
   imageUrl       String?
+  silhouetteId   String?
+  silhouette     Silhouette?      @relation(fields: [silhouetteId], references: [id], onDelete: SetNull)
 
   currentLocationId String?
   currentLocation   Location?        @relation("MOWCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
@@ -595,6 +637,8 @@ model Caboose {
   length         Float?
   status         RollingStockStatus @default(SERVICEABLE)
   imageUrl       String?
+  silhouetteId   String?
+  silhouette     Silhouette?      @relation(fields: [silhouetteId], references: [id], onDelete: SetNull)
 
   currentLocationId String?
   currentLocation   Location?        @relation("CabooseCurrentLocation", fields: [currentLocationId], references: [id], onDelete: SetNull)
