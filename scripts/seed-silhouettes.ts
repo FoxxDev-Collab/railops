@@ -32,10 +32,7 @@ const SILHOUETTE_MAP: Record<string, { name: string; category: SilhouetteCategor
   "4-8-4-northern":        { name: "4-8-4 Northern",             category: SilhouetteCategory.STEAM },
   "4-8-4-northern-alt":    { name: "4-8-4 Northern (Alt)",       category: SilhouetteCategory.STEAM },
   "garratt":               { name: "Garratt",                    category: SilhouetteCategory.STEAM },
-  "heavy-steam-locomotive":{ name: "Heavy Steam Locomotive",     category: SilhouetteCategory.STEAM },
   "heisler":               { name: "Heisler",                    category: SilhouetteCategory.STEAM },
-  "steam-engine-frontal":  { name: "Steam Engine (Frontal)",     category: SilhouetteCategory.STEAM },
-  "overview-steam":        { name: "Overview — Steam",           category: SilhouetteCategory.STEAM },
 
   // ── GP Diesels ─────────────────────────────────────────────────────────────
   "gp9":                   { name: "GP9",                        category: SilhouetteCategory.DIESEL_GP },
@@ -55,11 +52,7 @@ const SILHOUETTE_MAP: Record<string, { name: string; category: SilhouetteCategor
   "es44ac":                { name: "ES44AC",                     category: SilhouetteCategory.DIESEL_SD },
   "et44ac":                { name: "ET44AC",                     category: SilhouetteCategory.DIESEL_SD },
   "evolution-switcher":    { name: "Evolution Switcher",         category: SilhouetteCategory.DIESEL_SD },
-  "modern-freight-diesel": { name: "Modern Freight Diesel",      category: SilhouetteCategory.DIESEL_SD },
-  "modern-switcher":       { name: "Modern Switcher",            category: SilhouetteCategory.DIESEL_SD },
   "century-switcher":      { name: "Century Switcher",           category: SilhouetteCategory.DIESEL_SD },
-  "overview-modern-diesel":{ name: "Overview — Modern Diesel",   category: SilhouetteCategory.DIESEL_SD },
-  "overview-switcher":     { name: "Overview — Switcher",        category: SilhouetteCategory.DIESEL_SD },
 
   // ── Classic / Era Diesels ──────────────────────────────────────────────────
   "f3-a-unit":                   { name: "F3 A-Unit",                    category: SilhouetteCategory.DIESEL_ERA },
@@ -68,8 +61,6 @@ const SILHOUETTE_MAP: Record<string, { name: string; category: SilhouetteCategor
   "dr-4-4-15":                   { name: "DR-4-4-15",                    category: SilhouetteCategory.DIESEL_ERA },
   "e8-a-unit":                   { name: "E8 A-Unit",                    category: SilhouetteCategory.DIESEL_ERA },
   "lh-1000hp-switcher":          { name: "LH 1000HP Switcher",           category: SilhouetteCategory.DIESEL_ERA },
-  "streamlined-heritage-diesel": { name: "Streamlined Heritage Diesel",  category: SilhouetteCategory.DIESEL_ERA },
-  "overview-streamlined":        { name: "Overview — Streamlined",       category: SilhouetteCategory.DIESEL_ERA },
 
   // ── Freight Cars ───────────────────────────────────────────────────────────
   "3-bay-hopper-coal":       { name: "3-Bay Hopper (Coal)",       category: SilhouetteCategory.FREIGHT_CAR },
@@ -83,14 +74,10 @@ const SILHOUETTE_MAP: Record<string, { name: string; category: SilhouetteCategor
   "spine-car-trailer":       { name: "Spine Car (Trailer)",       category: SilhouetteCategory.FREIGHT_CAR },
   "stake-flatcar-lumber":    { name: "Stake Flatcar (Lumber)",    category: SilhouetteCategory.FREIGHT_CAR },
   "tri-level-auto-carrier":  { name: "Tri-Level Auto Carrier",    category: SilhouetteCategory.FREIGHT_CAR },
-  "overview-freight-car":    { name: "Overview — Freight Car",    category: SilhouetteCategory.FREIGHT_CAR },
 
   // ── Caboose ────────────────────────────────────────────────────────────────
   "standard-caboose":        { name: "Standard Caboose",          category: SilhouetteCategory.CABOOSE },
 
-  // ── Passenger Cars / EMU ──────────────────────────────────────────────────
-  "high-speed-emu":  { name: "High-Speed EMU",      category: SilhouetteCategory.PASSENGER_CAR },
-  "overview-emu":    { name: "Overview — EMU",       category: SilhouetteCategory.PASSENGER_CAR },
 };
 
 // ---------------------------------------------------------------------------

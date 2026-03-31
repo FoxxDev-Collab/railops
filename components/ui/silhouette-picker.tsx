@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import { Search, X } from "lucide-react";
 import { SilhouetteCategory } from "@prisma/client";
 
@@ -42,8 +41,6 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] =
     useState<SilhouetteCategory | null>(null);
-  const { resolvedTheme } = useTheme();
-
   useEffect(() => {
     startTransition(async () => {
       const data = await getSilhouettes();
@@ -72,8 +69,6 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
     const cats = new Set(silhouettes.map((s) => s.category));
     return Object.values(SilhouetteCategory).filter((c) => cats.has(c));
   }, [silhouettes]);
-
-  const isDark = resolvedTheme === "dark";
 
   function handleSelect(id: string) {
     onChange(value === id ? null : id);
@@ -139,10 +134,17 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
               >
                 <div className="relative h-8 w-full">
                   <Image
-                    src={isDark ? s.darkPath : s.filePath}
+                    src={s.filePath}
                     alt={s.name}
                     fill
-                    className="object-contain"
+                    className="object-contain dark:hidden"
+                    sizes="80px"
+                  />
+                  <Image
+                    src={s.darkPath}
+                    alt={s.name}
+                    fill
+                    className="hidden object-contain dark:block"
                     sizes="80px"
                   />
                 </div>
@@ -160,10 +162,17 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
         <div className="flex items-center gap-3 rounded-md border bg-muted/50 px-3 py-2">
           <div className="relative h-10 w-24 shrink-0">
             <Image
-              src={isDark ? selected.darkPath : selected.filePath}
+              src={selected.filePath}
               alt={selected.name}
               fill
-              className="object-contain"
+              className="object-contain dark:hidden"
+              sizes="96px"
+            />
+            <Image
+              src={selected.darkPath}
+              alt={selected.name}
+              fill
+              className="hidden object-contain dark:block"
               sizes="96px"
             />
           </div>

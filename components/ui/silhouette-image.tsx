@@ -1,7 +1,7 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface SilhouetteImageProps {
   filePath: string;
@@ -12,6 +12,11 @@ interface SilhouetteImageProps {
   height?: number;
 }
 
+/**
+ * Renders both light and dark silhouette variants, toggling visibility
+ * with Tailwind's `dark:` variant. This avoids hydration mismatches
+ * from useTheme() and ensures instant theme transitions without flicker.
+ */
 export function SilhouetteImage({
   filePath,
   darkPath,
@@ -20,17 +25,26 @@ export function SilhouetteImage({
   width = 120,
   height = 60,
 }: SilhouetteImageProps) {
-  const { resolvedTheme } = useTheme();
-  const src = resolvedTheme === "dark" ? darkPath : filePath;
+  const imgStyle = { width: "auto", height: "auto", maxWidth: "100%", maxHeight: "100%" } as const;
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      style={{ width: "auto", height: "auto", maxWidth: "100%", maxHeight: "100%" }}
-    />
+    <>
+      <Image
+        src={filePath}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cn(className, "dark:hidden")}
+        style={imgStyle}
+      />
+      <Image
+        src={darkPath}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cn(className, "hidden dark:block")}
+        style={imgStyle}
+      />
+    </>
   );
 }

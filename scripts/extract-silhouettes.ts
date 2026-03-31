@@ -112,30 +112,7 @@ const SHEETS: SheetConfig[] = [
       "4-6-0-camelback",
     ],
   },
-  {
-    file: "railops_sheet3_transition_diesels",
-    grid: [3, 2],
-    slugs: [
-      "modern-freight-diesel",
-      "streamlined-heritage-diesel",
-      "heavy-steam-locomotive",
-      "modern-switcher",
-      "high-speed-emu",
-      "steam-engine-frontal",
-    ],
-  },
-  {
-    file: "railops_sheet4_loco_overview",
-    grid: [3, 2],
-    slugs: [
-      "overview-modern-diesel",
-      "overview-streamlined",
-      "overview-steam",
-      "overview-switcher",
-      "overview-emu",
-      "overview-freight-car",
-    ],
-  },
+  // Sheets 3 (transition diesels) and 4 (loco overview) omitted — low quality extractions
 ];
 
 /**
