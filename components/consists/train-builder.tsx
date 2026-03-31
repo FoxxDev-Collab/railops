@@ -51,16 +51,24 @@ type StockType =
   | "CABOOSE"
   | "MOW_EQUIPMENT";
 
+interface SilhouetteData {
+  filePath: string;
+  darkPath: string;
+  name: string;
+}
+
 interface LocomotiveStock {
   id: string;
   road: string;
   number: string;
+  silhouette?: SilhouetteData | null;
 }
 
 interface GenericStock {
   id: string;
   reportingMarks: string;
   number: string;
+  silhouette?: SilhouetteData | null;
 }
 
 interface ConsistPositionData {
@@ -110,6 +118,11 @@ function getPositionType(pos: ConsistPositionData): StockType | null {
   if (pos.caboose) return "CABOOSE";
   if (pos.mowEquipment) return "MOW_EQUIPMENT";
   return null;
+}
+
+function getPositionSilhouette(pos: ConsistPositionData): SilhouetteData | null {
+  const stock = pos.locomotive ?? pos.freightCar ?? pos.passengerCar ?? pos.caboose ?? pos.mowEquipment;
+  return stock?.silhouette ?? null;
 }
 
 function getPositionLabel(pos: ConsistPositionData): string {
@@ -220,6 +233,7 @@ function SortableTrackCar({
             type={type}
             facing={(pos.facing as "F" | "R") ?? "F"}
             label={label}
+            silhouette={getPositionSilhouette(pos)}
             className="h-12 w-auto"
           />
 
@@ -246,6 +260,7 @@ function DragOverlayCar({ pos }: { pos: ConsistPositionData }) {
         type={type}
         facing={(pos.facing as "F" | "R") ?? "F"}
         label={label}
+        silhouette={getPositionSilhouette(pos)}
         className="h-12 w-auto drop-shadow-lg"
       />
       <span className="text-[10px] font-mono text-muted-foreground leading-tight">
@@ -261,12 +276,14 @@ function InventoryItem({
   id,
   label,
   type,
+  silhouette,
   onAdd,
   isPending,
 }: {
   id: string;
   label: string;
   type: StockType;
+  silhouette?: SilhouetteData | null;
   onAdd: (type: StockType, id: string) => void;
   isPending: boolean;
 }) {
@@ -282,7 +299,7 @@ function InventoryItem({
         bg-card hover:bg-accent/60 border border-border/50 hover:border-border
         transition-all duration-150 text-left disabled:opacity-40"
     >
-      <RollingStockIcon type={type} className="h-8 w-auto shrink-0" />
+      <RollingStockIcon type={type} silhouette={silhouette} className="h-8 w-auto shrink-0" />
       <span className="font-mono text-xs tracking-wide truncate flex-1">
         {label}
       </span>
@@ -319,28 +336,28 @@ export function TrainBuilder({
   // Available stock for the selected type, minus what's already in consist
   const inConsistIds = getAlreadyInConsist(positions, selectedType);
 
-  const availableItems: { id: string; label: string }[] = useMemo(() => {
+  const availableItems: { id: string; label: string; silhouette?: SilhouetteData | null }[] = useMemo(() => {
     switch (selectedType) {
       case "LOCOMOTIVE":
         return availableStock.locomotives
           .filter((l) => !inConsistIds.has(l.id))
-          .map((l) => ({ id: l.id, label: `${l.road} ${l.number}` }));
+          .map((l) => ({ id: l.id, label: `${l.road} ${l.number}`, silhouette: l.silhouette }));
       case "FREIGHT_CAR":
         return availableStock.freightCars
           .filter((c) => !inConsistIds.has(c.id))
-          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}` }));
+          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}`, silhouette: c.silhouette }));
       case "PASSENGER_CAR":
         return availableStock.passengerCars
           .filter((c) => !inConsistIds.has(c.id))
-          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}` }));
+          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}`, silhouette: c.silhouette }));
       case "CABOOSE":
         return availableStock.cabooses
           .filter((c) => !inConsistIds.has(c.id))
-          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}` }));
+          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}`, silhouette: c.silhouette }));
       case "MOW_EQUIPMENT":
         return availableStock.mowEquipment
           .filter((c) => !inConsistIds.has(c.id))
-          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}` }));
+          .map((c) => ({ id: c.id, label: `${c.reportingMarks} ${c.number}`, silhouette: c.silhouette }));
     }
   }, [selectedType, availableStock, inConsistIds]);
 
@@ -613,6 +630,7 @@ export function TrainBuilder({
                           id={item.id}
                           label={item.label}
                           type={selectedType}
+                          silhouette={item.silhouette}
                           onAdd={handleAdd}
                           isPending={isPending}
                         />

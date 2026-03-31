@@ -4,6 +4,8 @@
  * designed to look like side-profile train car shapes on a track.
  */
 
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
+
 interface CarSvgProps {
   className?: string;
   color?: string;
@@ -256,12 +258,29 @@ export function RollingStockIcon({
   className,
   facing,
   label,
+  silhouette,
 }: {
   type: StockType;
   className?: string;
   facing?: "F" | "R";
   label?: string;
+  silhouette?: { filePath: string; darkPath: string; name: string } | null;
 }) {
+  // If a specific silhouette is assigned, use it
+  if (silhouette) {
+    return (
+      <div className={className} style={facing === "R" ? { transform: "scaleX(-1)" } : undefined}>
+        <SilhouetteImage
+          filePath={silhouette.filePath}
+          darkPath={silhouette.darkPath}
+          alt={silhouette.name}
+          className="h-full w-auto"
+        />
+      </div>
+    );
+  }
+
+  // Fall back to generic inline SVG
   const color = STOCK_COLORS[type];
   const props = { className, color, label, facing };
 

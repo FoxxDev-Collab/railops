@@ -80,11 +80,11 @@ export default async function TrainDetailPage({
       positions: {
         orderBy: { position: "asc" },
         include: {
-          locomotive: true,
-          freightCar: true,
-          passengerCar: true,
-          mowEquipment: true,
-          caboose: true,
+          locomotive: { include: { silhouette: true } },
+          freightCar: { include: { silhouette: true } },
+          passengerCar: { include: { silhouette: true } },
+          mowEquipment: { include: { silhouette: true } },
+          caboose: { include: { silhouette: true } },
         },
       },
     },
@@ -111,31 +111,42 @@ export default async function TrainDetailPage({
   // Load layout rolling stock for the add-equipment panel
   const layout = await getLayout(layoutId);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pickSilhouette = (item: any) =>
+    item.silhouette
+      ? { filePath: item.silhouette.filePath, darkPath: item.silhouette.darkPath, name: item.silhouette.name }
+      : null;
+
   const availableStock = {
     locomotives: layout.locomotives.map((l) => ({
       id: l.id,
       road: l.road,
       number: l.number,
+      silhouette: pickSilhouette(l),
     })),
     freightCars: layout.freightCars.map((c) => ({
       id: c.id,
       reportingMarks: c.reportingMarks,
       number: c.number,
+      silhouette: pickSilhouette(c),
     })),
     passengerCars: layout.passengerCars.map((c) => ({
       id: c.id,
       reportingMarks: c.reportingMarks,
       number: c.number,
+      silhouette: pickSilhouette(c),
     })),
     cabooses: layout.cabooses.map((c) => ({
       id: c.id,
       reportingMarks: c.reportingMarks,
       number: c.number,
+      silhouette: pickSilhouette(c),
     })),
     mowEquipment: layout.mowEquipment.map((c) => ({
       id: c.id,
       reportingMarks: c.reportingMarks,
       number: c.number,
+      silhouette: pickSilhouette(c),
     })),
   };
 
