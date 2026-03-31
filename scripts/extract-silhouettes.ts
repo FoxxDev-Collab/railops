@@ -149,8 +149,9 @@ function getAbsoluteCoords(d: string): { xs: number[]; ys: number[] } {
     curY = 0;
 
   // Tokenize: split into commands and numbers
-  const tokens = d.match(/[a-zA-Z]|-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/g);
-  if (!tokens) return { xs, ys };
+  const tokensMatch = d.match(/[a-zA-Z]|-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/g);
+  if (!tokensMatch) return { xs, ys };
+  const tokens: string[] = tokensMatch;
 
   let i = 0;
   let cmd = "M";
@@ -431,7 +432,7 @@ function processSheet(config: SheetConfig, seenSlugs: Set<string>) {
 
     const svgText = fs.readFileSync(filePath, "utf-8");
     const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
-    const svgEl = doc.documentElement;
+    const svgEl = doc.documentElement!;
 
     const vb = svgEl.getAttribute("viewBox")!.split(/\s+/).map(parseFloat);
     const vbWidth = vb[2];

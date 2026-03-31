@@ -120,7 +120,7 @@ async function main() {
 
     const filePath = `/silhouettes/light/${file}`;
     const darkFile = path.join(darkDir, file);
-    const darkPath = fs.existsSync(darkFile) ? `/silhouettes/dark/${file}` : null;
+    const darkPath = fs.existsSync(darkFile) ? `/silhouettes/dark/${file}` : filePath;
 
     await prisma.silhouette.upsert({
       where:  { slug },

@@ -97,11 +97,11 @@ export default async function TrainDetailPage({
         positions: {
           orderBy: { position: "asc" },
           include: {
-            locomotive: true,
-            freightCar: true,
-            passengerCar: true,
-            mowEquipment: true,
-            caboose: true,
+            locomotive: { include: { silhouette: true } },
+            freightCar: { include: { silhouette: true } },
+            passengerCar: { include: { silhouette: true } },
+            mowEquipment: { include: { silhouette: true } },
+            caboose: { include: { silhouette: true } },
           },
         },
       },
