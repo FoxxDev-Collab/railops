@@ -9,6 +9,7 @@ import Link from "next/link";
 import { RollingStockStatus, PassengerCarType, ClassOfService } from "@prisma/client";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deletePassengerCar } from "@/app/actions/passenger-cars";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface PassengerCar {
   id: string;
@@ -21,6 +22,12 @@ interface PassengerCar {
   classOfService: ClassOfService;
   length: number | null;
   status: RollingStockStatus;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
 }
 
 const statusColors: Record<RollingStockStatus, string> = {
@@ -67,6 +74,17 @@ export function PassengerCarCardList({
         >
           <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {car.silhouette && (
+              <div className="px-4 pt-4 flex justify-center">
+                <SilhouetteImage
+                  filePath={car.silhouette.filePath}
+                  darkPath={car.silhouette.darkPath}
+                  alt={car.silhouette.name}
+                  className="h-12 w-auto opacity-80"
+                />
+              </div>
+            )}
 
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">

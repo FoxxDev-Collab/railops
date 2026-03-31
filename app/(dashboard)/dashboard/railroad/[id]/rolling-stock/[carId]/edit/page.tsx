@@ -34,6 +34,7 @@ export default async function EditFreightCarPage({
       layoutId: id,
       userId: session.user.id,
     },
+    include: { silhouette: true },
   });
 
   if (!car) notFound();
@@ -57,6 +58,7 @@ export default async function EditFreightCarPage({
           status: car.status,
           commodities: car.commodities,
           currentLocationId: car.currentLocationId,
+          silhouetteId: car.silhouetteId,
         }}
         backUrl={backUrl}
       />

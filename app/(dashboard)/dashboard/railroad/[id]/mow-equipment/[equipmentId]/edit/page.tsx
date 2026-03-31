@@ -20,6 +20,7 @@ export default async function EditMOWEquipmentPage({
 
   const equipment = await db.mOWEquipment.findFirst({
     where: { id: equipmentId, userId: session.user.id, layoutId: id },
+    include: { silhouette: true },
   });
 
   if (!equipment) redirect(`/dashboard/railroad/${id}/mow-equipment`);

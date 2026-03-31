@@ -20,6 +20,7 @@ export default async function EditCaboosePage({
 
   const caboose = await db.caboose.findFirst({
     where: { id: cabooseId, userId: session.user.id, layoutId: id },
+    include: { silhouette: true },
   });
 
   if (!caboose) redirect(`/dashboard/railroad/${id}/cabooses`);

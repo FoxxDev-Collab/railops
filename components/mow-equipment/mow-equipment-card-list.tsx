@@ -9,6 +9,7 @@ import Link from "next/link";
 import { MOWEquipmentType, RollingStockStatus } from "@prisma/client";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteMOWEquipment } from "@/app/actions/mow-equipment";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface MOWEquipment {
   id: string;
@@ -18,6 +19,12 @@ interface MOWEquipment {
   description: string | null;
   length: number | null;
   status: RollingStockStatus;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
 }
 
 const equipmentTypeLabels: Record<MOWEquipmentType, string> = {
@@ -59,6 +66,17 @@ export function MOWEquipmentCardList({
         >
           <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {item.silhouette && (
+              <div className="px-4 pt-4 flex justify-center">
+                <SilhouetteImage
+                  filePath={item.silhouette.filePath}
+                  darkPath={item.silhouette.darkPath}
+                  alt={item.silhouette.name}
+                  className="h-12 w-auto opacity-80"
+                />
+              </div>
+            )}
 
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">

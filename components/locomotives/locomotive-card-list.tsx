@@ -9,6 +9,7 @@ import { LocomotiveType, LocomotiveService, RollingStockStatus } from "@prisma/c
 import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteLocomotive } from "@/app/actions/locomotives";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface Locomotive {
   id: string;
@@ -27,6 +28,12 @@ interface Locomotive {
   fuelType: string | null;
   canPull: number | null;
   currentLocationId: string | null;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
 }
 
 const typeLabels: Record<LocomotiveType, string> = {
@@ -64,6 +71,17 @@ export function LocomotiveCardList({
         >
           <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {loco.silhouette && (
+              <div className="px-4 pt-4 flex justify-center">
+                <SilhouetteImage
+                  filePath={loco.silhouette.filePath}
+                  darkPath={loco.silhouette.darkPath}
+                  alt={loco.silhouette.name}
+                  className="h-12 w-auto opacity-80"
+                />
+              </div>
+            )}
 
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">

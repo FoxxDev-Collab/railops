@@ -20,6 +20,7 @@ export default async function EditPassengerCarPage({
 
   const car = await db.passengerCar.findFirst({
     where: { id: carId, userId: session.user.id, layoutId: id },
+    include: { silhouette: true },
   });
 
   if (!car) redirect(`/dashboard/railroad/${id}/passenger-cars`);

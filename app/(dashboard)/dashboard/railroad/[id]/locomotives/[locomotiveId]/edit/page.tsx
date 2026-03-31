@@ -20,6 +20,7 @@ export default async function EditLocomotivePage({
 
   const locomotive = await db.locomotive.findFirst({
     where: { id: locomotiveId, userId: session.user.id, layoutId: id },
+    include: { silhouette: true },
   });
 
   if (!locomotive) redirect(`/dashboard/railroad/${id}/locomotives`);
