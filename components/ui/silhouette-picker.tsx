@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { SilhouetteCategory } from "@prisma/client";
 
@@ -132,21 +131,11 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
                     : "border-transparent"
                 )}
               >
-                <div className="relative h-8 w-full">
-                  <Image
-                    src={s.filePath}
-                    alt={s.name}
-                    fill
-                    className="object-contain dark:hidden"
-                    sizes="80px"
-                  />
-                  <Image
-                    src={s.darkPath}
-                    alt={s.name}
-                    fill
-                    className="hidden object-contain dark:block"
-                    sizes="80px"
-                  />
+                <div className="flex h-8 w-full items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.filePath} alt={s.name} className="max-h-8 w-auto object-contain dark:!hidden" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.darkPath} alt={s.name} className="!hidden max-h-8 w-auto object-contain dark:!block" />
                 </div>
                 <span className="w-full truncate text-center text-[10px] leading-tight text-muted-foreground group-hover:text-foreground">
                   {s.name}
@@ -160,21 +149,11 @@ export function SilhouettePicker({ value, onChange }: SilhouettePickerProps) {
       {/* Selected preview */}
       {selected && (
         <div className="flex items-center gap-3 rounded-md border bg-muted/50 px-3 py-2">
-          <div className="relative h-10 w-24 shrink-0">
-            <Image
-              src={selected.filePath}
-              alt={selected.name}
-              fill
-              className="object-contain dark:hidden"
-              sizes="96px"
-            />
-            <Image
-              src={selected.darkPath}
-              alt={selected.name}
-              fill
-              className="hidden object-contain dark:block"
-              sizes="96px"
-            />
+          <div className="flex h-10 w-24 shrink-0 items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selected.filePath} alt={selected.name} className="max-h-10 w-auto object-contain dark:!hidden" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selected.darkPath} alt={selected.name} className="!hidden max-h-10 w-auto object-contain dark:!block" />
           </div>
           <span className="min-w-0 flex-1 truncate text-sm font-medium">
             {selected.name}
