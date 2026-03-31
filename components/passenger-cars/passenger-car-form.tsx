@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SilhouettePicker } from "@/components/ui/silhouette-picker";
 import { createPassengerCar, updatePassengerCar } from "@/app/actions/passenger-cars";
 
 const passengerCarSchema = z.object({
@@ -46,6 +47,7 @@ const passengerCarSchema = z.object({
   classOfService: z.nativeEnum(ClassOfService).optional(),
   length: z.coerce.number().optional().nullable(),
   status: z.nativeEnum(RollingStockStatus).optional(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof passengerCarSchema>;
@@ -87,6 +89,7 @@ interface PassengerCarFormProps {
     classOfService: ClassOfService;
     length: number | null;
     status: RollingStockStatus;
+    silhouetteId?: string | null;
   };
   backUrl: string;
 }
@@ -113,6 +116,7 @@ export function PassengerCarForm({
       classOfService: initialData?.classOfService ?? "COACH",
       length: initialData?.length ?? null,
       status: initialData?.status ?? "SERVICEABLE",
+      silhouetteId: initialData?.silhouetteId ?? null,
     },
   });
 
@@ -164,6 +168,29 @@ export function PassengerCarForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium">Silhouette</CardTitle>
+              <CardDescription>Choose a silhouette that matches your passenger car</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="silhouetteId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SilhouettePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Car Identity Card */}
           <Card>

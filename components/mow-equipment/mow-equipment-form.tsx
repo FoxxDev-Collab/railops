@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SilhouettePicker } from "@/components/ui/silhouette-picker";
 import { createMOWEquipment, updateMOWEquipment } from "@/app/actions/mow-equipment";
 
 const mowEquipmentSchema = z.object({
@@ -44,6 +45,7 @@ const mowEquipmentSchema = z.object({
   description: z.string().optional().nullable(),
   length: z.coerce.number().optional().nullable(),
   status: z.nativeEnum(RollingStockStatus).optional(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof mowEquipmentSchema>;
@@ -77,6 +79,7 @@ interface MOWEquipmentFormProps {
     description: string | null;
     length: number | null;
     status: RollingStockStatus;
+    silhouetteId?: string | null;
   };
   backUrl: string;
 }
@@ -100,6 +103,7 @@ export function MOWEquipmentForm({
       description: initialData?.description ?? "",
       length: initialData?.length ?? null,
       status: initialData?.status ?? "SERVICEABLE",
+      silhouetteId: initialData?.silhouetteId ?? null,
     },
   });
 
@@ -148,6 +152,29 @@ export function MOWEquipmentForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium">Silhouette</CardTitle>
+              <CardDescription>Choose a silhouette that matches your equipment</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="silhouetteId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SilhouettePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Identity Card */}
           <Card>

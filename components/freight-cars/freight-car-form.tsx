@@ -13,6 +13,7 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { SilhouettePicker } from "@/components/ui/silhouette-picker";
 import { createFreightCar, updateFreightCar } from "@/app/actions/freight-cars";
 
 const freightCarSchema = z.object({
@@ -50,6 +52,7 @@ const freightCarSchema = z.object({
   status: z.nativeEnum(RollingStockStatus).optional(),
   commodities: z.array(z.string()).optional(),
   currentLocationId: z.string().optional().nullable(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof freightCarSchema>;
@@ -90,6 +93,7 @@ interface FreightCarInitialData {
   status: RollingStockStatus;
   commodities: string[];
   currentLocationId: string | null;
+  silhouetteId?: string | null;
 }
 
 interface FreightCarFormProps {
@@ -184,6 +188,7 @@ export function FreightCarForm({
       status: initialData?.status ?? "SERVICEABLE",
       commodities: initialData?.commodities ?? [],
       currentLocationId: initialData?.currentLocationId ?? null,
+      silhouetteId: initialData?.silhouetteId ?? null,
     },
   });
 
@@ -245,6 +250,29 @@ export function FreightCarForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium">Silhouette</CardTitle>
+              <CardDescription>Choose a silhouette that matches your freight car type</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="silhouetteId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SilhouettePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Car Identity Card */}
           <Card>

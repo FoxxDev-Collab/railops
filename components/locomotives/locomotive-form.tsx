@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { SilhouettePicker } from "@/components/ui/silhouette-picker";
 import { createLocomotive, updateLocomotive } from "@/app/actions/locomotives";
 
 const locomotiveSchema = z.object({
@@ -54,6 +55,7 @@ const locomotiveSchema = z.object({
   fuelType: z.string().optional().nullable(),
   canPull: z.coerce.number().int().optional().nullable(),
   currentLocationId: z.string().optional().nullable(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof locomotiveSchema>;
@@ -99,6 +101,7 @@ interface LocomotiveFormProps {
     fuelType: string | null;
     canPull: number | null;
     currentLocationId: string | null;
+    silhouetteId?: string | null;
   };
   backUrl: string;
 }
@@ -134,6 +137,7 @@ export function LocomotiveForm({
       fuelType: initialData?.fuelType ?? "",
       canPull: initialData?.canPull ?? null,
       currentLocationId: initialData?.currentLocationId ?? null,
+      silhouetteId: initialData?.silhouetteId ?? null,
     },
   });
 
@@ -182,6 +186,29 @@ export function LocomotiveForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-medium">Silhouette</CardTitle>
+              <CardDescription>Choose a silhouette that matches your locomotive model</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="silhouetteId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SilhouettePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Basic Info Card */}
           <Card>
