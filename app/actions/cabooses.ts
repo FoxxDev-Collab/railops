@@ -20,6 +20,7 @@ const cabooseSchema = z.object({
   road: z.string().optional().nullable(),
   length: z.coerce.number().optional().nullable(),
   status: z.nativeEnum(RollingStockStatus).optional(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 export type CabooseFormValues = z.infer<typeof cabooseSchema>;

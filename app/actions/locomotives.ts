@@ -29,6 +29,7 @@ const locomotiveSchema = z.object({
   fuelType: z.string().optional().nullable(),
   canPull: z.coerce.number().int().optional().nullable(),
   currentLocationId: z.string().optional().nullable(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 export type LocomotiveFormValues = z.infer<typeof locomotiveSchema>;

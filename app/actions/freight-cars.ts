@@ -25,6 +25,7 @@ const freightCarSchema = z.object({
   status: z.nativeEnum(RollingStockStatus).optional(),
   commodities: z.array(z.string()).optional(),
   currentLocationId: z.string().optional().nullable(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 export type FreightCarFormValues = z.infer<typeof freightCarSchema>;

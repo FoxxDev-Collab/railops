@@ -20,6 +20,7 @@ const mowEquipmentSchema = z.object({
   description: z.string().optional().nullable(),
   length: z.coerce.number().optional().nullable(),
   status: z.nativeEnum(RollingStockStatus).optional(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 export type MOWEquipmentFormValues = z.infer<typeof mowEquipmentSchema>;

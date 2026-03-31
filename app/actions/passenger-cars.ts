@@ -23,6 +23,7 @@ const passengerCarSchema = z.object({
   classOfService: z.nativeEnum(ClassOfService).optional(),
   length: z.coerce.number().optional().nullable(),
   status: z.nativeEnum(RollingStockStatus).optional(),
+  silhouetteId: z.string().optional().nullable(),
 });
 
 export type PassengerCarFormValues = z.infer<typeof passengerCarSchema>;
