@@ -79,9 +79,8 @@ export function PassengerCarCardList({
               <div className="px-4 pt-4 flex justify-center">
                 <SilhouetteImage
                   filePath={car.silhouette.filePath}
-                  darkPath={car.silhouette.darkPath}
                   alt={car.silhouette.name}
-                  className="h-12 w-auto opacity-80"
+                  className="h-16 w-full opacity-80"
                 />
               </div>
             )}

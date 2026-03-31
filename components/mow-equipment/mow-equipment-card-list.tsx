@@ -71,9 +71,8 @@ export function MOWEquipmentCardList({
               <div className="px-4 pt-4 flex justify-center">
                 <SilhouetteImage
                   filePath={item.silhouette.filePath}
-                  darkPath={item.silhouette.darkPath}
                   alt={item.silhouette.name}
-                  className="h-12 w-auto opacity-80"
+                  className="h-16 w-full opacity-80"
                 />
               </div>
             )}

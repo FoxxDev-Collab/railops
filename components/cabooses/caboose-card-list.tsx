@@ -64,9 +64,8 @@ export function CabooseCardList({ cabooses, layoutId }: CabooseCardListProps) {
               <div className="px-4 pt-4 flex justify-center">
                 <SilhouetteImage
                   filePath={caboose.silhouette.filePath}
-                  darkPath={caboose.silhouette.darkPath}
                   alt={caboose.silhouette.name}
-                  className="h-12 w-auto opacity-80"
+                  className="h-16 w-full opacity-80"
                 />
               </div>
             )}

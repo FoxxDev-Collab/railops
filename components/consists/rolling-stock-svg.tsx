@@ -264,7 +264,7 @@ export function RollingStockIcon({
   className?: string;
   facing?: "F" | "R";
   label?: string;
-  silhouette?: { filePath: string; darkPath: string; name: string } | null;
+  silhouette?: { filePath: string; name: string } | null;
 }) {
   // If a specific silhouette is assigned, use it
   if (silhouette) {
@@ -272,9 +272,8 @@ export function RollingStockIcon({
       <div className={className} style={facing === "R" ? { transform: "scaleX(-1)" } : undefined}>
         <SilhouetteImage
           filePath={silhouette.filePath}
-          darkPath={silhouette.darkPath}
           alt={silhouette.name}
-          className="h-full w-auto"
+          className="h-full w-full"
         />
       </div>
     );

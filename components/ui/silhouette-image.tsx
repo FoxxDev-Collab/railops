@@ -2,36 +2,36 @@ import { cn } from "@/lib/utils";
 
 interface SilhouetteImageProps {
   filePath: string;
-  darkPath: string;
+  darkPath?: string;
   alt: string;
   className?: string;
 }
 
 /**
- * Renders both light and dark silhouette variants, toggling visibility
- * with Tailwind's `dark:` variant. Uses plain <img> tags since these are
- * local static SVGs that don't benefit from next/image optimization.
+ * Renders an SVG silhouette using CSS mask-image so it inherits the
+ * current text color automatically — no theme toggling needed.
+ * The SVG is used as a mask shape; backgroundColor provides the fill.
  */
 export function SilhouetteImage({
   filePath,
-  darkPath,
   alt,
   className,
 }: SilhouetteImageProps) {
   return (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={filePath}
-        alt={alt}
-        className={cn(className, "dark:!hidden")}
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={darkPath}
-        alt={alt}
-        className={cn(className, "!hidden dark:!block")}
-      />
-    </>
+    <div
+      role="img"
+      aria-label={alt}
+      className={cn("bg-foreground", className)}
+      style={{
+        maskImage: `url(${filePath})`,
+        WebkitMaskImage: `url(${filePath})`,
+        maskSize: "contain",
+        WebkitMaskSize: "contain",
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+        maskPosition: "center",
+        WebkitMaskPosition: "center",
+      }}
+    />
   );
 }
