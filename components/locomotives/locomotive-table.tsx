@@ -9,6 +9,7 @@ import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteLocomotive } from "@/app/actions/locomotives";
 import { DataTable, SortableHeader, type FilterDef } from "@/components/shared/data-table";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface Locomotive {
   id: string;
@@ -24,6 +25,12 @@ interface Locomotive {
   decoderModel: string | null;
   hasSound: boolean;
   length: number | null;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
   fuelType: string | null;
   canPull: number | null;
   currentLocationId: string | null;
@@ -46,6 +53,19 @@ const statusColors: Record<RollingStockStatus, "default" | "destructive" | "seco
 
 function getColumns(layoutId: string): ColumnDef<Locomotive, unknown>[] {
   return [
+    {
+      id: "silhouette",
+      header: "",
+      cell: ({ row }) =>
+        row.original.silhouette ? (
+          <SilhouetteImage
+            filePath={row.original.silhouette.filePath}
+            alt={row.original.silhouette.name}
+            className="h-6 w-16"
+          />
+        ) : null,
+      enableSorting: false,
+    },
     {
       accessorKey: "road",
       header: ({ column }) => <SortableHeader column={column}>Road / Number</SortableHeader>,
@@ -117,12 +137,6 @@ function getColumns(layoutId: string): ColumnDef<Locomotive, unknown>[] {
           </div>
         );
       },
-    },
-    {
-      accessorKey: "length",
-      header: ({ column }) => <SortableHeader column={column}>Length</SortableHeader>,
-      cell: ({ row }) =>
-        row.original.length ? `${row.original.length}ft` : <span className="text-muted-foreground">—</span>,
     },
     {
       id: "actions",

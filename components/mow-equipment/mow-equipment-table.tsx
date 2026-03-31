@@ -9,6 +9,7 @@ import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deleteMOWEquipment } from "@/app/actions/mow-equipment";
 import { DataTable, SortableHeader, type FilterDef } from "@/components/shared/data-table";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface MOWEquipment {
   id: string;
@@ -17,6 +18,12 @@ interface MOWEquipment {
   equipmentType: MOWEquipmentType;
   description: string | null;
   length: number | null;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
   status: RollingStockStatus;
 }
 
@@ -41,6 +48,19 @@ const statusColors: Record<RollingStockStatus, "default" | "destructive" | "seco
 
 function getColumns(layoutId: string): ColumnDef<MOWEquipment, unknown>[] {
   return [
+    {
+      id: "silhouette",
+      header: "",
+      cell: ({ row }) =>
+        row.original.silhouette ? (
+          <SilhouetteImage
+            filePath={row.original.silhouette.filePath}
+            alt={row.original.silhouette.name}
+            className="h-6 w-16"
+          />
+        ) : null,
+      enableSorting: false,
+    },
     {
       accessorKey: "reportingMarks",
       header: ({ column }) => <SortableHeader column={column}>Marks</SortableHeader>,
@@ -69,12 +89,6 @@ function getColumns(layoutId: string): ColumnDef<MOWEquipment, unknown>[] {
         </Badge>
       ),
       filterFn: (row, _columnId, filterValue: string) => row.original.status === filterValue,
-    },
-    {
-      accessorKey: "length",
-      header: ({ column }) => <SortableHeader column={column}>Length</SortableHeader>,
-      cell: ({ row }) =>
-        row.original.length ? `${row.original.length}ft` : <span className="text-muted-foreground">—</span>,
     },
     {
       accessorKey: "description",

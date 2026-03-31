@@ -9,6 +9,7 @@ import Link from "next/link";
 import { DeleteButton } from "@/components/shared/delete-button";
 import { deletePassengerCar } from "@/app/actions/passenger-cars";
 import { DataTable, SortableHeader, type FilterDef } from "@/components/shared/data-table";
+import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface PassengerCar {
   id: string;
@@ -20,6 +21,12 @@ interface PassengerCar {
   berths: number | null;
   classOfService: ClassOfService;
   length: number | null;
+  silhouette: {
+    id: string;
+    name: string;
+    filePath: string;
+    darkPath: string;
+  } | null;
   status: RollingStockStatus;
 }
 
@@ -49,6 +56,19 @@ const classOfServiceLabels: Record<ClassOfService, string> = {
 
 function getColumns(layoutId: string): ColumnDef<PassengerCar, unknown>[] {
   return [
+    {
+      id: "silhouette",
+      header: "",
+      cell: ({ row }) =>
+        row.original.silhouette ? (
+          <SilhouetteImage
+            filePath={row.original.silhouette.filePath}
+            alt={row.original.silhouette.name}
+            className="h-6 w-16"
+          />
+        ) : null,
+      enableSorting: false,
+    },
     {
       accessorKey: "reportingMarks",
       header: ({ column }) => <SortableHeader column={column}>Marks</SortableHeader>,
@@ -112,12 +132,6 @@ function getColumns(layoutId: string): ColumnDef<PassengerCar, unknown>[] {
         ) : (
           <span className="text-muted-foreground">—</span>
         ),
-    },
-    {
-      accessorKey: "length",
-      header: ({ column }) => <SortableHeader column={column}>Length</SortableHeader>,
-      cell: ({ row }) =>
-        row.original.length ? `${row.original.length}ft` : <span className="text-muted-foreground">—</span>,
     },
     {
       id: "actions",

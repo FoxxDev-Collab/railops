@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Cpu, Volume2 } from "lucide-react";
@@ -72,87 +72,86 @@ export function LocomotiveCardList({
           <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            {loco.silhouette && (
-              <div className="px-4 pt-4 flex justify-center">
-                <SilhouetteImage
-                  filePath={loco.silhouette.filePath}
-                  alt={loco.silhouette.name}
-                  className="h-16 w-full opacity-80"
-                />
-              </div>
-            )}
-
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-base font-mono tracking-wide">
-                    {loco.road} #{loco.number}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {loco.model}
-                  </p>
-                </div>
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                    asChild
-                  >
-                    <Link href={`/dashboard/railroad/${layoutId}/locomotives/${loco.id}/edit`}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                  <DeleteButton
-                    itemName={`${loco.road} #${loco.number}`}
-                    itemType="locomotive"
-                    onDelete={() => deleteLocomotive(loco.id)}
+            <div className="flex">
+              {loco.silhouette && (
+                <div className="flex w-28 shrink-0 items-center justify-center border-r border-border/30 p-3">
+                  <SilhouetteImage
+                    filePath={loco.silhouette.filePath}
+                    alt={loco.silhouette.name}
+                    className="h-12 w-full opacity-80"
                   />
                 </div>
-              </div>
-            </CardHeader>
+              )}
 
-            <CardContent className="pt-0 space-y-3">
-              <div className="flex flex-wrap gap-1.5">
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 font-normal">
-                  {typeLabels[loco.locomotiveType]}
-                </Badge>
-                <Badge
-                  variant={statusColors[loco.status] as "default" | "destructive" | "secondary" | "outline"}
-                  className="text-[10px] px-1.5 py-0 h-4 font-normal"
-                >
-                  {loco.status.replace("_", " ")}
-                </Badge>
-                {loco.horsepower && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal">
-                    {loco.horsepower} HP
+              <div className="flex-1 min-w-0 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-mono font-medium tracking-wide truncate">
+                      {loco.road} #{loco.number}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {loco.model}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      asChild
+                    >
+                      <Link href={`/dashboard/railroad/${layoutId}/locomotives/${loco.id}/edit`}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                    <DeleteButton
+                      itemName={`${loco.road} #${loco.number}`}
+                      itemType="locomotive"
+                      onDelete={() => deleteLocomotive(loco.id)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-1 mt-2">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 font-normal">
+                    {typeLabels[loco.locomotiveType]}
                   </Badge>
-                )}
-              </div>
-
-              {/* DCC info */}
-              {(loco.dccAddress || loco.hasSound) && (
-                <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1 border-t border-border/30">
-                  {loco.dccAddress && (
-                    <span className="flex items-center gap-1">
-                      <Cpu className="h-3 w-3" />
-                      <span className="font-mono">DCC {loco.dccAddress}</span>
-                    </span>
-                  )}
-                  {loco.hasSound && (
-                    <span className="flex items-center gap-1">
-                      <Volume2 className="h-3 w-3" />
-                      Sound
-                    </span>
-                  )}
-                  {loco.decoderManufacturer && (
-                    <span className="text-muted-foreground/50">
-                      {loco.decoderManufacturer}
-                    </span>
+                  <Badge
+                    variant={statusColors[loco.status] as "default" | "destructive" | "secondary" | "outline"}
+                    className="text-[10px] px-1.5 py-0 h-4 font-normal"
+                  >
+                    {loco.status.replace("_", " ")}
+                  </Badge>
+                  {loco.horsepower && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal">
+                      {loco.horsepower} HP
+                    </Badge>
                   )}
                 </div>
-              )}
-            </CardContent>
+
+                {(loco.dccAddress || loco.hasSound) && (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2 pt-2 border-t border-border/30">
+                    {loco.dccAddress && (
+                      <span className="flex items-center gap-1">
+                        <Cpu className="h-3 w-3" />
+                        <span className="font-mono">DCC {loco.dccAddress}</span>
+                      </span>
+                    )}
+                    {loco.hasSound && (
+                      <span className="flex items-center gap-1">
+                        <Volume2 className="h-3 w-3" />
+                        Sound
+                      </span>
+                    )}
+                    {loco.decoderManufacturer && (
+                      <span className="text-muted-foreground/50">
+                        {loco.decoderManufacturer}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </Card>
         </motion.div>
       ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
@@ -60,78 +60,78 @@ export function CabooseCardList({ cabooses, layoutId }: CabooseCardListProps) {
           <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-md hover:border-primary/20">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            {caboose.silhouette && (
-              <div className="px-4 pt-4 flex justify-center">
-                <SilhouetteImage
-                  filePath={caboose.silhouette.filePath}
-                  alt={caboose.silhouette.name}
-                  className="h-16 w-full opacity-80"
-                />
-              </div>
-            )}
-
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-base font-mono tracking-wide">
-                    {caboose.reportingMarks} {caboose.number}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {cabooseTypeLabels[caboose.cabooseType]}
-                  </p>
-                </div>
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                    asChild
-                  >
-                    <Link
-                      href={`/dashboard/railroad/${layoutId}/cabooses/${caboose.id}/edit`}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                  <DeleteButton
-                    itemName={`${caboose.reportingMarks} ${caboose.number}`}
-                    itemType="caboose"
-                    onDelete={() => deleteCaboose(caboose.id)}
+            <div className="flex">
+              {caboose.silhouette && (
+                <div className="flex w-28 shrink-0 items-center justify-center border-r border-border/30 p-3">
+                  <SilhouetteImage
+                    filePath={caboose.silhouette.filePath}
+                    alt={caboose.silhouette.name}
+                    className="h-12 w-full opacity-80"
                   />
                 </div>
-              </div>
-            </CardHeader>
+              )}
 
-            <CardContent className="pt-0 space-y-3">
-              <div className="flex flex-wrap gap-1.5">
-                <Badge
-                  variant={
-                    statusColors[caboose.status] as
-                      | "default"
-                      | "destructive"
-                      | "secondary"
-                      | "outline"
-                  }
-                  className="text-[10px] px-1.5 py-0 h-4 font-normal"
-                >
-                  {caboose.status.replace("_", " ")}
-                </Badge>
-                {caboose.road && (
+              <div className="flex-1 min-w-0 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-mono font-medium tracking-wide truncate">
+                      {caboose.reportingMarks} {caboose.number}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {cabooseTypeLabels[caboose.cabooseType]}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      asChild
+                    >
+                      <Link
+                        href={`/dashboard/railroad/${layoutId}/cabooses/${caboose.id}/edit`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                    <DeleteButton
+                      itemName={`${caboose.reportingMarks} ${caboose.number}`}
+                      itemType="caboose"
+                      onDelete={() => deleteCaboose(caboose.id)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-1 mt-2">
                   <Badge
-                    variant="secondary"
+                    variant={
+                      statusColors[caboose.status] as
+                        | "default"
+                        | "destructive"
+                        | "secondary"
+                        | "outline"
+                    }
                     className="text-[10px] px-1.5 py-0 h-4 font-normal"
                   >
-                    {caboose.road}
+                    {caboose.status.replace("_", " ")}
                   </Badge>
+                  {caboose.road && (
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] px-1.5 py-0 h-4 font-normal"
+                    >
+                      {caboose.road}
+                    </Badge>
+                  )}
+                </div>
+
+                {caboose.length && (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
+                    <span>{caboose.length}ft</span>
+                  </div>
                 )}
               </div>
-
-              {caboose.length && (
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span>{caboose.length}ft</span>
-                </div>
-              )}
-            </CardContent>
+            </div>
           </Card>
         </motion.div>
       ))}
