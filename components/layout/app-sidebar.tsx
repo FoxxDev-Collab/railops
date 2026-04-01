@@ -140,8 +140,13 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
       : [];
 
   async function handleSignOut() {
-    const { signOut } = await import("next-auth/react");
-    signOut({ callbackUrl: "/auth/login" });
+    if (variant === "admin") {
+      const { adminLogout } = await import("@/app/actions/admin/auth");
+      await adminLogout();
+    } else {
+      const { signOut } = await import("next-auth/react");
+      signOut({ callbackUrl: "/auth/login" });
+    }
   }
 
   const isActive = (href: string, exact?: boolean) => {
