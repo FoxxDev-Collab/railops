@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { LocationType } from "@prisma/client";
 import { toast } from "sonner";
@@ -325,7 +325,7 @@ export function LocationForm({ layoutId, initialData, backUrl }: LocationFormPro
     },
   });
 
-  const selectedType = form.watch("locationType");
+  const selectedType = useWatch({ control: form.control, name: "locationType" });
   const selectedTypeInfo = locationTypes.find((t) => t.value === selectedType);
 
   function buildTypeAttributes(values: FormValues): Record<string, unknown> {

@@ -146,7 +146,7 @@ export function CabooseForm({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-sm font-medium">Silhouette</CardTitle>

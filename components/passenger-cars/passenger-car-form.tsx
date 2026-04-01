@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { RollingStockStatus, PassengerCarType, ClassOfService } from "@prisma/client";
 import { toast } from "sonner";
@@ -140,7 +140,7 @@ export function PassengerCarForm({
     }
   }
 
-  const watchedCarType = form.watch("carType");
+  const watchedCarType = useWatch({ control: form.control, name: "carType" });
   const isSleeper = watchedCarType === "SLEEPER";
 
   return (

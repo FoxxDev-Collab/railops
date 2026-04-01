@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { RollingStockStatus } from "@prisma/client";
 import { toast } from "sonner";
@@ -193,7 +193,7 @@ export function FreightCarForm({
   });
 
   // Auto-fill AAR code when car type changes (only on create)
-  const watchedType = form.watch("carType");
+  const watchedType = useWatch({ control: form.control, name: "carType" });
   useEffect(() => {
     const match = carTypes.find((t) => t.value === watchedType);
     if (match && !isEdit) {

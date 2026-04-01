@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -100,7 +100,7 @@ export function SessionForm({
     }
   }
 
-  const selectedTrainIds = form.watch("trainIds") ?? [];
+  const selectedTrainIds = useWatch({ control: form.control, name: "trainIds" }) ?? [];
 
   function toggleTrain(trainId: string) {
     const current = form.getValues("trainIds") ?? [];
