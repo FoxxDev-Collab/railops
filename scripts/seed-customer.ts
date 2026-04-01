@@ -15,12 +15,13 @@ async function main() {
   // ── User ──
   const user = await db.user.upsert({
     where: { email },
-    update: { password: hashedPassword },
+    update: { password: hashedPassword, plan: "PRO" },
     create: {
       email,
       password: hashedPassword,
       name: "Demo Operator",
       role: "USER",
+      plan: "PRO",
       emailVerified: new Date(),
     },
   });

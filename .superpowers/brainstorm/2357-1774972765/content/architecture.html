@@ -1,0 +1,109 @@
+<h2>Vehicle Silhouette System — Architecture</h2>
+<p class="subtitle">How the pieces fit together</p>
+
+<div class="section">
+  <h3>Data Flow</h3>
+  <div class="mockup">
+    <div class="mockup-header">System Architecture</div>
+    <div class="mockup-body" style="padding: 24px; font-family: monospace; font-size: 13px; line-height: 2;">
+      <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap;">
+
+        <!-- Column 1: Source -->
+        <div style="flex: 1; min-width: 200px;">
+          <div style="background: var(--accent-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px;">
+            <div style="font-weight: bold; color: var(--accent); margin-bottom: 8px;">BUILD TIME</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px;">
+              railops_assets/*.svg<br>
+              <span style="opacity: 0.6">(8 sprite sheets)</span>
+            </div>
+            <div style="text-align: center; opacity: 0.5;">&darr; Node.js extraction script</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-top: 6px; font-size: 11px;">
+              public/silhouettes/*.svg<br>
+              <span style="opacity: 0.6">(~46 individual SVGs)</span>
+            </div>
+            <div style="text-align: center; opacity: 0.5;">&darr; seed script</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-top: 6px; font-size: 11px;">
+              Silhouette table (DB)<br>
+              <span style="opacity: 0.6">(name, slug, category, path)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Runtime -->
+        <div style="flex: 1; min-width: 200px;">
+          <div style="background: var(--accent-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px;">
+            <div style="font-weight: bold; color: var(--accent); margin-bottom: 8px;">RUNTIME</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px;">
+              Inventory Forms<br>
+              <span style="opacity: 0.6">Locomotive / FreightCar / etc.</span>
+            </div>
+            <div style="text-align: center; opacity: 0.5;">&darr; silhouetteId FK</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px;">
+              Silhouette Picker Component<br>
+              <span style="opacity: 0.6">Grid of all silhouettes, filterable</span>
+            </div>
+            <div style="text-align: center; opacity: 0.5;">&darr; selected silhouette</div>
+            <div style="background: var(--bg); padding: 8px; border-radius: 4px; font-size: 11px;">
+              Train Builder / Consist View<br>
+              <span style="opacity: 0.6">Renders actual silhouette per item</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Schema -->
+        <div style="flex: 1; min-width: 220px;">
+          <div style="background: var(--accent-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="font-weight: bold; color: var(--accent); margin-bottom: 8px;">SCHEMA</div>
+            <div style="background: var(--bg); padding: 10px; border-radius: 4px; font-size: 11px; line-height: 1.7;">
+              <strong>Silhouette</strong><br>
+              &nbsp;&nbsp;id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String @id<br>
+              &nbsp;&nbsp;name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String<br>
+              &nbsp;&nbsp;slug &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String @unique<br>
+              &nbsp;&nbsp;category &nbsp;&nbsp;SilhouetteCategory<br>
+              &nbsp;&nbsp;filePath &nbsp;&nbsp;String<br>
+              &nbsp;&nbsp;source &nbsp;&nbsp;&nbsp;&nbsp;BUILT_IN | USER<br>
+              &nbsp;&nbsp;userId? &nbsp;&nbsp;&nbsp;String?<br>
+              <br>
+              <strong>SilhouetteCategory</strong> (enum)<br>
+              &nbsp;&nbsp;DIESEL_GP<br>
+              &nbsp;&nbsp;DIESEL_SD<br>
+              &nbsp;&nbsp;DIESEL_ERA<br>
+              &nbsp;&nbsp;STEAM<br>
+              &nbsp;&nbsp;FREIGHT_CAR<br>
+              &nbsp;&nbsp;PASSENGER_CAR<br>
+              &nbsp;&nbsp;CABOOSE<br>
+              &nbsp;&nbsp;MOW<br>
+              <br>
+              <span style="opacity: 0.6;">+ silhouetteId FK on:<br>
+              &nbsp;&nbsp;Locomotive, FreightCar,<br>
+              &nbsp;&nbsp;PassengerCar, Caboose,<br>
+              &nbsp;&nbsp;MOWEquipment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Key Decisions</h3>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+    <div style="background: var(--card-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+      <div class="label">Extraction</div>
+      <p>Node.js script clusters SVG paths by spatial proximity, extracts each vehicle as a standalone SVG with tight viewBox. Light + dark mode variants.</p>
+    </div>
+    <div style="background: var(--card-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+      <div class="label">Storage</div>
+      <p>Static files in <code>public/silhouettes/</code> for fast serving. DB table for metadata, selection UI, and future user uploads.</p>
+    </div>
+    <div style="background: var(--card-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+      <div class="label">Dark Mode</div>
+      <p>Both light and dark SVG variants extracted. Component swaps based on current theme using <code>next-themes</code>.</p>
+    </div>
+    <div style="background: var(--card-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+      <div class="label">Consist View</div>
+      <p>Replace generic <code>RollingStockIcon</code> shapes with actual assigned silhouettes. Fallback to generic if none assigned.</p>
+    </div>
+  </div>
+</div>
