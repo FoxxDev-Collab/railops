@@ -13,7 +13,8 @@ export const {
   session: { strategy: "jwt" },
   ...authConfig,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // Initial sign-in: populate token from the user object returned by authorize()
       if (user) {
         token.id = user.id;
         token.role = (user as { role: Role }).role;
@@ -27,20 +28,39 @@ export const {
         token.sessionVersion = dbUser?.sessionVersion ?? 0;
       }
 
-      // On subsequent requests, verify session is still valid
-      if (!user && token.id && !token.impersonatingFrom) {
+      // Refresh session data from DB on explicit update trigger
+      if (trigger === "update" && token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { sessionVersion: true, role: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.sessionVersion = dbUser.sessionVersion;
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.invalid) {
+        session.user = undefined as unknown as typeof session.user;
+        return session;
+      }
+
+      // Verify session is still valid on each session access (runs in Node.js, not edge)
+      if (token.id && !token.impersonatingFrom) {
         const dbUser = await db.user.findUnique({
           where: { id: token.id as string },
           select: { sessionVersion: true, role: true },
         });
 
         if (!dbUser) {
-          // User was deleted — invalidate token
-          return { ...token, invalid: true };
+          session.user = undefined as unknown as typeof session.user;
+          return session;
         }
 
         if (dbUser.sessionVersion !== token.sessionVersion) {
-          // Session version changed (role change, password reset, etc.)
           token.role = dbUser.role;
           token.sessionVersion = dbUser.sessionVersion;
         }
@@ -52,7 +72,6 @@ export const {
         const impersonateCookie = cookieStore.get("impersonate_target");
 
         if (impersonateCookie?.value && !token.impersonatingFrom) {
-          // Start impersonation: store original admin identity
           const targetUser = await db.user.findUnique({
             where: { id: impersonateCookie.value },
             select: { id: true, role: true, email: true, name: true, emailVerified: true },
@@ -68,7 +87,6 @@ export const {
             token.emailVerified = targetUser.emailVerified;
           }
         } else if (!impersonateCookie?.value && token.impersonatingFrom) {
-          // Stop impersonation: restore admin identity
           const adminUser = await db.user.findUnique({
             where: { id: token.impersonatingFrom as string },
             select: { id: true, role: true, email: true, name: true, emailVerified: true },
@@ -88,14 +106,6 @@ export const {
         // cookies() may not be available in all contexts
       }
 
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.invalid) {
-        // Force re-authentication — clear user identity from session
-        session.user = undefined as unknown as typeof session.user;
-        return session;
-      }
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;

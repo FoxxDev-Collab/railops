@@ -1,5 +1,31 @@
-import { auth } from "@/auth";
+import NextAuth from "next-auth";
+import authConfig from "@/auth.config";
 import { NextResponse } from "next/server";
+
+// Use only the edge-safe auth config (no Prisma) for middleware
+const { auth } = NextAuth({
+  session: { strategy: "jwt" },
+  ...authConfig,
+  callbacks: {
+    async jwt({ token, user }) {
+      // Minimal edge-safe JWT callback — only copies user fields on sign-in
+      if (user) {
+        token.id = user.id;
+        token.role = (user as { role: string }).role;
+        token.emailVerified = (user as { emailVerified: Date | null }).emailVerified;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as "ADMIN" | "USER";
+        session.user.emailVerified = token.emailVerified as Date | null;
+      }
+      return session;
+    },
+  },
+});
 
 // API routes that do NOT require auth (allowlisted)
 const PUBLIC_API_ROUTES = [
