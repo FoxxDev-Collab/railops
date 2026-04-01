@@ -5,6 +5,7 @@ import { LayoutForm } from "@/components/layouts/layout-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { TrackPlanImageUpload } from "@/components/track-plan/image-upload";
 
 export default async function RailroadSettingsPage({
   params,
@@ -35,6 +36,12 @@ export default async function RailroadSettingsPage({
 
       <div className="max-w-2xl">
         <LayoutForm initialData={layout} />
+        <div className="mt-6">
+          <TrackPlanImageUpload
+            layoutId={id}
+            currentImageUrl={layout.imageUrl}
+          />
+        </div>
       </div>
     </div>
   );
