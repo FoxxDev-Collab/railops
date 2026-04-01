@@ -271,8 +271,6 @@ model Layout {
   crewMembers     CrewMember[]
   roles           Role[]
   inviteLinks     InviteLink[]
-  canvas          LayoutCanvas?
-
   @@index([userId])
 }
 
@@ -372,6 +370,8 @@ model Location {
   typeAttributes  Json?
   imageUrl        String?
   sortOrder    Int          @default(0)
+  pinX         Float?
+  pinY         Float?
 
   layoutId     String
   layout       Layout       @relation(fields: [layoutId], references: [id], onDelete: Cascade)
@@ -384,9 +384,6 @@ model Location {
   industries          Industry[]
   yardTracks          YardTrack[]
   trainStops          TrainStop[]
-  canvasNode          CanvasNode?
-  locationCanvas      LocationCanvas?
-
   // Current location of rolling stock
   locomotivesHere     Locomotive[]   @relation("LocomotiveCurrentLocation")
   freightCarsHere     FreightCar[]   @relation("FreightCarCurrentLocation")
@@ -1004,68 +1001,6 @@ model SystemSetting {
   updatedBy String?
 
   @@index([key])
-}
-
-// ─────────────────────────────────────────────
-// CANVAS / MAP EDITOR
-// ─────────────────────────────────────────────
-
-model LayoutCanvas {
-  id        String   @id @default(cuid())
-  layoutId  String   @unique
-  layout    Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
-  viewport  Json     @default("{\"x\":0,\"y\":0,\"zoom\":1}")
-  gridSize  Int      @default(20)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  nodes CanvasNode[]
-  edges CanvasEdge[]
-}
-
-model CanvasNode {
-  id         String       @id @default(cuid())
-  canvasId   String
-  canvas     LayoutCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
-  locationId String       @unique
-  location   Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  x          Float
-  y          Float
-  width      Float        @default(180)
-  height     Float        @default(60)
-  style      Json         @default("{}")
-
-  sourceEdges CanvasEdge[] @relation("EdgeSource")
-  targetEdges CanvasEdge[] @relation("EdgeTarget")
-
-  @@index([canvasId])
-}
-
-model CanvasEdge {
-  id           String       @id @default(cuid())
-  canvasId     String
-  canvas       LayoutCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
-  sourceNodeId String
-  sourceNode   CanvasNode   @relation("EdgeSource", fields: [sourceNodeId], references: [id], onDelete: Cascade)
-  targetNodeId String
-  targetNode   CanvasNode   @relation("EdgeTarget", fields: [targetNodeId], references: [id], onDelete: Cascade)
-  pathData     Json         @default("{}")
-  trackType    String       @default("mainline")
-  label        String?
-  style        Json         @default("{}")
-
-  @@index([canvasId])
-}
-
-model LocationCanvas {
-  id            String   @id @default(cuid())
-  locationId    String   @unique
-  location      Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  viewport      Json     @default("{\"x\":0,\"y\":0,\"zoom\":1}")
-  trackElements Json     @default("[]")
-  carSlots      Json     @default("[]")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────

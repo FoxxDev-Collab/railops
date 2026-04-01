@@ -21,7 +21,6 @@ import {
   CreditCard,
   BookOpen,
   ArrowUpDown,
-  Map,
 } from "lucide-react";
 import {
   Sidebar,
@@ -56,11 +55,6 @@ function getRailroadMenuItems(railroadId: string) {
       label: "Operations Center",
       icon: LayoutDashboard,
       exact: true,
-    },
-    {
-      href: `/dashboard/railroad/${railroadId}/map`,
-      label: "Map",
-      icon: Map,
     },
     {
       href: `/dashboard/railroad/${railroadId}/locations`,
