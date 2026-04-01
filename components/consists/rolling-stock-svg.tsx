@@ -4,6 +4,7 @@
  * designed to look like side-profile train car shapes on a track.
  */
 
+import { cn } from "@/lib/utils";
 import { SilhouetteImage } from "@/components/ui/silhouette-image";
 
 interface CarSvgProps {
@@ -269,13 +270,12 @@ export function RollingStockIcon({
   // If a specific silhouette is assigned, use it
   if (silhouette) {
     return (
-      <div className={className} style={facing === "R" ? { transform: "scaleX(-1)" } : undefined}>
-        <SilhouetteImage
-          filePath={silhouette.filePath}
-          alt={silhouette.name}
-          className="h-full w-full"
-        />
-      </div>
+      <SilhouetteImage
+        filePath={silhouette.filePath}
+        alt={silhouette.name}
+        className={cn("aspect-[2/1]", className)}
+        style={facing === "R" ? { transform: "scaleX(-1)" } : undefined}
+      />
     );
   }
 

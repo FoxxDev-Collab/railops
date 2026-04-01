@@ -5,6 +5,7 @@ interface SilhouetteImageProps {
   darkPath?: string;
   alt: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -16,6 +17,7 @@ export function SilhouetteImage({
   filePath,
   alt,
   className,
+  style,
 }: SilhouetteImageProps) {
   return (
     <div
@@ -31,6 +33,7 @@ export function SilhouetteImage({
         WebkitMaskRepeat: "no-repeat",
         maskPosition: "center",
         WebkitMaskPosition: "center",
+        ...style,
       }}
     />
   );
