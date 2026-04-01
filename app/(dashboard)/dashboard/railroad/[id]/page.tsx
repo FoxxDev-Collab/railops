@@ -24,6 +24,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TrackPlanViewer } from "@/components/track-plan/track-plan-viewer";
 
 const sections = [
   {
@@ -159,6 +160,21 @@ export default async function RailroadPage({
           </CardContent>
         </Card>
       </div>
+
+      {/* Track plan */}
+      {layout.imageUrl && (
+        <TrackPlanViewer
+          layoutId={id}
+          imageUrl={layout.imageUrl}
+          locations={layout.locations.map((l) => ({
+            id: l.id,
+            name: l.name,
+            code: l.code,
+            pinX: l.pinX,
+            pinY: l.pinY,
+          }))}
+        />
+      )}
 
       {/* Section cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
