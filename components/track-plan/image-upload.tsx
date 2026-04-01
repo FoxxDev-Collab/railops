@@ -36,13 +36,9 @@ export function TrackPlanImageUpload({ layoutId, currentImageUrl }: ImageUploadP
   );
 
   const handleRemove = async () => {
-    const result = await removeTrackPlanImage(layoutId);
-    if (result.error) {
-      toast.error(result.error);
-    } else {
-      setImageUrl(null);
-      toast.success("Track plan removed");
-    }
+    await removeTrackPlanImage(layoutId);
+    setImageUrl(null);
+    toast.success("Track plan removed");
   };
 
   const handleDrop = useCallback(
