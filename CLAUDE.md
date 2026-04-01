@@ -13,7 +13,8 @@ npm run dev          # Start dev server (localhost:3000)
 npm run build        # Production build
 npm run lint         # ESLint
 npx prisma generate  # Regenerate Prisma client after schema changes
-npx prisma db push   # Push schema changes to database (no migration files)
+npx prisma migrate dev     # Create and apply migrations (dev)
+npx prisma migrate deploy  # Apply pending migrations (production)
 npx prisma studio    # Visual database browser
 npx tsx scripts/create-admin.ts  # Create admin user
 ```

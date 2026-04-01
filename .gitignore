@@ -42,7 +42,6 @@ next-env.d.ts
 
 # prisma
 /lib/generated/prisma
-prisma/migrations/*_migration.sql
 
 # database
 *.db
