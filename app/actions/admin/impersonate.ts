@@ -1,6 +1,5 @@
 "use server";
 
-import { signIn } from "@/auth";
 import { adminAuth } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { cookies } from "next/headers";
