@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { getSetting, setSetting, getAllSettingsForAdmin, invalidateCache, type SettingKey, SETTING_KEYS } from "@/lib/settings";
 import { logAudit } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
@@ -9,7 +9,7 @@ import nodemailer from "nodemailer";
 // ─── Auth guard ──────────────────────────────────────────────────────────────
 
 async function requireAdmin() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session?.user || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }

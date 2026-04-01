@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getSystemStats } from "@/app/actions/admin/users";
 import { getRecentActivity } from "@/app/actions/admin/audit";
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") {
     redirect("/dashboard");
   }

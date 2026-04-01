@@ -1,13 +1,14 @@
 "use server";
 
-import { auth } from "@/auth";
+import { signIn } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { cookies } from "next/headers";
 import { logAudit } from "@/lib/audit";
 import { redirect } from "next/navigation";
 
 async function requireAdmin() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session?.user) throw new Error("Unauthorized");
 
   // Must be a real admin — impersonating sessions cannot call admin actions
@@ -60,7 +61,7 @@ export async function startImpersonation(targetUserId: string) {
 }
 
 export async function stopImpersonation() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session?.user) throw new Error("Unauthorized");
 
   const adminId = session.user.impersonatingFrom ?? session.user.id;

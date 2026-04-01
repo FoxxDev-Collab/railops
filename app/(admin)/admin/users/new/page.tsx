@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { CreateUserForm } from "@/components/admin/create-user-form";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export default async function NewUserPage() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") {
     redirect("/dashboard");
   }

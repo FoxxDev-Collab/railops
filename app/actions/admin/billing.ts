@@ -1,12 +1,12 @@
 "use server";
 
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session?.user || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getAuditLogs, getAuditActionTypes } from "@/app/actions/admin/audit";
 import { AuditLogClient } from "./client";
@@ -8,7 +8,7 @@ export default async function AuditLogPage({
 }: {
   searchParams: Promise<{ page?: string; action?: string }>;
 }) {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") {
     redirect("/dashboard");
   }

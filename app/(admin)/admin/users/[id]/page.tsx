@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getUserDetails } from "@/app/actions/admin/users";
 import { UserDetailView } from "./client";
@@ -11,7 +11,7 @@ export default async function UserDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
 
   const { id } = await params;

@@ -8,7 +8,6 @@ const { auth } = NextAuth({
   ...authConfig,
   callbacks: {
     async jwt({ token, user }) {
-      // Minimal edge-safe JWT callback — only copies user fields on sign-in
       if (user) {
         token.id = user.id;
         token.role = (user as { role: string }).role;
@@ -29,7 +28,8 @@ const { auth } = NextAuth({
 
 // API routes that do NOT require auth (allowlisted)
 const PUBLIC_API_ROUTES = [
-  "/api/auth", // NextAuth handler
+  "/api/auth",          // NextAuth handler
+  "/api/admin-auth",    // Admin NextAuth handler
   "/api/stripe/webhook", // Stripe webhook (has its own signature verification)
 ];
 
@@ -42,7 +42,6 @@ function isPublicApiRoute(pathname: string): boolean {
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  const userRole = req.auth?.user?.role;
   const emailVerified = req.auth?.user?.emailVerified;
 
   const pathname = nextUrl.pathname;
@@ -65,6 +64,11 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // Admin routes are fully managed server-side by adminAuth() — skip middleware
+  if (isAdminRoute) {
+    return NextResponse.next();
+  }
+
   // Allow verification routes even when logged in and unverified
   if (isVerificationRoute && isLoggedIn) {
     return NextResponse.next();
@@ -73,16 +77,6 @@ export default auth((req) => {
   // Redirect logged-in users away from auth pages
   if (isAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
-  }
-
-  // Protect admin routes
-  if (isAdminRoute) {
-    if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/auth/login", nextUrl));
-    }
-    if (userRole !== "ADMIN") {
-      return NextResponse.redirect(new URL("/dashboard", nextUrl));
-    }
   }
 
   // Invite routes are public — let them through

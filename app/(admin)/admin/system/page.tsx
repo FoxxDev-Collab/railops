@@ -1,10 +1,10 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getAdminSettings } from "@/app/actions/admin/settings";
 import { SettingsForm } from "@/components/admin/settings-form";
 
 export default async function SystemSettingsPage() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") {
     redirect("/dashboard");
   }

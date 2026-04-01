@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getRevenueStats } from "@/app/actions/admin/billing";
 import { getPricingConfig } from "@/app/actions/admin/pricing";
@@ -14,7 +14,7 @@ import { DollarSign, Users, TrendingUp, UserPlus } from "lucide-react";
 import { PricingManager } from "./pricing-manager";
 
 export default async function AdminBillingPage() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
 
   const [stats, pricingConfig] = await Promise.all([

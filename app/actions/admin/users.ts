@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { Plan } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -10,7 +10,7 @@ import { logAudit } from "@/lib/audit";
 
 // Authorization helper
 async function requireAdmin() {
-  const session = await auth();
+  const session = await adminAuth();
   if (!session?.user || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }

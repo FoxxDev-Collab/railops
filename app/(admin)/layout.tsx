@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import {
   SidebarInset,
@@ -14,11 +14,11 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = await adminAuth();
 
   // Require admin authentication
   if (!session?.user) {
-    redirect("/auth/login");
+    redirect("/admin/auth");
   }
 
   if (session.user.role !== "ADMIN") {
