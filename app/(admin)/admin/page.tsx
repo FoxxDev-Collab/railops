@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
     }),
   ]);
 
-  const mrr = stats.operatorUsers * 5;
+  const mrr = stats.proUsers * 5;
 
   return (
     <div className="space-y-6">
@@ -64,7 +64,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">${mrr}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.operatorUsers} operator{stats.operatorUsers !== 1 ? "s" : ""} @ $5/mo
+              {stats.proUsers} Pro subscriber{stats.proUsers !== 1 ? "s" : ""} @ $5/mo
             </p>
           </CardContent>
         </Card>
@@ -121,14 +121,14 @@ export default async function AdminDashboardPage() {
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Operator</span>
-              <span className="font-mono tabular-nums">{stats.operatorUsers}</span>
+              <span className="font-mono tabular-nums">{stats.proUsers}</span>
             </div>
             <div className="h-2 rounded-full bg-muted overflow-hidden">
               <div
                 className="h-full rounded-full bg-primary transition-all duration-500"
                 style={{
                   width: stats.totalUsers > 0
-                    ? `${(stats.operatorUsers / stats.totalUsers) * 100}%`
+                    ? `${(stats.proUsers / stats.totalUsers) * 100}%`
                     : "0%",
                 }}
               />
@@ -190,7 +190,7 @@ export default async function AdminDashboardPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-3">
                       <Badge
-                        variant={user.plan === "OPERATOR" ? "default" : "outline"}
+                        variant={user.plan === "PRO" ? "default" : "outline"}
                         className="text-[10px] px-1.5 py-0 h-4 font-normal"
                       >
                         {user.plan}

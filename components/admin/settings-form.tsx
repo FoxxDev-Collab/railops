@@ -122,7 +122,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         "stripe.publishableKey",
         "stripe.secretKey",
         "stripe.webhookSecret",
-        "stripe.operatorPriceId",
+        "stripe.proPriceId",
       ];
       const toSave = stripeKeys
         .filter((k) => values[k])
@@ -248,11 +248,11 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             placeholder="whsec_..."
           />
           <SettingField
-            settingKey="stripe.operatorPriceId"
-            label="Operator Plan Price ID"
-            setting={settings["stripe.operatorPriceId"]}
-            value={values["stripe.operatorPriceId"]}
-            onChange={(v) => updateValue("stripe.operatorPriceId", v)}
+            settingKey="stripe.proPriceId"
+            label="Pro Plan Price ID"
+            setting={settings["stripe.proPriceId"]}
+            value={values["stripe.proPriceId"]}
+            onChange={(v) => updateValue("stripe.proPriceId", v)}
             placeholder="price_..."
           />
           <div className="flex items-center gap-2 pt-2">

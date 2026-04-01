@@ -21,7 +21,7 @@ interface PricingManagerProps {
   initialConfig: PricingConfig;
 }
 
-type TierKey = "hobbyist" | "operator" | "club";
+type TierKey = "free" | "pro";
 
 function TierEditor({
   tierKey,
@@ -55,7 +55,7 @@ function TierEditor({
     setSaving(true);
     try {
       const data: PricingTier = { name, price, description, features };
-      if (tierKey === "club") data.crewSeatPrice = crewSeatPrice;
+      if (tierKey === "pro") data.crewSeatPrice = crewSeatPrice;
       const result = await updatePricingTier(tierKey, data);
       if (result.success) {
         toast.success(`${name} tier updated`);
@@ -175,7 +175,7 @@ function TierEditor({
         )}
 
         {/* Crew seat price (Club only) */}
-        {tierKey === "club" && (
+        {tierKey === "pro" && (
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">
               Additional Crew Seat Price ($/month)
@@ -269,10 +269,9 @@ function TierEditor({
 
 export function PricingManager({ initialConfig }: PricingManagerProps) {
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <TierEditor tierKey="hobbyist" tier={initialConfig.hobbyist} />
-      <TierEditor tierKey="operator" tier={initialConfig.operator} highlighted />
-      <TierEditor tierKey="club" tier={initialConfig.club} />
+    <div className="grid gap-6 lg:grid-cols-2">
+      <TierEditor tierKey="free" tier={initialConfig.free} />
+      <TierEditor tierKey="pro" tier={initialConfig.pro} highlighted />
     </div>
   );
 }

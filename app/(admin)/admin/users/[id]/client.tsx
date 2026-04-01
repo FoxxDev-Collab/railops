@@ -109,7 +109,7 @@ export function UserDetailView({ user, adminId }: UserDetailViewProps) {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Plan</p>
-                <Badge variant={user.plan === "OPERATOR" ? "default" : "outline"}>
+                <Badge variant={user.plan === "PRO" ? "default" : "outline"}>
                   {user.plan}
                 </Badge>
               </div>

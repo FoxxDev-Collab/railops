@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Check, ArrowRight, HelpCircle } from "lucide-react";
+import { Check, ArrowRight, HelpCircle, X } from "lucide-react";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { getPricingConfig } from "@/app/actions/admin/pricing";
@@ -21,20 +21,24 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const { hobbyist, operator, club } = await getPricingConfig();
+  const { free, pro } = await getPricingConfig();
 
   const faqs = [
     {
       q: "Can I really use RailOps for free?",
-      a: "Yes. The Hobbyist tier is free forever — no credit card required. You get one railroad with up to 25 of each resource type, waybill generation, operating sessions, and maintenance tracking.",
+      a: "Yes. The Free tier is free forever — no credit card required. You get one layout with up to 50 total items, waybill generation, operating sessions, and maintenance tracking.",
     },
     {
-      q: "What happens when I hit the free tier limits?",
+      q: "What counts as an item?",
+      a: "Locations, locomotives, freight cars, passenger cars, MOW equipment, cabooses, and trains all count toward your 50-item total. Waybills, industries, and yard tracks don't count.",
+    },
+    {
+      q: "What happens when I hit the free tier limit?",
       a: "You'll see a notice when you approach the cap. Nothing gets deleted — you just can't add new items until you upgrade or remove existing ones.",
     },
     {
-      q: "How does Club pricing work?",
-      a: `Club includes 5 crew seats. The base price is $${club.price}/month. Additional seats beyond the included 5 are $${club.crewSeatPrice || "5"}/month each. The owner seat is always included.`,
+      q: "How do crew seats and extra layouts work?",
+      a: `Pro includes 1 crew member and 5 layouts. Need more? Each additional crew seat or 5-layout pack is $${pro.crewSeatPrice || "5"}/month.`,
     },
     {
       q: "Can I switch plans anytime?",
@@ -42,7 +46,7 @@ export default async function PricingPage() {
     },
     {
       q: "Do crew members need their own accounts?",
-      a: "Yes. Each crew member signs up with their own email. The railroad owner or an admin invites them via email or shareable link, and they get role-based access (Dispatcher, Yardmaster, Conductor, or a custom role).",
+      a: "Yes. Each crew member signs up with their own email. The layout owner invites them via email or shareable link, and they get role-based access (Dispatcher, Yardmaster, Conductor, or a custom role).",
     },
     {
       q: "Is my data safe?",
@@ -88,16 +92,16 @@ export default async function PricingPage() {
         {/* Pricing Cards */}
         <section className="border-b border-border bg-muted/40 py-20">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-5xl">
-              <div className="grid gap-6 md:grid-cols-3">
-                {/* Hobbyist */}
+            <div className="mx-auto max-w-3xl">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Free */}
                 <Card className="relative flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-xl">{hobbyist.name}</CardTitle>
-                    <CardDescription>{hobbyist.description}</CardDescription>
+                    <CardTitle className="text-xl">{free.name}</CardTitle>
+                    <CardDescription>{free.description}</CardDescription>
                     <div className="pt-4">
                       <span className="text-5xl font-extrabold tracking-tight text-foreground">
-                        ${hobbyist.price}
+                        ${free.price}
                       </span>
                       <span className="ml-1 text-muted-foreground">
                         /month
@@ -109,7 +113,7 @@ export default async function PricingPage() {
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {hobbyist.features.map((f) => (
+                      {free.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           <span>{f}</span>
@@ -127,19 +131,19 @@ export default async function PricingPage() {
                   </CardContent>
                 </Card>
 
-                {/* Operator */}
+                {/* Pro */}
                 <Card className="relative flex flex-col border-primary shadow-lg">
                   <div className="absolute -top-3 left-6">
                     <Badge className="px-3 py-1 text-xs font-semibold">
-                      Most Popular
+                      Recommended
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-xl">{operator.name}</CardTitle>
-                    <CardDescription>{operator.description}</CardDescription>
+                    <CardTitle className="text-xl">{pro.name}</CardTitle>
+                    <CardDescription>{pro.description}</CardDescription>
                     <div className="pt-4">
                       <span className="text-5xl font-extrabold tracking-tight text-foreground">
-                        ${operator.price}
+                        ${pro.price}
                       </span>
                       <span className="ml-1 text-muted-foreground">
                         /month
@@ -151,7 +155,7 @@ export default async function PricingPage() {
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {operator.features.map((f) => (
+                      {pro.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                           <span>{f}</span>
@@ -165,54 +169,15 @@ export default async function PricingPage() {
                     </Button>
                   </CardContent>
                 </Card>
-
-                {/* Club */}
-                <Card className="relative flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{club.name}</CardTitle>
-                    <CardDescription>{club.description}</CardDescription>
-                    <div className="pt-4">
-                      <span className="text-5xl font-extrabold tracking-tight text-foreground">
-                        ${club.price}
-                      </span>
-                      <span className="ml-1 text-muted-foreground">
-                        /month
-                      </span>
-                    </div>
-                    <p className="pt-1 text-xs font-medium text-muted-foreground">
-                      Includes 5 crew seats
-                    </p>
-                  </CardHeader>
-                  <CardContent className="flex flex-1 flex-col">
-                    <ul className="flex-1 space-y-3">
-                      {club.features.map((f) => (
-                        <li key={f} className="flex items-start gap-3 text-sm">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="mt-8 w-full"
-                      size="lg"
-                    >
-                      <Link href="/auth/signup">Get Started Free</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
               </div>
 
               <p className="mt-8 text-center text-sm text-muted-foreground">
-                All plans start on the free tier. Upgrade or downgrade at any
-                time.{" "}
+                All accounts start on the free tier. Upgrade or downgrade at any
+                time. Need more?{" "}
                 <span className="font-medium text-foreground">
-                  Club pricing: ${operator.price} operator + $
-                  {club.crewSeatPrice || "5"}/seat &times; included crew = $
-                  {club.price}/mo
+                  +${pro.crewSeatPrice || "5"}/mo per additional crew seat or
+                  5-layout pack.
                 </span>
-                . Additional seats are ${club.crewSeatPrice || "5"}/mo each.
               </p>
             </div>
           </div>
@@ -221,7 +186,7 @@ export default async function PricingPage() {
         {/* Feature Comparison Table */}
         <section className="border-b border-border py-20">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-4xl">
+            <div className="mx-auto max-w-3xl">
               <div className="mb-12 text-center">
                 <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground">
                   Compare Plans
@@ -239,106 +204,73 @@ export default async function PricingPage() {
                         Feature
                       </th>
                       <th className="px-4 py-4 text-center font-semibold text-foreground">
-                        {hobbyist.name}
+                        {free.name}
                       </th>
                       <th className="px-4 py-4 text-center font-semibold text-primary">
-                        {operator.name}
-                      </th>
-                      <th className="px-4 py-4 text-center font-semibold text-foreground">
-                        {club.name}
+                        {pro.name}
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     <ComparisonRow
-                      feature="Railroads"
-                      hobbyist="1"
-                      operator="Unlimited"
-                      club="Unlimited"
+                      feature="Total Items"
+                      free="50"
+                      pro="Unlimited"
                     />
                     <ComparisonRow
-                      feature="Locations"
-                      hobbyist="25"
-                      operator="Unlimited"
-                      club="Unlimited"
+                      feature="Layouts"
+                      free="1"
+                      pro="5 included"
                     />
                     <ComparisonRow
-                      feature="Locomotives"
-                      hobbyist="25"
-                      operator="Unlimited"
-                      club="Unlimited"
-                    />
-                    <ComparisonRow
-                      feature="Freight Cars"
-                      hobbyist="25"
-                      operator="Unlimited"
-                      club="Unlimited"
-                    />
-                    <ComparisonRow
-                      feature="Trains"
-                      hobbyist="25"
-                      operator="Unlimited"
-                      club="Unlimited"
+                      feature="Crew Members"
+                      free="—"
+                      pro="1 included"
                     />
                     <ComparisonRow
                       feature="Waybill Generation"
-                      hobbyist={true}
-                      operator={true}
-                      club={true}
+                      free={true}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="Operating Sessions"
-                      hobbyist={true}
-                      operator={true}
-                      club={true}
+                      free={true}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="Maintenance Tracking"
-                      hobbyist={true}
-                      operator={true}
-                      club={true}
+                      free={true}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="Print Switch Lists"
-                      hobbyist={false}
-                      operator={true}
-                      club={true}
+                      free={false}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="CSV Import / Export"
-                      hobbyist={false}
-                      operator={true}
-                      club={true}
+                      free={false}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="Priority Support"
-                      hobbyist={false}
-                      operator={true}
-                      club={true}
-                    />
-                    <ComparisonRow
-                      feature="Crew Seats"
-                      hobbyist="—"
-                      operator="—"
-                      club="5 included"
+                      free={false}
+                      pro={true}
                     />
                     <ComparisonRow
                       feature="Role-Based Access"
-                      hobbyist={false}
-                      operator={false}
-                      club={true}
+                      free={false}
+                      pro={true}
                     />
                     <ComparisonRow
-                      feature="Custom Roles"
-                      hobbyist={false}
-                      operator={false}
-                      club={true}
+                      feature="Additional Crew Seats"
+                      free="—"
+                      pro="$5/mo each"
                     />
                     <ComparisonRow
-                      feature="Shared Sessions"
-                      hobbyist={false}
-                      operator={false}
-                      club={true}
+                      feature="Additional Layout Packs"
+                      free="—"
+                      pro="$5/mo per 5"
                     />
                   </tbody>
                 </table>
@@ -412,14 +344,12 @@ export default async function PricingPage() {
 
 function ComparisonRow({
   feature,
-  hobbyist,
-  operator,
-  club,
+  free,
+  pro,
 }: {
   feature: string;
-  hobbyist: boolean | string;
-  operator: boolean | string;
-  club: boolean | string;
+  free: boolean | string;
+  pro: boolean | string;
 }) {
   function renderCell(value: boolean | string) {
     if (typeof value === "string") {
@@ -430,16 +360,15 @@ function ComparisonRow({
     return value ? (
       <Check className="mx-auto h-4 w-4 text-primary" />
     ) : (
-      <span className="text-muted-foreground/40">—</span>
+      <X className="mx-auto h-4 w-4 text-muted-foreground/40" />
     );
   }
 
   return (
     <tr>
       <td className="py-3.5 pr-4 text-foreground">{feature}</td>
-      <td className="px-4 py-3.5 text-center">{renderCell(hobbyist)}</td>
-      <td className="px-4 py-3.5 text-center">{renderCell(operator)}</td>
-      <td className="px-4 py-3.5 text-center">{renderCell(club)}</td>
+      <td className="px-4 py-3.5 text-center">{renderCell(free)}</td>
+      <td className="px-4 py-3.5 text-center">{renderCell(pro)}</td>
     </tr>
   );
 }

@@ -117,7 +117,7 @@ export default async function Home() {
     },
   ];
 
-  const { hobbyist, operator, club } = pricing;
+  const { free, pro } = pricing;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -293,22 +293,22 @@ export default async function Home() {
                 </p>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-3">
-                {/* Hobbyist — Free */}
+              <div className="mx-auto grid max-w-3xl gap-6 md:grid-cols-2">
+                {/* Free */}
                 <Card className="relative flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-xl">{hobbyist.name}</CardTitle>
-                    <CardDescription>{hobbyist.description}</CardDescription>
+                    <CardTitle className="text-xl">{free.name}</CardTitle>
+                    <CardDescription>{free.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
-                        ${hobbyist.price}
+                        ${free.price}
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {hobbyist.features.map((f) => (
+                      {free.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           <span>{f}</span>
@@ -326,26 +326,26 @@ export default async function Home() {
                   </CardContent>
                 </Card>
 
-                {/* Operator */}
+                {/* Pro */}
                 <Card className="relative flex flex-col border-primary shadow-lg">
                   <div className="absolute -top-3 left-6">
                     <Badge className="px-3 py-1 text-xs font-semibold">
-                      Most Popular
+                      Recommended
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-xl">{operator.name}</CardTitle>
-                    <CardDescription>{operator.description}</CardDescription>
+                    <CardTitle className="text-xl">{pro.name}</CardTitle>
+                    <CardDescription>{pro.description}</CardDescription>
                     <div className="pt-3">
                       <span className="text-4xl font-extrabold text-foreground">
-                        ${operator.price}
+                        ${pro.price}
                       </span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col">
                     <ul className="flex-1 space-y-3">
-                      {operator.features.map((f) => (
+                      {pro.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                           <span>{f}</span>
@@ -357,48 +357,14 @@ export default async function Home() {
                     </Button>
                   </CardContent>
                 </Card>
-
-                {/* Club */}
-                <Card className="relative flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{club.name}</CardTitle>
-                    <CardDescription>{club.description}</CardDescription>
-                    <div className="pt-3">
-                      <span className="text-4xl font-extrabold text-foreground">
-                        ${club.price}
-                      </span>
-                      <span className="text-muted-foreground">/month</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex flex-1 flex-col">
-                    <ul className="flex-1 space-y-3">
-                      {club.features.map((f) => (
-                        <li key={f} className="flex items-start gap-3 text-sm">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="mt-8 w-full"
-                      size="lg"
-                    >
-                      <Link href="/auth/signup">Get Started Free</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
               </div>
 
               <p className="mt-8 text-center text-sm text-muted-foreground">
-                All plans start on the free tier. Upgrade or downgrade at any
+                All accounts start on the free tier. Upgrade or downgrade at any
                 time.{" "}
                 <span className="font-medium text-foreground">
-                  Club pricing: ${operator.price} operator + ${club.crewSeatPrice || "5"}/seat &times; included crew =
-                  ${club.price}/mo
+                  Need more? +${pro.crewSeatPrice || "5"}/mo per additional crew seat or 5-layout pack.
                 </span>
-                . Additional seats are ${club.crewSeatPrice || "5"}/mo each.
               </p>
             </div>
           </div>

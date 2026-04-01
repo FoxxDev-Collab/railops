@@ -8,7 +8,7 @@ export const SETTING_KEYS = {
   "stripe.publishableKey": { envFallback: "STRIPE_PUBLISHABLE_KEY", sensitive: false },
   "stripe.secretKey": { envFallback: "STRIPE_SECRET_KEY", sensitive: true },
   "stripe.webhookSecret": { envFallback: "STRIPE_WEBHOOK_SECRET", sensitive: true },
-  "stripe.operatorPriceId": { envFallback: "STRIPE_OPERATOR_PRICE_ID", sensitive: false },
+  "stripe.proPriceId": { envFallback: "STRIPE_PRO_PRICE_ID", sensitive: false },
 
   // SMTP
   "smtp.host": { envFallback: "SMTP_HOST", sensitive: false },
@@ -23,19 +23,16 @@ export const SETTING_KEYS = {
   "app.url": { envFallback: "NEXT_PUBLIC_APP_URL", sensitive: false },
 
   // Pricing — tier configuration (JSON)
-  "pricing.hobbyist.name": { envFallback: null, sensitive: false },
-  "pricing.hobbyist.price": { envFallback: null, sensitive: false },
-  "pricing.hobbyist.description": { envFallback: null, sensitive: false },
-  "pricing.hobbyist.features": { envFallback: null, sensitive: false },
-  "pricing.operator.name": { envFallback: null, sensitive: false },
-  "pricing.operator.price": { envFallback: null, sensitive: false },
-  "pricing.operator.description": { envFallback: null, sensitive: false },
-  "pricing.operator.features": { envFallback: null, sensitive: false },
-  "pricing.club.name": { envFallback: null, sensitive: false },
-  "pricing.club.price": { envFallback: null, sensitive: false },
-  "pricing.club.description": { envFallback: null, sensitive: false },
-  "pricing.club.features": { envFallback: null, sensitive: false },
-  "pricing.club.crewSeatPrice": { envFallback: null, sensitive: false },
+  "pricing.free.name": { envFallback: null, sensitive: false },
+  "pricing.free.price": { envFallback: null, sensitive: false },
+  "pricing.free.description": { envFallback: null, sensitive: false },
+  "pricing.free.features": { envFallback: null, sensitive: false },
+  "pricing.pro.name": { envFallback: null, sensitive: false },
+  "pricing.pro.price": { envFallback: null, sensitive: false },
+  "pricing.pro.description": { envFallback: null, sensitive: false },
+  "pricing.pro.features": { envFallback: null, sensitive: false },
+  "pricing.pro.crewSeatPrice": { envFallback: null, sensitive: false },
+  "pricing.pro.layoutPackPrice": { envFallback: null, sensitive: false },
 } as const;
 
 export type SettingKey = keyof typeof SETTING_KEYS;

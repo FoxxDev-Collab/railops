@@ -143,7 +143,7 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
               </TableCell>
               <TableCell>
                 <Badge
-                  variant={user.plan === "OPERATOR" ? "default" : "outline"}
+                  variant={user.plan === "PRO" ? "default" : "outline"}
                 >
                   {user.plan}
                 </Badge>
@@ -184,11 +184,11 @@ export function UserManagementTable({ users }: { users: UserWithCounts[] }) {
                           {user.plan === "FREE" && " (current)"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleSetPlan(user.id, "OPERATOR")}
-                          disabled={user.plan === "OPERATOR"}
+                          onClick={() => handleSetPlan(user.id, "PRO")}
+                          disabled={user.plan === "PRO"}
                         >
-                          Operator
-                          {user.plan === "OPERATOR" && " (current)"}
+                          Pro
+                          {user.plan === "PRO" && " (current)"}
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
                     </DropdownMenuSub>

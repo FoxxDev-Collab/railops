@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LocomotiveType, LocomotiveService, RollingStockStatus } from "@prisma/client";
-import { checkCategoryLimit } from "@/lib/limits";
+import { checkTotalItemLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -45,9 +45,9 @@ export async function createLocomotive(layoutId: string, values: LocomotiveFormV
   });
   if (!layout) return { error: "Layout not found" };
 
-  const limit = await checkCategoryLimit(session.user.id, layoutId, "locomotives");
+  const limit = await checkTotalItemLimit(session.user.id);
   if (!limit.allowed) {
-    return { error: `Free plan limit reached (${limit.limit} locomotives). Upgrade to add more.` };
+    return { error: `Free plan limit reached (${limit.current}/${limit.limit} total items). Upgrade to Pro to add more.` };
   }
 
   // Check unique road+number per user

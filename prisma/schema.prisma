@@ -176,7 +176,7 @@ enum AssetType {
 
 enum Plan {
   FREE
-  OPERATOR
+  PRO
 }
 
 // ─────────────────────────────────────────────

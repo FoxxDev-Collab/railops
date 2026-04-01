@@ -2,22 +2,22 @@ import { db } from "@/lib/db";
 import { Plan } from "@prisma/client";
 
 const PLAN_LIMITS: Record<Plan, {
-  maxRailroads: number;
-  maxPerCategory: number;
+  maxLayouts: number;
+  maxTotalItems: number;
   canExport: boolean;
   maxCrew: number;
 }> = {
   FREE: {
-    maxRailroads: 1,
-    maxPerCategory: 25,
+    maxLayouts: 1,
+    maxTotalItems: 50,
     canExport: false,
     maxCrew: 0,
   },
-  OPERATOR: {
-    maxRailroads: Infinity,
-    maxPerCategory: Infinity,
+  PRO: {
+    maxLayouts: 5,
+    maxTotalItems: Infinity,
     canExport: true,
-    maxCrew: Infinity, // Paid per seat via Stripe
+    maxCrew: Infinity, // 1 included, additional paid per seat via Stripe
   },
 };
 
@@ -25,20 +25,13 @@ export function getPlanLimits(plan: Plan) {
   return PLAN_LIMITS[plan];
 }
 
-type CountableCategory =
-  | "locations"
-  | "locomotives"
-  | "freightCars"
-  | "passengerCars"
-  | "mowEquipment"
-  | "cabooses"
-  | "trains"
-  | "waybills";
-
-export async function checkCategoryLimit(
-  userId: string,
-  layoutId: string,
-  category: CountableCategory
+/**
+ * Checks the total item limit across all countable categories for a user.
+ * Free plan: 50 total items (locations + all rolling stock + trains).
+ * Pro plan: unlimited.
+ */
+export async function checkTotalItemLimit(
+  userId: string
 ): Promise<{ allowed: boolean; current: number; limit: number }> {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -47,24 +40,24 @@ export async function checkCategoryLimit(
 
   const plan = user?.plan ?? "FREE";
   const limits = getPlanLimits(plan);
-  const limit = limits.maxPerCategory;
+  const limit = limits.maxTotalItems;
 
   if (limit === Infinity) {
     return { allowed: true, current: 0, limit };
   }
 
-  const countMap: Record<CountableCategory, () => Promise<number>> = {
-    locations: () => db.location.count({ where: { userId, layoutId } }),
-    locomotives: () => db.locomotive.count({ where: { userId, layoutId } }),
-    freightCars: () => db.freightCar.count({ where: { userId, layoutId } }),
-    passengerCars: () => db.passengerCar.count({ where: { userId, layoutId } }),
-    mowEquipment: () => db.mOWEquipment.count({ where: { userId, layoutId } }),
-    cabooses: () => db.caboose.count({ where: { userId, layoutId } }),
-    trains: () => db.train.count({ where: { userId, layoutId } }),
-    waybills: () => db.waybill.count({ where: { userId } }),
-  };
+  const [locations, locomotives, freightCars, passengerCars, mowEquipment, cabooses, trains] =
+    await Promise.all([
+      db.location.count({ where: { userId } }),
+      db.locomotive.count({ where: { userId } }),
+      db.freightCar.count({ where: { userId } }),
+      db.passengerCar.count({ where: { userId } }),
+      db.mOWEquipment.count({ where: { userId } }),
+      db.caboose.count({ where: { userId } }),
+      db.train.count({ where: { userId } }),
+    ]);
 
-  const current = await countMap[category]();
+  const current = locations + locomotives + freightCars + passengerCars + mowEquipment + cabooses + trains;
   return { allowed: current < limit, current, limit };
 }
 
@@ -78,7 +71,7 @@ export async function checkRailroadLimit(
 
   const plan = user?.plan ?? "FREE";
   const limits = getPlanLimits(plan);
-  const limit = limits.maxRailroads;
+  const limit = limits.maxLayouts;
 
   if (limit === Infinity) {
     return { allowed: true, current: 0, limit };

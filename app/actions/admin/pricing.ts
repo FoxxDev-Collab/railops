@@ -19,70 +19,59 @@ export interface PricingTier {
   description: string;
   features: string[];
   crewSeatPrice?: string;
+  layoutPackPrice?: string;
 }
 
 export interface PricingConfig {
-  hobbyist: PricingTier;
-  operator: PricingTier;
-  club: PricingTier;
+  free: PricingTier;
+  pro: PricingTier;
 }
 
 const DEFAULTS: PricingConfig = {
-  hobbyist: {
-    name: "Hobbyist",
+  free: {
+    name: "Free",
     price: "0",
-    description: "For getting started with a single railroad",
+    description: "For getting started with a single layout",
     features: [
-      "1 railroad",
-      "25 locations",
-      "25 locomotives",
-      "25 freight cars",
-      "25 trains",
+      "1 layout",
+      "50 total items (rolling stock & locations)",
       "Waybill generation",
       "Operating sessions",
       "Maintenance tracking",
     ],
   },
-  operator: {
-    name: "Operator",
+  pro: {
+    name: "Pro",
     price: "5",
-    description: "Unlimited everything for serious railroaders",
+    description: "Unlimited items for serious railroaders",
     features: [
-      "Everything in Hobbyist",
-      "Unlimited railroads",
-      "Unlimited inventory",
-      "Unlimited trains & waybills",
+      "Everything in Free",
+      "Unlimited items",
+      "5 layouts included",
+      "1 crew member included",
       "Print switch lists & manifests",
       "CSV import / export",
       "Priority support",
-    ],
-  },
-  club: {
-    name: "Club",
-    price: "25",
-    description: "Multi-crew operations for clubs and groups",
-    features: [
-      "Everything in Operator",
-      "5 crew seats included",
-      "Role-based access control",
-      "Dispatcher, Yardmaster, Conductor roles",
-      "Shared session management",
-      "Crew activity log",
-      "Additional seats $5/mo each",
+      "Additional crew seats $5/mo each",
+      "Additional 5-layout packs $5/mo each",
     ],
     crewSeatPrice: "5",
+    layoutPackPrice: "5",
   },
 };
 
-async function getTierFromDb(tier: "hobbyist" | "operator" | "club"): Promise<PricingTier> {
+async function getTierFromDb(tier: "free" | "pro"): Promise<PricingTier> {
   const prefix = `pricing.${tier}` as const;
-  const [name, price, description, featuresJson, crewSeatPrice] = await Promise.all([
-    getSetting(`${prefix}.name` as SettingKey),
-    getSetting(`${prefix}.price` as SettingKey),
-    getSetting(`${prefix}.description` as SettingKey),
-    getSetting(`${prefix}.features` as SettingKey),
-    tier === "club" ? getSetting("pricing.club.crewSeatPrice" as SettingKey) : null,
-  ]);
+  const keys = [
+    `${prefix}.name`,
+    `${prefix}.price`,
+    `${prefix}.description`,
+    `${prefix}.features`,
+  ] as const;
+
+  const [name, price, description, featuresJson] = await Promise.all(
+    keys.map((k) => getSetting(k as SettingKey))
+  );
 
   const defaults = DEFAULTS[tier];
 
@@ -97,26 +86,35 @@ async function getTierFromDb(tier: "hobbyist" | "operator" | "club"): Promise<Pr
     features = defaults.features;
   }
 
-  return {
+  const result: PricingTier = {
     name: name || defaults.name,
     price: price || defaults.price,
     description: description || defaults.description,
     features,
-    ...(tier === "club" ? { crewSeatPrice: crewSeatPrice || defaults.crewSeatPrice } : {}),
   };
+
+  if (tier === "pro") {
+    const [crewSeatPrice, layoutPackPrice] = await Promise.all([
+      getSetting("pricing.pro.crewSeatPrice" as SettingKey),
+      getSetting("pricing.pro.layoutPackPrice" as SettingKey),
+    ]);
+    result.crewSeatPrice = crewSeatPrice || defaults.crewSeatPrice;
+    result.layoutPackPrice = layoutPackPrice || defaults.layoutPackPrice;
+  }
+
+  return result;
 }
 
 export async function getPricingConfig(): Promise<PricingConfig> {
-  const [hobbyist, operator, club] = await Promise.all([
-    getTierFromDb("hobbyist"),
-    getTierFromDb("operator"),
-    getTierFromDb("club"),
+  const [free, pro] = await Promise.all([
+    getTierFromDb("free"),
+    getTierFromDb("pro"),
   ]);
-  return { hobbyist, operator, club };
+  return { free, pro };
 }
 
 export async function updatePricingTier(
-  tier: "hobbyist" | "operator" | "club",
+  tier: "free" | "pro",
   data: PricingTier
 ) {
   const session = await requireAdmin();
@@ -127,8 +125,11 @@ export async function updatePricingTier(
     setSetting(`${prefix}.price` as SettingKey, data.price, session.user.id),
     setSetting(`${prefix}.description` as SettingKey, data.description, session.user.id),
     setSetting(`${prefix}.features` as SettingKey, JSON.stringify(data.features), session.user.id),
-    ...(tier === "club" && data.crewSeatPrice
-      ? [setSetting("pricing.club.crewSeatPrice" as SettingKey, data.crewSeatPrice, session.user.id)]
+    ...(tier === "pro" && data.crewSeatPrice
+      ? [setSetting("pricing.pro.crewSeatPrice" as SettingKey, data.crewSeatPrice, session.user.id)]
+      : []),
+    ...(tier === "pro" && data.layoutPackPrice
+      ? [setSetting("pricing.pro.layoutPackPrice" as SettingKey, data.layoutPackPrice, session.user.id)]
       : []),
   ]);
 

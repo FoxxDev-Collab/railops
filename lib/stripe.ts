@@ -31,7 +31,7 @@ export async function getStripeClient(): Promise<Stripe> {
 }
 
 /**
- * Creates a Stripe Checkout session for the Operator plan.
+ * Creates a Stripe Checkout session for the Pro plan.
  */
 export async function createCheckoutSession(
   userId: string,
@@ -39,11 +39,11 @@ export async function createCheckoutSession(
   customerId?: string | null
 ): Promise<string> {
   const stripe = await getStripeClient();
-  const priceId = await getSetting("stripe.operatorPriceId");
+  const priceId = await getSetting("stripe.proPriceId");
   const appUrl = await getSetting("app.url") ?? "http://localhost:3000";
 
   if (!priceId) {
-    throw new Error("Stripe Operator price ID not configured.");
+    throw new Error("Stripe Pro price ID not configured.");
   }
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {

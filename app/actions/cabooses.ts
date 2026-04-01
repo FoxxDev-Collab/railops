@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { CabooseType, RollingStockStatus } from "@prisma/client";
-import { checkCategoryLimit } from "@/lib/limits";
+import { checkTotalItemLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -36,9 +36,9 @@ export async function createCaboose(layoutId: string, values: CabooseFormValues)
   });
   if (!layout) return { error: "Layout not found" };
 
-  const limit = await checkCategoryLimit(session.user.id, layoutId, "cabooses");
+  const limit = await checkTotalItemLimit(session.user.id);
   if (!limit.allowed) {
-    return { error: `Free plan limit reached (${limit.limit} cabooses). Upgrade to add more.` };
+    return { error: `Free plan limit reached (${limit.current}/${limit.limit} total items). Upgrade to Pro to add more.` };
   }
 
   const existing = await db.caboose.findUnique({

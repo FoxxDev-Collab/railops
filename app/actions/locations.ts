@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LocationType } from "@prisma/client";
-import { checkCategoryLimit } from "@/lib/limits";
+import { checkTotalItemLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -118,9 +118,9 @@ export async function createLocation(layoutId: string, values: LocationFormValue
   if (!layout) return { error: "Layout not found" };
 
   // Check plan limits
-  const limit = await checkCategoryLimit(session.user.id, layoutId, "locations");
+  const limit = await checkTotalItemLimit(session.user.id);
   if (!limit.allowed) {
-    return { error: `Free plan limit reached (${limit.limit} locations). Upgrade to add more.` };
+    return { error: `Free plan limit reached (${limit.current}/${limit.limit} total items). Upgrade to Pro to add more.` };
   }
 
   // Check unique code within layout

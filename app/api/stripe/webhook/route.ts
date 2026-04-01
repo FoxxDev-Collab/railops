@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         await db.user.update({
           where: { id: userId },
           data: {
-            plan: "OPERATOR",
+            plan: "PRO",
             stripeCustomerId: session.customer as string,
             stripeSubId: session.subscription as string,
           },
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
           adminEmail: "stripe-webhook",
           entityType: "User",
           entityId: userId,
-          metadata: { plan: "OPERATOR", subscriptionId: session.subscription },
+          metadata: { plan: "PRO", subscriptionId: session.subscription },
         });
         break;
       }
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
           await db.user.update({
             where: { id: user.id },
             data: {
-              plan: "OPERATOR",
+              plan: "PRO",
               planExpiresAt: periodEnd ? new Date(periodEnd * 1000) : null,
             },
           });

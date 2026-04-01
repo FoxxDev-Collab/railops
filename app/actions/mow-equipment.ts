@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { MOWEquipmentType, RollingStockStatus } from "@prisma/client";
-import { checkCategoryLimit } from "@/lib/limits";
+import { checkTotalItemLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -36,9 +36,9 @@ export async function createMOWEquipment(layoutId: string, values: MOWEquipmentF
   });
   if (!layout) return { error: "Layout not found" };
 
-  const limit = await checkCategoryLimit(session.user.id, layoutId, "mowEquipment");
+  const limit = await checkTotalItemLimit(session.user.id);
   if (!limit.allowed) {
-    return { error: `Free plan limit reached (${limit.limit} MOW equipment). Upgrade to add more.` };
+    return { error: `Free plan limit reached (${limit.current}/${limit.limit} total items). Upgrade to Pro to add more.` };
   }
 
   const existing = await db.mOWEquipment.findUnique({

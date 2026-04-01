@@ -16,10 +16,10 @@ async function requireAdmin() {
 export async function getRevenueStats() {
   await requireAdmin();
 
-  const [totalUsers, freeUsers, operatorUsers, recentSignups] = await Promise.all([
+  const [totalUsers, freeUsers, proUsers, recentSignups] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: "FREE" } }),
-    db.user.count({ where: { plan: "OPERATOR" } }),
+    db.user.count({ where: { plan: "PRO" } }),
     db.user.findMany({
       where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
       select: { id: true, email: true, plan: true, createdAt: true },
@@ -28,12 +28,12 @@ export async function getRevenueStats() {
     }),
   ]);
 
-  const mrr = operatorUsers * 5; // $5/mo per operator
+  const mrr = proUsers * 5; // $5/mo per Pro subscriber
 
   return {
     totalUsers,
     freeUsers,
-    operatorUsers,
+    proUsers,
     mrr,
     recentSignups,
   };
@@ -82,7 +82,7 @@ export async function adminGrantPlan(userId: string) {
 
   await db.user.update({
     where: { id: userId },
-    data: { plan: "OPERATOR", planExpiresAt: null },
+    data: { plan: "PRO", planExpiresAt: null },
   });
 
   await logAudit({
@@ -91,7 +91,7 @@ export async function adminGrantPlan(userId: string) {
     adminEmail: session.user.email!,
     entityType: "User",
     entityId: userId,
-    metadata: { email: user.email, grantedPlan: "OPERATOR" },
+    metadata: { email: user.email, grantedPlan: "PRO" as const },
   });
 
   revalidatePath("/admin/users");

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LoadStatus } from "@prisma/client";
-import { checkCategoryLimit } from "@/lib/limits";
+import { checkTotalItemLimit } from "@/lib/limits";
 
 async function requireAuth() {
   const session = await auth();
@@ -47,9 +47,9 @@ export async function createWaybill(layoutId: string, values: WaybillFormValues)
   });
   if (!layout) return { error: "Layout not found" };
 
-  const limit = await checkCategoryLimit(userId, layoutId, "waybills");
+  const limit = await checkTotalItemLimit(userId);
   if (!limit.allowed) {
-    return { error: `Free plan limit reached (${limit.limit} waybills). Upgrade to add more.` };
+    return { error: `Free plan limit reached (${limit.current}/${limit.limit} total items). Upgrade to Pro to add more.` };
   }
 
   const waybill = await db.waybill.create({

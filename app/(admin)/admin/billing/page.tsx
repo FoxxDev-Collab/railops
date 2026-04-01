@@ -45,8 +45,8 @@ export default async function AdminBillingPage() {
               ${stats.mrr}
             </div>
             <p className="text-xs text-muted-foreground">
-              {stats.operatorUsers} operator subscription
-              {stats.operatorUsers !== 1 ? "s" : ""}
+              {stats.proUsers} Pro subscription
+              {stats.proUsers !== 1 ? "s" : ""}
             </p>
           </CardContent>
         </Card>
@@ -61,7 +61,7 @@ export default async function AdminBillingPage() {
               {stats.totalUsers}
             </div>
             <p className="text-xs text-muted-foreground">
-              {stats.freeUsers} free, {stats.operatorUsers} operator
+              {stats.freeUsers} free, {stats.proUsers} Pro
             </p>
           </CardContent>
         </Card>
@@ -76,11 +76,11 @@ export default async function AdminBillingPage() {
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">
               {stats.totalUsers > 0
-                ? ((stats.operatorUsers / stats.totalUsers) * 100).toFixed(1)
+                ? ((stats.proUsers / stats.totalUsers) * 100).toFixed(1)
                 : "0"}
               %
             </div>
-            <p className="text-xs text-muted-foreground">Free → Operator</p>
+            <p className="text-xs text-muted-foreground">Free → Pro</p>
           </CardContent>
         </Card>
 
@@ -144,7 +144,7 @@ export default async function AdminBillingPage() {
                   </div>
                   <Badge
                     variant={
-                      user.plan === "OPERATOR" ? "default" : "secondary"
+                      user.plan === "PRO" ? "default" : "secondary"
                     }
                     className="text-[10px] font-normal"
                   >
