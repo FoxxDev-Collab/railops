@@ -168,14 +168,22 @@ export async function reorderPositions(
     return { error: "Consist not found" };
   }
 
-  await Promise.all(
-    orderedPositionIds.map((id, idx) =>
+  // Two-pass reorder to avoid unique constraint violations on (consistId, position).
+  // First set all to negative temporaries, then to final values.
+  await db.$transaction([
+    ...orderedPositionIds.map((id, idx) =>
+      db.consistPosition.update({
+        where: { id },
+        data: { position: -(idx + 1) },
+      })
+    ),
+    ...orderedPositionIds.map((id, idx) =>
       db.consistPosition.update({
         where: { id },
         data: { position: idx + 1 },
       })
-    )
-  );
+    ),
+  ]);
 
   revalidatePath(
     `/dashboard/railroad/${consist.train.layoutId}/trains/${consist.trainId}`
