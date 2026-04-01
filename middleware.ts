@@ -1,6 +1,18 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
+// API routes that do NOT require auth (allowlisted)
+const PUBLIC_API_ROUTES = [
+  "/api/auth", // NextAuth handler
+  "/api/stripe/webhook", // Stripe webhook (has its own signature verification)
+];
+
+function isPublicApiRoute(pathname: string): boolean {
+  return PUBLIC_API_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+}
+
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
@@ -8,12 +20,24 @@ export default auth((req) => {
   const emailVerified = req.auth?.user?.emailVerified;
 
   const pathname = nextUrl.pathname;
+  const isApiRoute = pathname.startsWith("/api");
   const isAuthRoute = pathname.startsWith("/auth");
   const isAdminRoute = pathname.startsWith("/admin");
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isInviteRoute = pathname.startsWith("/invite");
   const isVerificationRoute =
     pathname === "/auth/verify" || pathname === "/auth/check-email";
+
+  // Protect API routes by default — only allowlisted routes skip auth
+  if (isApiRoute) {
+    if (isPublicApiRoute(pathname)) {
+      return NextResponse.next();
+    }
+    if (!isLoggedIn) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
 
   // Allow verification routes even when logged in and unverified
   if (isVerificationRoute && isLoggedIn) {
@@ -54,5 +78,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!api/stripe|api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

@@ -10,8 +10,8 @@ async function requireAdmin() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  // Check real admin identity (either current role or impersonating role)
-  if (session.user.role !== "ADMIN" && !session.user.impersonatingFrom) {
+  // Must be a real admin — impersonating sessions cannot call admin actions
+  if (session.user.role !== "ADMIN" || session.user.impersonatingFrom) {
     throw new Error("Unauthorized");
   }
   return session;
@@ -42,7 +42,7 @@ export async function startImpersonation(targetUserId: string) {
   cookieStore.set("impersonate_target", targetUserId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 60 * 60, // 1 hour max
   });

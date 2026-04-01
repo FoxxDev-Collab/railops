@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { generateToken, verifyToken } from "@/lib/tokens";
 import { sendPasswordResetEmail } from "@/lib/mail";
+import { rateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 const passwordSchema = z
   .string()
@@ -13,6 +15,13 @@ const passwordSchema = z
   .regex(/[0-9]/, "Password must contain at least one number");
 
 export async function requestPasswordReset(email: string) {
+  const hdrs = await headers();
+  const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = rateLimit(`reset:${ip}`, { limit: 3, windowSec: 900 });
+  if (!rl.success) {
+    return { success: "If that email is registered, a reset link has been sent." };
+  }
+
   const user = await db.user.findUnique({ where: { email } });
 
   // Always return success to not leak email existence
@@ -41,7 +50,7 @@ export async function resetPassword(rawToken: string, newPassword: string) {
 
   await db.user.update({
     where: { email: result.email },
-    data: { password: hashedPassword },
+    data: { password: hashedPassword, sessionVersion: { increment: 1 } },
   });
 
   return { success: "Password reset successfully. You can now sign in." };

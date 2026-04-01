@@ -50,7 +50,8 @@ export async function uploadTrackPlanImage(layoutId: string, formData: FormData)
     }
   }
 
-  const blob = await put(`track-plans/${layoutId}/${file.name}`, file, {
+  const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+  const blob = await put(`track-plans/${layoutId}/plan.${ext}`, file, {
     access: "public",
   });
 
@@ -109,7 +110,7 @@ export async function updateLocationPins(
   await db.$transaction(
     validated.data.map((pin) =>
       db.location.update({
-        where: { id: pin.locationId },
+        where: { id: pin.locationId, layoutId },
         data: { pinX: pin.pinX, pinY: pin.pinY },
       })
     )

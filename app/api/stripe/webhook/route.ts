@@ -156,7 +156,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("[STRIPE WEBHOOK] Error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Webhook error" },
+      { error: "Webhook processing failed" },
       { status: 400 }
     );
   }

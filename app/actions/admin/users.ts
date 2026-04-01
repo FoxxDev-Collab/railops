@@ -22,7 +22,16 @@ export async function getAllUsers() {
   await requireAdmin();
 
   const users = await db.user.findMany({
-    include: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      plan: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      image: true,
       _count: {
         select: {
           layouts: true,
@@ -45,7 +54,20 @@ export async function getUserDetails(userId: string) {
 
   const user = await db.user.findUnique({
     where: { id: userId },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      plan: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      image: true,
+      stripeCustomerId: true,
+      stripeSubId: true,
+      planExpiresAt: true,
+      lastLoginAt: true,
       layouts: {
         include: {
           _count: {
@@ -110,10 +132,11 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
     },
   });
 
+  const adminSession = await requireAdmin();
   await logAudit({
     action: "user.create",
-    adminId: (await auth())!.user.id,
-    adminEmail: (await auth())!.user.email!,
+    adminId: adminSession.user.id,
+    adminEmail: adminSession.user.email ?? "unknown",
     entityType: "User",
     entityId: user.id,
     metadata: { email, role },
@@ -163,7 +186,7 @@ export async function toggleAdminRole(userId: string) {
   const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
   const updatedUser = await db.user.update({
     where: { id: userId },
-    data: { role: newRole },
+    data: { role: newRole, sessionVersion: { increment: 1 } },
   });
 
   await logAudit({
@@ -260,7 +283,7 @@ export async function resetUserPassword(userId: string, newPassword: string) {
 
   await db.user.update({
     where: { id: userId },
-    data: { password: hashedPassword },
+    data: { password: hashedPassword, sessionVersion: { increment: 1 } },
   });
 
   await logAudit({

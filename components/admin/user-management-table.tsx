@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Plan } from "@prisma/client";
+import { Plan } from "@prisma/client";
 import {
   Table,
   TableBody,
@@ -41,7 +41,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 
-type UserWithCounts = User & {
+type UserWithCounts = {
+  id: string;
+  email: string;
+  name: string | null;
+  role: "USER" | "ADMIN";
+  plan: Plan;
+  emailVerified: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  image: string | null;
   _count: {
     layouts: number;
     locations: number;

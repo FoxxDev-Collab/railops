@@ -13,11 +13,37 @@ export const {
   session: { strategy: "jwt" },
   ...authConfig,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = (user as { role: Role }).role;
         token.emailVerified = (user as { emailVerified: Date | null }).emailVerified;
+
+        // Store initial session version
+        const dbUser = await db.user.findUnique({
+          where: { id: user.id as string },
+          select: { sessionVersion: true },
+        });
+        token.sessionVersion = dbUser?.sessionVersion ?? 0;
+      }
+
+      // On subsequent requests, verify session is still valid
+      if (!user && token.id && !token.impersonatingFrom) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { sessionVersion: true, role: true },
+        });
+
+        if (!dbUser) {
+          // User was deleted — invalidate token
+          return { ...token, invalid: true };
+        }
+
+        if (dbUser.sessionVersion !== token.sessionVersion) {
+          // Session version changed (role change, password reset, etc.)
+          token.role = dbUser.role;
+          token.sessionVersion = dbUser.sessionVersion;
+        }
       }
 
       // Handle impersonation via cookie
@@ -65,6 +91,11 @@ export const {
       return token;
     },
     async session({ session, token }) {
+      if (token.invalid) {
+        // Force re-authentication — clear user identity from session
+        session.user = undefined as unknown as typeof session.user;
+        return session;
+      }
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;

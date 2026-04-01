@@ -7,6 +7,8 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { generateToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
+import { rateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 const passwordSchema = z
   .string()
@@ -20,7 +22,18 @@ const signupSchema = z.object({
   name: z.string().min(2).optional(),
 });
 
+async function getClientIp() {
+  const hdrs = await headers();
+  return hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+}
+
 export async function signup(values: z.infer<typeof signupSchema>) {
+  const ip = await getClientIp();
+  const rl = rateLimit(`signup:${ip}`, { limit: 5, windowSec: 600 });
+  if (!rl.success) {
+    return { error: "Too many attempts. Please try again later." };
+  }
+
   const validatedFields = signupSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -56,6 +69,18 @@ export async function signup(values: z.infer<typeof signupSchema>) {
 }
 
 export async function login(values: { email: string; password: string }) {
+  const ip = await getClientIp();
+  const rl = rateLimit(`login:${ip}`, { limit: 10, windowSec: 900 });
+  if (!rl.success) {
+    return { error: "Too many login attempts. Please try again later." };
+  }
+
+  // Also rate limit per email to prevent credential stuffing on a single account
+  const emailRl = rateLimit(`login:${values.email}`, { limit: 5, windowSec: 900 });
+  if (!emailRl.success) {
+    return { error: "Too many login attempts. Please try again later." };
+  }
+
   try {
     await signIn("credentials", {
       email: values.email,
