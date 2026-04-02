@@ -21,6 +21,10 @@ import {
   CreditCard,
   BookOpen,
   ArrowUpDown,
+  BarChart3,
+  Activity,
+  HeartPulse,
+  AlertCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -41,8 +45,14 @@ interface AppSidebarProps {
 }
 
 const adminMenuItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/users", label: "User Management", icon: Users },
+  { href: "/admin/analytics", label: "Growth", icon: BarChart3 },
+  { href: "/admin/analytics/cohorts", label: "Cohorts", icon: Activity },
+  { href: "/admin/analytics/usage", label: "Usage", icon: Activity },
+  { href: "/admin/analytics/revenue", label: "Revenue", icon: CreditCard },
+  { href: "/admin/health", label: "System Health", icon: HeartPulse },
+  { href: "/admin/health/errors", label: "Error Log", icon: AlertCircle },
   { href: "/admin/billing", label: "Billing", icon: CreditCard },
   { href: "/admin/audit", label: "Audit Log", icon: ShieldCheck },
   { href: "/admin/system", label: "System Settings", icon: Settings },
