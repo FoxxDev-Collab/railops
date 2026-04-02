@@ -23,7 +23,7 @@ async function getTransporter() {
 }
 
 async function getFromEmail() {
-  return (await getSetting("smtp.from")) || "RailOps <noreply@railops.app>";
+  return (await getSetting("smtp.from")) || "Model Rail Ops <noreply@modelrailops.com>";
 }
 
 async function getAppUrl() {
@@ -42,10 +42,10 @@ export async function sendVerificationEmail(email: string, token: string) {
   await transporter.sendMail({
     from: fromEmail,
     to: email,
-    subject: "Verify your RailOps account",
+    subject: "Verify your Model Rail Ops account",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2>Welcome to RailOps</h2>
+        <h2>Welcome to Model Rail Ops</h2>
         <p>Click the link below to verify your email and activate your account:</p>
         <p>
           <a href="${verifyUrl}"
@@ -73,7 +73,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   await transporter.sendMail({
     from: fromEmail,
     to: email,
-    subject: "Reset your RailOps password",
+    subject: "Reset your Model Rail Ops password",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Reset Your Password</h2>
@@ -111,7 +111,7 @@ export async function sendCrewInviteEmail(
   await transporter.sendMail({
     from: fromEmail,
     to: email,
-    subject: `You're invited to join ${railroadName} on RailOps`,
+    subject: `You're invited to join ${railroadName} on Model Rail Ops`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Join ${railroadName}</h2>
@@ -123,7 +123,7 @@ export async function sendCrewInviteEmail(
           </a>
         </p>
         <p style="color: #666; font-size: 14px;">
-          This invitation expires in 7 days. If you don't have a RailOps account, you'll be able to create one.
+          This invitation expires in 7 days. If you don't have a Model Rail Ops account, you'll be able to create one.
         </p>
       </div>
     `,
@@ -170,7 +170,7 @@ export async function sendCrewRemovedEmail(
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Access Removed</h2>
-        <p>You no longer have access to <strong>${railroadName}</strong> on RailOps.</p>
+        <p>You no longer have access to <strong>${railroadName}</strong> on Model Rail Ops.</p>
         <p style="color: #666; font-size: 14px;">If you believe this was a mistake, contact the railroad owner.</p>
       </div>
     `,

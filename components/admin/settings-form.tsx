@@ -343,7 +343,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               setting={settings["smtp.from"]}
               value={values["smtp.from"]}
               onChange={(v) => updateValue("smtp.from", v)}
-              placeholder='"RailOps" <noreply@railops.app>'
+              placeholder='"Model Rail Ops" <noreply@modelrailops.com>'
             />
           </div>
           <div className="flex items-center gap-2 pt-2">
@@ -386,7 +386,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             setting={settings["app.url"]}
             value={values["app.url"]}
             onChange={(v) => updateValue("app.url", v)}
-            placeholder="https://railops.app"
+            placeholder="https://modelrailops.com"
           />
 
           {/* Maintenance Mode */}

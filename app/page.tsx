@@ -25,6 +25,7 @@ import {
   ArrowDown,
   Gauge,
 } from "lucide-react";
+import Image from "next/image";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { getPricingConfig } from "@/app/actions/admin/pricing";
@@ -100,7 +101,7 @@ export default async function Home() {
     {
       step: "02",
       title: "Generate Waybills",
-      desc: "RailOps creates four-panel waybills that route cars between industries based on commodity demand.",
+      desc: "Model Rail Ops creates four-panel waybills that route cars between industries based on commodity demand.",
       icon: FileText,
     },
     {
@@ -154,10 +155,11 @@ export default async function Home() {
               </h1>
 
               <p className="mx-auto mb-12 max-w-2xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                RailOps replaces spreadsheets, car cards, and JMRI paperwork
-                with a cloud platform purpose-built for model railroad
-                operations. Inventory your equipment, generate waybills, build
-                consists, and run sessions — all from your browser.
+                Model Rail Ops replaces spreadsheets, car cards, and JMRI
+                paperwork with a cloud platform purpose-built for model
+                railroad operations. Inventory your equipment, generate
+                waybills, build consists, and run sessions — all from your
+                browser.
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-4">
@@ -374,8 +376,14 @@ export default async function Home() {
         <section className="py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-12 text-center shadow-xl">
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg bg-primary shadow-lg">
-                <Train className="h-8 w-8 text-primary-foreground" />
+              <div className="mb-6">
+                <Image
+                  src="/modelrailops-logo.png"
+                  alt="Model Rail Ops"
+                  width={80}
+                  height={80}
+                  className="mx-auto h-20 w-20 object-contain"
+                />
               </div>
               <h2 className="mb-4 text-3xl font-bold tracking-tight text-card-foreground sm:text-4xl">
                 All Aboard

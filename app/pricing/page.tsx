@@ -15,7 +15,7 @@ import { getPricingConfig } from "@/app/actions/admin/pricing";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing — RailOps",
+  title: "Pricing — Model Rail Ops",
   description:
     "Simple, honest pricing for model railroad operations. Start free, upgrade when you outgrow the limits.",
 };
@@ -25,7 +25,7 @@ export default async function PricingPage() {
 
   const faqs = [
     {
-      q: "Can I really use RailOps for free?",
+      q: "Can I really use Model Rail Ops for free?",
       a: "Yes. The Free tier is free forever — no credit card required. You get one layout with up to 50 total items, waybill generation, operating sessions, and maintenance tracking.",
     },
     {

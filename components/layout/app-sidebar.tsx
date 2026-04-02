@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   LayoutDashboard,
   MapPin,
@@ -167,13 +168,22 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="px-6 py-4">
-          <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
-            <h2 className="text-lg font-semibold">RailOps</h2>
+        <div className="px-4 py-4">
+          <Link href="/dashboard" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
+            <Image
+              src="/modelrailops-logo.png"
+              alt="Model Rail Ops"
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain"
+            />
+            <div>
+              <h2 className="font-display text-base font-bold leading-tight">Model Rail Ops</h2>
+              {variant === "admin" && (
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Admin Panel</p>
+              )}
+            </div>
           </Link>
-          {variant === "admin" && (
-            <p className="text-xs text-muted-foreground">Admin Panel</p>
-          )}
         </div>
         {isInRailroad && selectedLayout && (
           <>

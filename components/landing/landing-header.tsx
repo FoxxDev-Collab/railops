@@ -2,26 +2,31 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Train } from "lucide-react";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function LandingHeader() {
   return (
     <header className="border-b border-border bg-card/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary shadow-lg">
-            <Train className="h-6 w-6 text-primary-foreground" />
-          </div>
+        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+          <Image
+            src="/modelrailops-logo.png"
+            alt="Model Rail Ops"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+            priority
+          />
           <div>
-            <span className="block text-2xl font-bold tracking-tight text-foreground">
-              RailOps
+            <span className="block font-display text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              Model Rail Ops
             </span>
-            <span className="block text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Est. 2024
+            <span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              modelrailops.com
             </span>
           </div>
-        </div>
+        </Link>
         <div className="flex items-center gap-6">
           <nav className="hidden items-center gap-5 text-sm font-medium text-muted-foreground md:flex">
             <Link
@@ -43,7 +48,7 @@ export function LandingHeader() {
               <Link href="/auth/login">Sign In</Link>
             </Button>
             <Button asChild>
-              <Link href="/auth/signup">Start Free Trial</Link>
+              <Link href="/auth/signup">Start Free</Link>
             </Button>
           </div>
         </div>
