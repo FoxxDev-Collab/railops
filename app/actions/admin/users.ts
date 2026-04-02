@@ -299,6 +299,90 @@ export async function resetUserPassword(userId: string, newPassword: string) {
   return { success: true };
 }
 
+// Get user timeline events
+export async function getUserTimeline(userId: string) {
+  await requireAdmin();
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      createdAt: true,
+      emailVerified: true,
+      plan: true,
+      lastLoginAt: true,
+    },
+  });
+
+  if (!user) return [];
+
+  const events: Array<{ date: Date; label: string; type: string }> = [];
+  events.push({ date: user.createdAt, label: "Account created", type: "signup" });
+
+  if (user.emailVerified) {
+    events.push({ date: user.emailVerified, label: "Email verified", type: "verified" });
+  }
+
+  // Check for first layout
+  const firstLayout = await db.layout.findFirst({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+    select: { createdAt: true, name: true },
+  });
+  if (firstLayout) {
+    events.push({
+      date: firstLayout.createdAt,
+      label: `First railroad created: ${firstLayout.name}`,
+      type: "milestone",
+    });
+  }
+
+  // Check for first session
+  const firstSession = await db.operatingSession.findFirst({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+    select: { createdAt: true },
+  });
+  if (firstSession) {
+    events.push({ date: firstSession.createdAt, label: "First operating session", type: "milestone" });
+  }
+
+  if (user.lastLoginAt) {
+    events.push({ date: user.lastLoginAt, label: "Last login", type: "login" });
+  }
+
+  return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+// Get user activity feed (paginated)
+export async function getUserActivityFeed(
+  userId: string,
+  { page = 1, action }: { page?: number; action?: string } = {}
+) {
+  await requireAdmin();
+
+  const pageSize = 20;
+  const where: Record<string, unknown> = { userId };
+  if (action) where.action = action;
+
+  const [activities, total] = await Promise.all([
+    db.userActivity.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    db.userActivity.count({ where }),
+  ]);
+
+  return {
+    activities,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
 // Get system stats
 export async function getSystemStats() {
   await requireAdmin();
