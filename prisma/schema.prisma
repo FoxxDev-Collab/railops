@@ -241,6 +241,8 @@ model User {
   crewMemberships  CrewMember[]       @relation("CrewUser")
   crewInvitations  CrewMember[]       @relation("CrewInviter")
   inviteLinks      InviteLink[]       @relation("InviteLinkCreator")
+  activities       UserActivity[]
+  adminNotes       AdminNote[]
 
   @@index([email])
   @@index([role])
@@ -1023,4 +1025,87 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
   @@index([action])
+}
+
+// ─────────────────────────────────────────────
+// USER ACTIVITY (analytics)
+// ─────────────────────────────────────────────
+
+model UserActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([userId, action, createdAt])
+}
+
+// ─────────────────────────────────────────────
+// DAILY METRICS (pre-computed snapshots)
+// ─────────────────────────────────────────────
+
+model DailyMetric {
+  id       String   @id @default(cuid())
+  date     DateTime @db.Date
+  metric   String
+  value    Float
+  metadata Json?
+
+  @@unique([date, metric])
+  @@index([metric, date])
+}
+
+// ─────────────────────────────────────────────
+// SYSTEM METRICS (time-series health)
+// ─────────────────────────────────────────────
+
+model SystemMetric {
+  id        String   @id @default(cuid())
+  metric    String
+  value     Float
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([metric, createdAt])
+}
+
+// ─────────────────────────────────────────────
+// ERROR LOG
+// ─────────────────────────────────────────────
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  level     String
+  message   String
+  stack     String?
+  source    String?
+  action    String?
+  userId    String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([level, createdAt])
+  @@index([source, createdAt])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// ADMIN NOTES (internal user notes)
+// ─────────────────────────────────────────────
+
+model AdminNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminId   String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
 }
