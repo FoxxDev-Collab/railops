@@ -1,6 +1,3 @@
-[dotenv@17.2.3] injecting env (20) from .env.local -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-Loaded Prisma config from prisma.config.ts.
-
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -93,6 +90,10 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "lastLoginAt" TIMESTAMP(3),
     "sessionVersion" INTEGER NOT NULL DEFAULT 0,
+    "mfaSecret" TEXT,
+    "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "mfaBackupCodes" TEXT,
+    "mfaBackupCodesUsed" INTEGER NOT NULL DEFAULT 0,
     "plan" "Plan" NOT NULL DEFAULT 'FREE',
     "stripeCustomerId" TEXT,
     "stripeSubId" TEXT,
@@ -593,6 +594,66 @@ CREATE TABLE "AuditLog" (
     CONSTRAINT "AuditLog_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "UserActivity" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "action" TEXT NOT NULL,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserActivity_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DailyMetric" (
+    "id" TEXT NOT NULL,
+    "date" DATE NOT NULL,
+    "metric" TEXT NOT NULL,
+    "value" DOUBLE PRECISION NOT NULL,
+    "metadata" JSONB,
+
+    CONSTRAINT "DailyMetric_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SystemMetric" (
+    "id" TEXT NOT NULL,
+    "metric" TEXT NOT NULL,
+    "value" DOUBLE PRECISION NOT NULL,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SystemMetric_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ErrorLog" (
+    "id" TEXT NOT NULL,
+    "level" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "stack" TEXT,
+    "source" TEXT,
+    "action" TEXT,
+    "userId" TEXT,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ErrorLog_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AdminNote" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "adminId" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AdminNote_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
 
@@ -796,6 +857,39 @@ CREATE INDEX "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "AuditLog_action_idx" ON "AuditLog"("action");
+
+-- CreateIndex
+CREATE INDEX "UserActivity_userId_idx" ON "UserActivity"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserActivity_action_idx" ON "UserActivity"("action");
+
+-- CreateIndex
+CREATE INDEX "UserActivity_createdAt_idx" ON "UserActivity"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "UserActivity_userId_action_createdAt_idx" ON "UserActivity"("userId", "action", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "DailyMetric_metric_date_idx" ON "DailyMetric"("metric", "date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DailyMetric_date_metric_key" ON "DailyMetric"("date", "metric");
+
+-- CreateIndex
+CREATE INDEX "SystemMetric_metric_createdAt_idx" ON "SystemMetric"("metric", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "ErrorLog_level_createdAt_idx" ON "ErrorLog"("level", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "ErrorLog_source_createdAt_idx" ON "ErrorLog"("source", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "ErrorLog_createdAt_idx" ON "ErrorLog"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "AdminNote_userId_createdAt_idx" ON "AdminNote"("userId", "createdAt");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_selectedLayoutId_fkey" FOREIGN KEY ("selectedLayoutId") REFERENCES "Layout"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1048,14 +1142,10 @@ ALTER TABLE "BadOrder" ADD CONSTRAINT "BadOrder_cabooseId_fkey" FOREIGN KEY ("ca
 
 -- AddForeignKey
 ALTER TABLE "BadOrder" ADD CONSTRAINT "BadOrder_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-┌─────────────────────────────────────────────────────────┐
-│  Update available 6.19.2 -> 7.6.0                       │
-│                                                         │
-│  This is a major update - please follow the guide at    │
-│  https://pris.ly/d/major-version-upgrade                │
-│                                                         │
-│  Run the following to update                            │
-│    npm i --save-dev prisma@latest                       │
-│    npm i @prisma/client@latest                          │
-└─────────────────────────────────────────────────────────┘
+
+-- AddForeignKey
+ALTER TABLE "UserActivity" ADD CONSTRAINT "UserActivity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AdminNote" ADD CONSTRAINT "AdminNote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

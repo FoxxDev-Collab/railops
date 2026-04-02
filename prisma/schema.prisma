@@ -216,6 +216,12 @@ model User {
   lastLoginAt    DateTime?
   sessionVersion Int       @default(0)
 
+  // MFA
+  mfaSecret          String?
+  mfaEnabled         Boolean  @default(false)
+  mfaBackupCodes     String?
+  mfaBackupCodesUsed Int      @default(0)
+
   // Subscription
   plan             Plan      @default(FREE)
   stripeCustomerId String?   @unique
