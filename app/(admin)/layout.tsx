@@ -1,5 +1,6 @@
 import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
 import {
   SidebarInset,
   SidebarProvider,
@@ -23,6 +24,25 @@ export default async function AdminLayout({
 
   if (session.user.role !== "ADMIN") {
     redirect("/dashboard");
+  }
+
+  // MFA gate: check if MFA setup or verification is needed
+  const dbUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { mfaEnabled: true },
+  });
+
+  const mfaPending = (session as Record<string, unknown>).mfaPending;
+  const mfaVerified = (session as Record<string, unknown>).mfaVerified;
+
+  if (!dbUser?.mfaEnabled) {
+    // MFA not set up — force setup
+    redirect("/admin/mfa/setup");
+  }
+
+  if (mfaPending && !mfaVerified) {
+    // MFA enabled but not verified this session
+    redirect("/admin/mfa/verify");
   }
 
   return (
