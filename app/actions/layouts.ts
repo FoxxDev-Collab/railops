@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { checkRailroadLimit } from "@/lib/limits";
 import { seedDefaultRoles } from "@/lib/crew/seed-roles";
+import { trackActivity } from "@/lib/activity";
 
 async function requireAuth() {
   const session = await auth();
@@ -173,6 +174,8 @@ export async function createLayout(values: z.infer<typeof layoutSchema>) {
   // Seed default crew roles for this railroad
   await seedDefaultRoles(layout.id);
 
+  trackActivity(session.user.id, "layout.create", { layoutId: layout.id, name: layout.name });
+
   revalidatePath("/dashboard");
   return { success: true, layout };
 }
@@ -308,6 +311,8 @@ export async function deleteLayout(layoutId: string) {
   await db.layout.delete({
     where: { id: layoutId },
   });
+
+  trackActivity(session.user.id, "layout.delete", { layoutId });
 
   revalidatePath("/dashboard");
   return { success: true };

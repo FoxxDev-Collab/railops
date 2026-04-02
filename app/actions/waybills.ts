@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LoadStatus } from "@prisma/client";
 import { checkTotalItemLimit } from "@/lib/limits";
+import { trackActivity } from "@/lib/activity";
 
 async function requireAuth() {
   const session = await auth();
@@ -64,6 +65,8 @@ export async function createWaybill(layoutId: string, values: WaybillFormValues)
     },
     include: { panels: true },
   });
+
+  trackActivity(userId, "waybill.create", { waybillId: waybill.id });
 
   if (parsed.data.freightCarId) {
     const car = await db.freightCar.findFirst({

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { TrainClass, TrainServiceType } from "@prisma/client";
 import { checkTotalItemLimit } from "@/lib/limits";
+import { trackActivity } from "@/lib/activity";
 
 async function requireAuth() {
   const session = await auth();
@@ -57,6 +58,8 @@ export async function createTrain(layoutId: string, values: TrainFormValues) {
       userId: session.user.id,
     },
   });
+
+  trackActivity(session.user.id, "train.create", { trainId: train.id });
 
   revalidatePath(`/dashboard/railroad/${layoutId}`);
   return { success: true, train };

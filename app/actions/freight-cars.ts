@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { RollingStockStatus } from "@prisma/client";
 import { checkTotalItemLimit } from "@/lib/limits";
+import { trackActivity } from "@/lib/activity";
 
 async function requireAuth() {
   const session = await auth();
@@ -66,6 +67,8 @@ export async function createFreightCar(layoutId: string, values: FreightCarFormV
       userId: session.user.id,
     },
   });
+
+  trackActivity(session.user.id, "freight_car.create", { freightCarId: car.id });
 
   revalidatePath(`/dashboard/railroad/${layoutId}`);
   return { success: true, car };

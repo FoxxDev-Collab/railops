@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { SessionStatus } from "@prisma/client";
+import { trackActivity } from "@/lib/activity";
 
 async function requireAuth() {
   const session = await auth();
@@ -51,6 +52,8 @@ export async function createSession(layoutId: string, values: SessionFormValues)
       })),
     });
   }
+
+  trackActivity(session.user.id, "session.start", { sessionId: operatingSession.id });
 
   revalidatePath(`/dashboard/railroad/${layoutId}`);
   return { success: true, session: operatingSession };
@@ -133,6 +136,12 @@ export async function updateSessionStatus(
     where: { id: sessionId },
     data,
   });
+
+  if (status === "IN_PROGRESS") {
+    trackActivity(session.user.id, "session.start", { sessionId: operatingSession.id });
+  } else if (status === "COMPLETED") {
+    trackActivity(session.user.id, "session.complete", { sessionId: operatingSession.id });
+  }
 
   revalidatePath(`/dashboard/railroad/${layoutId}`);
   return { success: true, session: operatingSession };

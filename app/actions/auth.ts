@@ -9,6 +9,7 @@ import { generateToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 import { rateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
+import { trackActivity } from "@/lib/activity";
 
 const passwordSchema = z
   .string()
@@ -90,8 +91,12 @@ export async function login(values: { email: string; password: string }) {
 
     const user = await db.user.findUnique({
       where: { email: values.email },
-      select: { role: true, emailVerified: true },
+      select: { id: true, role: true, emailVerified: true },
     });
+
+    if (user) {
+      trackActivity(user.id, "login");
+    }
 
     return {
       success: true,
