@@ -1,0 +1,86 @@
+<h2>Build Phasing — What Order?</h2>
+<p class="subtitle">All 6 modules are in scope. How should we phase the work? Each phase would be its own spec → plan → implementation cycle.</p>
+
+<div class="options">
+  <div class="option" data-choice="foundation-first" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Foundation First</h3>
+      <p>Build the data layer and infrastructure modules first, then the UI-heavy features on top.</p>
+      <div style="margin-top:12px; font-size:0.9em;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#3b82f6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 1</span>
+          <span>Feature Flags + Enhanced User Detail + Customer Lifecycle</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#8b5cf6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 2</span>
+          <span>Email Center + Operational Health</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="background:#ec4899;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 3</span>
+          <span>Analytics & BI (needs usage data to accumulate)</span>
+        </div>
+      </div>
+      <div style="margin-top:10px;" class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Feature flags available for all later work</li><li>User detail page improves day-1 admin UX</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>No email capability until Phase 2</li><li>Analytics last means less visibility early</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="customer-facing-first" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Customer-Facing First</h3>
+      <p>Prioritize the modules that directly impact how you manage and communicate with customers.</p>
+      <div style="margin-top:12px; font-size:0.9em;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#3b82f6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 1</span>
+          <span>Email Center + Customer Lifecycle + Enhanced User Detail</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#8b5cf6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 2</span>
+          <span>Analytics & BI + Feature Flags</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="background:#ec4899;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 3</span>
+          <span>Operational Health & Monitoring</span>
+        </div>
+      </div>
+      <div style="margin-top:10px;" class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Email + lifecycle = immediate customer management</li><li>Can onboard and communicate from day 1</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>No feature flags for granular control early</li><li>Ops monitoring deferred</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="visibility-first" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Visibility First</h3>
+      <p>Start with analytics and monitoring so you can see what's happening before you act on it.</p>
+      <div style="margin-top:12px; font-size:0.9em;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#3b82f6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 1</span>
+          <span>Analytics & BI + Operational Health + Enhanced User Detail</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="background:#8b5cf6;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 2</span>
+          <span>Customer Lifecycle + Email Center</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="background:#ec4899;color:white;padding:2px 8px;border-radius:4px;font-size:0.8em;font-weight:600;">Phase 3</span>
+          <span>Feature Flags</span>
+        </div>
+      </div>
+      <div style="margin-top:10px;" class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Data-driven decisions from the start</li><li>Spot problems before users report them</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Can see problems but can't act (no email/lifecycle) until Phase 2</li><li>Analytics on a small user base may not be useful yet</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+  <p style="font-size: 0.9em; color: #aaa; margin: 0;"><strong>My recommendation is B (Customer-Facing First)</strong> — you already have SMTP configured, so the email center unlocks immediate value. Customer lifecycle + enhanced user detail give you real SaaS management power right away. Analytics and feature flags can layer on top once you have customers to analyze.</p>
+</div>

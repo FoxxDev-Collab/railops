@@ -1,0 +1,62 @@
+<h2>Admin Panel — Design Direction</h2>
+<p class="subtitle">Your current admin uses the same shadcn/ui cards as the rest of the app. An enterprise admin should feel distinct — authoritative, information-dense, and purpose-built. Which direction?</p>
+
+<div class="options">
+  <div class="option" data-choice="command-center" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Command Center</h3>
+      <p>Dark, dense, data-forward. Think Bloomberg Terminal meets Vercel Dashboard. Monospace numbers, tight spacing, real-time feel. Status indicators everywhere. Information density is a feature, not a bug.</p>
+      <div style="margin-top:12px;padding:16px;background:#09090b;border-radius:8px;border:1px solid #27272a;font-family:monospace;font-size:0.8em;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:#71717a;">MRR</span>
+          <span style="color:#22c55e;">$245 <span style="font-size:0.75em;color:#4ade80;">+12%</span></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:#71717a;">ACTIVE</span>
+          <span style="color:#e2e8f0;">47/52</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#71717a;">CHURN RISK</span>
+          <span style="color:#ef4444;">3 <span style="font-size:0.75em;">▲</span></span>
+        </div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Dark mode only. Geist Mono + Geist Sans. Green/amber/red status system. Minimal borders, lots of subtle separators.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="clean-enterprise" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Clean Enterprise</h3>
+      <p>Polished and professional like Stripe Dashboard or Linear. Light backgrounds with excellent typography, generous whitespace, and subtle depth. Feels premium and trustworthy.</p>
+      <div style="margin-top:12px;padding:16px;background:#fafafa;border-radius:8px;border:1px solid #e5e7eb;font-size:0.85em;color:#111;">
+        <div style="font-weight:600;margin-bottom:4px;">Monthly Recurring Revenue</div>
+        <div style="font-size:1.8em;font-weight:700;letter-spacing:-0.02em;">$245</div>
+        <div style="color:#16a34a;font-size:0.85em;margin-top:2px;">↑ 12% from last month</div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Light/dark theme support. Inter or similar refined sans. Cards with subtle shadows. Color used sparingly for status.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="industrial-ops" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Industrial Operations</h3>
+      <p>Leans into the railroad theme. Utilitarian, rugged, purpose-built feel. Think dispatch board or control room — amber warnings, heavy type, grid-based layout. The admin panel should feel like running a railroad.</p>
+      <div style="margin-top:12px;padding:16px;background:#1a1a1a;border-radius:4px;border:2px solid #d97706;font-size:0.85em;">
+        <div style="text-transform:uppercase;letter-spacing:0.15em;color:#d97706;font-weight:700;font-size:0.75em;margin-bottom:6px;">DISPATCH — SYSTEM STATUS</div>
+        <div style="display:flex;gap:16px;">
+          <div><span style="color:#fbbf24;font-size:1.4em;font-weight:800;">47</span><br><span style="color:#737373;font-size:0.75em;">ACTIVE</span></div>
+          <div><span style="color:#ef4444;font-size:1.4em;font-weight:800;">3</span><br><span style="color:#737373;font-size:0.75em;">AT RISK</span></div>
+          <div><span style="color:#22c55e;font-size:1.4em;font-weight:800;">$245</span><br><span style="color:#737373;font-size:0.75em;">MRR</span></div>
+        </div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Dark with amber/orange accents. Bold industrial typography. Heavy borders. Railroad-inspired iconography. Feels unique to RailOps.</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+  <p style="font-size: 0.9em; color: #aaa; margin: 0;"><strong>My lean is C (Industrial Operations)</strong> — it gives RailOps a distinctive identity that no other SaaS admin has. The railroad dispatch aesthetic is on-brand and makes the admin feel like a purpose-built tool, not a generic dashboard. But A is equally strong if you want pure data density.</p>
+</div>

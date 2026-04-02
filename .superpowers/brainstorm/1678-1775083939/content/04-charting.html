@@ -1,0 +1,56 @@
+<h2>Charts & Data Visualization — Library Choice</h2>
+<p class="subtitle">Phase 1 needs charts for signup trends, MRR, cohort analysis, feature usage. Which charting approach?</p>
+
+<div class="options">
+  <div class="option" data-choice="recharts" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Recharts</h3>
+      <p>The most popular React charting library. Declarative, composable, built on D3. shadcn/ui already has chart components wrapping Recharts.</p>
+      <div style="margin-top:10px;font-size:0.85em;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <span style="background:#22c55e22;color:#22c55e;padding:2px 8px;border-radius:4px;">Already in shadcn/ui</span>
+          <span style="background:#3b82f622;color:#3b82f6;padding:2px 8px;border-radius:4px;">~45kb gzipped</span>
+          <span style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:4px;">Line, Bar, Area, Pie, Radar</span>
+        </div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Easiest integration path. Good enough for most SaaS dashboards. Customizable but can feel generic without effort.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="tremor" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Tremor</h3>
+      <p>Dashboard-first React component library. Built specifically for analytics dashboards. Comes with KPI cards, sparklines, and data tables built in.</p>
+      <div style="margin-top:10px;font-size:0.85em;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <span style="background:#22c55e22;color:#22c55e;padding:2px 8px;border-radius:4px;">Dashboard-optimized</span>
+          <span style="background:#3b82f622;color:#3b82f6;padding:2px 8px;border-radius:4px;">Uses Recharts under the hood</span>
+          <span style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:4px;">KPIs + Charts + Tables</span>
+        </div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Adds another component library alongside shadcn/ui. Great defaults but may conflict with your existing design system.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="shadcn-charts" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>shadcn/ui Charts (Recharts wrapper)</h3>
+      <p>Use shadcn/ui's built-in chart components. They wrap Recharts with your theme's CSS variables, ensuring charts match your design system automatically.</p>
+      <div style="margin-top:10px;font-size:0.85em;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <span style="background:#22c55e22;color:#22c55e;padding:2px 8px;border-radius:4px;">Zero new dependencies</span>
+          <span style="background:#3b82f622;color:#3b82f6;padding:2px 8px;border-radius:4px;">Matches existing theme</span>
+          <span style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:4px;">Consistent with rest of UI</span>
+        </div>
+      </div>
+      <p style="margin-top:8px;color:#888;font-size:0.85em;">Best consistency with your existing shadcn/ui components. Same theming, same dark mode, same design language. Recommended.</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+  <p style="font-size: 0.9em; color: #aaa; margin: 0;"><strong>My recommendation is C (shadcn/ui Charts)</strong> — zero new dependencies, automatic theme integration, and it keeps the admin panel visually consistent with the rest of RailOps. Adding Tremor alongside shadcn/ui creates two competing design systems.</p>
+</div>

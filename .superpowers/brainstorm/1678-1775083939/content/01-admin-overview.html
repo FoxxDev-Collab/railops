@@ -1,0 +1,80 @@
+<h2>Enterprise Admin Panel — System Overview</h2>
+<p class="subtitle">Here's the full scope of what we'll build. Which modules matter most? Select your top priorities.</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="customer-lifecycle" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Customer Lifecycle Management</h3>
+      <p><strong>Account states:</strong> Active, Suspended, Churned, Deactivated with automated transitions</p>
+      <p><strong>Onboarding tracking:</strong> See where users drop off (signed up → verified → created layout → added stock → ran session)</p>
+      <p><strong>Churn alerts:</strong> Flag users inactive 14+ days, subscription about to expire, downgrade signals</p>
+      <p><strong>Account actions:</strong> Suspend/reactivate with reason tracking, grace periods, automated email notifications</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">New Prisma models: AccountStatus enum, AccountEvent log</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="email-center" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Email & Communications Center</h3>
+      <p><strong>Template system:</strong> Welcome, verification, password reset, subscription changes, announcements — all editable</p>
+      <p><strong>Compose & send:</strong> Write and send to individual users or segments (all free, all pro, unverified, inactive)</p>
+      <p><strong>Broadcast announcements:</strong> New feature alerts, maintenance windows, newsletters to all users</p>
+      <p><strong>Email log:</strong> Track every email sent — recipient, template, delivery status, opens</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">New Prisma models: EmailTemplate, EmailLog, EmailBroadcast</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="analytics" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Analytics & Business Intelligence</h3>
+      <p><strong>Growth charts:</strong> Signups over time (daily/weekly/monthly), cumulative users, MRR trend line</p>
+      <p><strong>Cohort analysis:</strong> Retention by signup month, conversion funnel (free → pro over time)</p>
+      <p><strong>Feature usage:</strong> Most active features per user, layouts created, sessions run, rolling stock counts</p>
+      <p><strong>Revenue dashboard:</strong> ARR projections, churn rate, LTV estimates, plan distribution trends</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">Computed from existing data — no new models needed, just new queries + chart components</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="ops-health" onclick="toggleSelect(this)">
+    <div class="letter">4</div>
+    <div class="content">
+      <h3>Operational Health & Monitoring</h3>
+      <p><strong>Database dashboard:</strong> Table sizes, row counts, slow queries, connection pool status</p>
+      <p><strong>System health:</strong> Uptime, memory usage, active sessions, API response times</p>
+      <p><strong>Error tracking:</strong> Recent server errors, failed actions, rate limit hits</p>
+      <p><strong>Background jobs:</strong> Email queue status, scheduled tasks, cleanup jobs</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">New Prisma models: SystemMetric (time-series), ErrorLog</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="user-detail" onclick="toggleSelect(this)">
+    <div class="letter">5</div>
+    <div class="content">
+      <h3>Enhanced User Detail Page</h3>
+      <p><strong>Full profile view:</strong> Account timeline, all railroads with stats, login history, subscription history</p>
+      <p><strong>Admin actions panel:</strong> Send email, adjust plan, add credit, extend trial, add notes</p>
+      <p><strong>Usage breakdown:</strong> Resource counts by railroad, storage used, API calls, last active features</p>
+      <p><strong>Support notes:</strong> Internal admin notes per user (not visible to user), tagged conversations</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">Extends existing user detail page + new AdminNote model</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="feature-flags" onclick="toggleSelect(this)">
+    <div class="letter">6</div>
+    <div class="content">
+      <h3>Feature Flags & Config</h3>
+      <p><strong>Toggle features:</strong> Enable/disable features per plan tier or globally without deploys</p>
+      <p><strong>Beta access:</strong> Grant specific users access to unreleased features</p>
+      <p><strong>Plan limits:</strong> Configure item limits (free: 25 items), storage caps, API rate limits from admin UI</p>
+      <p><strong>A/B testing:</strong> Simple percentage-based rollout for new features</p>
+      <p style="margin-top:8px;color:#888;font-size:0.85em">New Prisma models: FeatureFlag, UserFeatureOverride</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+  <p style="font-size: 0.9em; color: #aaa; margin: 0;"><strong>Click all the modules you want included</strong>, then tell me in the terminal. I'll also ask about build order and phasing next.</p>
+</div>
