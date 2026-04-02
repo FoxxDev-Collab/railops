@@ -27,7 +27,7 @@ export default async function MfaVerifyPage() {
   }
 
   // If already verified (session flag), go to admin
-  const mfaVerified = (session as Record<string, unknown>).mfaVerified;
+  const mfaVerified = (session as unknown as Record<string, unknown>).mfaVerified;
   if (mfaVerified) {
     redirect("/admin");
   }

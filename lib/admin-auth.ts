@@ -96,8 +96,8 @@ export const {
         session.user.role = token.role as Role;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        (session as Record<string, unknown>).mfaPending = token.mfaPending as boolean;
-        (session as Record<string, unknown>).mfaVerified = token.mfaVerified as boolean;
+        (session as unknown as Record<string, unknown>).mfaPending = token.mfaPending as boolean;
+        (session as unknown as Record<string, unknown>).mfaVerified = token.mfaVerified as boolean;
       }
       return session;
     },

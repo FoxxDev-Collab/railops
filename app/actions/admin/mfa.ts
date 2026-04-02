@@ -14,10 +14,10 @@ async function getClientIp() {
 
 async function requireAdminSession() {
   const session = await adminAuth();
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user?.email || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }
-  return session.user;
+  return session.user as { id: string; email: string; role: string; name: string | null };
 }
 
 /**

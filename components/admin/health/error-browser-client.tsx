@@ -97,15 +97,15 @@ export function ErrorBrowserClient({
                 <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
                     borderRadius: "8px",
                     fontSize: "12px",
                   }}
                 />
                 <Legend />
-                <Bar dataKey="error" fill="hsl(var(--destructive))" stackId="a" />
-                <Bar dataKey="warn" fill="hsl(var(--primary) / 0.6)" stackId="a" />
+                <Bar dataKey="error" fill="var(--destructive)" stackId="a" />
+                <Bar dataKey="warn" fill="color-mix(in oklch, var(--primary) 60%, transparent)" stackId="a" />
                 <Bar dataKey="fatal" fill="#991b1b" stackId="a" />
               </BarChart>
             </ResponsiveContainer>

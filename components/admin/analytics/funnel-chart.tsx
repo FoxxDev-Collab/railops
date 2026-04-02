@@ -16,11 +16,11 @@ interface FunnelChartProps {
 }
 
 const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--primary) / 0.85)",
-  "hsl(var(--primary) / 0.7)",
-  "hsl(var(--primary) / 0.55)",
-  "hsl(var(--primary) / 0.4)",
+  "var(--primary)",
+  "color-mix(in oklch, var(--primary) 85%, transparent)",
+  "color-mix(in oklch, var(--primary) 70%, transparent)",
+  "color-mix(in oklch, var(--primary) 55%, transparent)",
+  "color-mix(in oklch, var(--primary) 40%, transparent)",
 ];
 
 export function FunnelChart({ data }: FunnelChartProps) {
@@ -43,8 +43,8 @@ export function FunnelChart({ data }: FunnelChartProps) {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
+                  backgroundColor: "var(--card)",
+                  border: "1px solid var(--border)",
                   borderRadius: "8px",
                   fontSize: "12px",
                 }}

@@ -32,8 +32,8 @@ export default async function AdminLayout({
     select: { mfaEnabled: true },
   });
 
-  const mfaPending = (session as Record<string, unknown>).mfaPending;
-  const mfaVerified = (session as Record<string, unknown>).mfaVerified;
+  const mfaPending = (session as unknown as Record<string, unknown>).mfaPending;
+  const mfaVerified = (session as unknown as Record<string, unknown>).mfaVerified;
 
   if (!dbUser?.mfaEnabled) {
     // MFA not set up — force setup
