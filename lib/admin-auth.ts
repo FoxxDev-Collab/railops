@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { UserRole as Role } from "@prisma/client";
 import { getUserByEmail } from "@/lib/db/user";
+import { db } from "@/lib/db";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -16,7 +17,7 @@ export const {
   signIn: adminSignIn,
   signOut: adminSignOut,
 } = NextAuth({
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   cookies: {
     sessionToken: {
       name: "admin-session-token",
@@ -64,13 +65,29 @@ export const {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = (user as { role: Role }).role;
         token.email = user.email;
         token.name = user.name;
+        // Password verified — MFA step is pending
+        token.mfaPending = true;
+        token.mfaVerified = false;
       }
+
+      // Handle MFA verification update
+      if (trigger === "update" && token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { mfaEnabled: true },
+        });
+        if (dbUser?.mfaEnabled) {
+          token.mfaPending = false;
+          token.mfaVerified = true;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -79,6 +96,8 @@ export const {
         session.user.role = token.role as Role;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
+        (session as Record<string, unknown>).mfaPending = token.mfaPending as boolean;
+        (session as Record<string, unknown>).mfaVerified = token.mfaVerified as boolean;
       }
       return session;
     },
