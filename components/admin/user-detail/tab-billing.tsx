@@ -20,11 +20,10 @@ interface StripeDetails {
 
 interface TabBillingProps {
   stripeDetails: StripeDetails;
-  plan: string;
   stripeCustomerId: string | null;
 }
 
-export function TabBilling({ stripeDetails, plan, stripeCustomerId }: TabBillingProps) {
+export function TabBilling({ stripeDetails, stripeCustomerId }: TabBillingProps) {
   if (!stripeCustomerId) {
     return (
       <Card>

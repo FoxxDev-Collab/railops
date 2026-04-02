@@ -25,7 +25,6 @@ export default async function ErrorsPage() {
         initialLogs={logsResult.logs}
         total={logsResult.total}
         page={logsResult.page}
-        pageSize={logsResult.pageSize}
         totalPages={logsResult.totalPages}
         frequencyData={frequency}
       />

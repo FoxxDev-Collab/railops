@@ -104,7 +104,6 @@ export default async function UserDetailPage({
         billing={
           <TabBilling
             stripeDetails={stripeDetails}
-            plan={user.plan}
             stripeCustomerId={user.stripeCustomerId}
           />
         }

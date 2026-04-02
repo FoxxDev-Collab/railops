@@ -39,7 +39,6 @@ interface ErrorBrowserProps {
   initialLogs: ErrorEntry[];
   total: number;
   page: number;
-  pageSize: number;
   totalPages: number;
   frequencyData: Array<{ hour: string; error: number; warn: number; fatal: number }>;
 }
@@ -48,7 +47,6 @@ export function ErrorBrowserClient({
   initialLogs,
   total,
   page: initialPage,
-  pageSize,
   totalPages: initialTotalPages,
   frequencyData,
 }: ErrorBrowserProps) {

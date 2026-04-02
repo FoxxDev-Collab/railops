@@ -63,7 +63,7 @@ export async function getStripeRevenue() {
   }
 }
 
-export async function getStripePayments(page: number = 1) {
+export async function getStripePayments() {
   await requireAdmin();
   const pageSize = 20;
 
