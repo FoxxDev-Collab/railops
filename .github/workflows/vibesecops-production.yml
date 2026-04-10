@@ -148,33 +148,9 @@ jobs:
           exit-code: '1'
           skip-dirs: node_modules,.next
 
-  # ── 6. OpenSSF Scorecard ─────────────────────────────────────────────────
-  # Supply chain health — weekly + push, not PRs.
-  scorecard:
-    name: OpenSSF Scorecard
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      id-token: write
-      contents: read
-      actions: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Run Scorecard analysis
-        uses: ossf/scorecard-action@v2.4.3
-        with:
-          results_file: scorecard.sarif
-          results_format: sarif
-          publish_results: true
-
-      - name: Upload Scorecard SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: scorecard.sarif
-          category: scorecard
+  # ── 6. OpenSSF Scorecard — moved to vibesecops-scorecard.yml ─────────────
+  # Scorecard requires a workflow with no global write permissions or env vars,
+  # so it runs in its own dedicated workflow file.
 
   # ── 7. Deploy to Vercel (production) — all gates must pass ───────────────
   deploy-production:

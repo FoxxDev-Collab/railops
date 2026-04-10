@@ -16,23 +16,19 @@ export function MfaSetupForm() {
   const [manualSecret, setManualSecret] = useState("");
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [confirmCode, setConfirmCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [backupAcknowledged, setBackupAcknowledged] = useState(false);
   const router = useRouter();
 
-  async function startSetup() {
-    setIsLoading(true);
-    const result = await generateMfaSetup();
-    setQrDataUri(result.qrDataUri);
-    setManualSecret(result.secret);
-    setBackupCodes(result.backupCodes);
-    setStep("scan");
-    setIsLoading(false);
-  }
-
   useEffect(() => {
-    startSetup();
+    generateMfaSetup().then((result) => {
+      setQrDataUri(result.qrDataUri);
+      setManualSecret(result.secret);
+      setBackupCodes(result.backupCodes);
+      setStep("scan");
+      setIsLoading(false);
+    });
   }, []);
 
   async function handleConfirm() {
