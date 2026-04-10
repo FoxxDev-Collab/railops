@@ -1,0 +1,230 @@
+name: VibeSecOps — Preview
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: vibesecops-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write   # SARIF uploads to GitHub Security
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+
+  # ── 1. Security invariant gate ────────────────────────────────────────────
+  # Blocks forbidden code patterns on every PR.
+  # Runs first — everything downstream depends on this passing.
+  invariant-gate:
+    name: Security invariant gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Forbidden pattern scan
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          DIFF=$(git diff "$BASE_SHA" "$HEAD_SHA" -- '*.ts' '*.tsx' '*.js' '*.jsx')
+          ADDED=$(printf '%s\n' "$DIFF" | grep -E '^\+' | grep -v '^\+\+\+' || true)
+
+          FAIL=0
+          check() {
+            local pattern="$1" label="$2"
+            if printf '%s\n' "$ADDED" | grep -E "$pattern" >/dev/null; then
+              echo "::error::$label — forbidden pattern introduced in this PR"
+              printf '%s\n' "$ADDED" | grep -nE "$pattern" || true
+              FAIL=1
+            fi
+          }
+
+          check 'eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck' \
+                'Lint/type suppression'
+
+          check ':\s*any(\s|,|\)|>|;|$)' \
+                'Explicit any type'
+
+          if [ "$FAIL" -ne 0 ]; then
+            echo ""
+            echo "One or more security invariants were violated."
+            exit 1
+          fi
+          echo "All security invariants satisfied."
+
+  # ── 2. Workflow YAML audit (zizmor) ──────────────────────────────────────
+  zizmor:
+    name: Workflow audit (zizmor)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zizmor
+        run: pipx install zizmor
+
+      - name: Run zizmor
+        run: zizmor --format sarif .github/workflows/ > zizmor.sarif || true
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: zizmor.sarif
+          category: zizmor
+
+  # ── 3. Dependency review (PR only) ───────────────────────────────────────
+  # Blocks PRs that introduce vulnerable or incompatibly-licensed dependencies.
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+
+  # ── 4. Secret scan (gitleaks) ────────────────────────────────────────────
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── 5. CI — lint, typecheck, tests ───────────────────────────────────────
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    needs: [invariant-gate]
+    if: always() && (needs.invariant-gate.result == 'success' || needs.invariant-gate.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck --if-present
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Tests
+        run: npm run test --if-present
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high --omit=dev
+
+  # ── 6. SAST (CodeQL) ─────────────────────────────────────────────────────
+  codeql:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    needs: [ci]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended,security-and-quality
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: codeql-typescript
+
+  # ── 7. Filesystem scan (Trivy) ────────────────────────────────────────────
+  trivy-fs:
+    name: Filesystem scan (Trivy)
+    runs-on: ubuntu-latest
+    needs: [ci]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan (SARIF)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: fs
+          scan-ref: .
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH,MEDIUM
+          format: sarif
+          output: trivy-fs.sarif
+          skip-dirs: node_modules,.next
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-filesystem
+
+      - name: Trivy filesystem scan (fail on CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: fs
+          scan-ref: .
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          skip-dirs: node_modules,.next
+
+  # ── 8. Deploy to Vercel (preview) — gates must pass ──────────────────────
+  deploy-preview:
+    name: Deploy preview
+    runs-on: ubuntu-latest
+    needs: [gitleaks, ci, codeql, trivy-fs]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel (preview)
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
