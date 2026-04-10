@@ -17,9 +17,8 @@ permissions:
   contents: read
   security-events: write   # SARIF uploads to GitHub Security
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+# NOTE: env vars moved to job-level — Scorecard publish_results requires
+# no global env vars. See https://github.com/ossf/scorecard-action#workflow-restrictions
 
 jobs:
 
@@ -184,6 +183,9 @@ jobs:
     needs: [gitleaks, ci, codeql, trivy-fs]
     # Scorecard is informational — does not gate deploy
     if: github.event_name == 'push'
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
 

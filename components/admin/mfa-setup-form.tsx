@@ -21,10 +21,6 @@ export function MfaSetupForm() {
   const [backupAcknowledged, setBackupAcknowledged] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    startSetup();
-  }, []);
-
   async function startSetup() {
     setIsLoading(true);
     const result = await generateMfaSetup();
@@ -34,6 +30,10 @@ export function MfaSetupForm() {
     setStep("scan");
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    startSetup();
+  }, []);
 
   async function handleConfirm() {
     if (!confirmCode.trim()) return;
