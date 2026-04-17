@@ -27,12 +27,6 @@ export function MfaVerifyForm() {
           `Backup code used. ${result.remainingCodes} remaining.`
         );
       }
-      // Refresh the admin JWT so mfaVerified updates
-      await fetch("/api/admin-auth/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
       window.location.href = "/admin";
     }
   }

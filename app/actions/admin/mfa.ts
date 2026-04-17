@@ -5,7 +5,18 @@ import { db } from "@/lib/db";
 import { generateTOTPSetup, verifyTOTPCode } from "@/lib/mfa/totp";
 import { generateBackupCodes, verifyBackupCode } from "@/lib/mfa/backup-codes";
 import { rateLimit } from "@/lib/rate-limit";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
+
+async function setMfaVerifiedCookie(userId: string) {
+  const cookieStore = await cookies();
+  cookieStore.set("admin-mfa-verified", userId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 8 * 60 * 60, // match admin session maxAge
+  });
+}
 
 async function getClientIp() {
   const hdrs = await headers();
@@ -85,6 +96,8 @@ export async function confirmMfaSetup(code: string) {
     data: { mfaEnabled: true },
   });
 
+  await setMfaVerifiedCookie(user.id);
+
   return { success: true };
 }
 
@@ -115,6 +128,7 @@ export async function verifyMfaCode(code: string) {
   if (/^\d{6}$/.test(normalizedCode)) {
     const isValid = verifyTOTPCode(dbUser.mfaSecret, normalizedCode);
     if (isValid) {
+      await setMfaVerifiedCookie(user.id);
       return { success: true };
     }
     return { error: "Invalid code. Please try again." };
@@ -139,6 +153,8 @@ export async function verifyMfaCode(code: string) {
       mfaBackupCodesUsed: (dbUser.mfaBackupCodesUsed ?? 0) + 1,
     },
   });
+
+  await setMfaVerifiedCookie(user.id);
 
   return { success: true, backupCodeUsed: true, remainingCodes: hashedCodes.length };
 }

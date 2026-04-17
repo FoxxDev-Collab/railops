@@ -96,12 +96,6 @@ export function MfaSetupForm() {
       toast.error(result.error);
       setIsLoading(false);
     } else {
-      // Refresh the admin JWT so mfaVerified updates
-      await fetch("/api/admin-auth/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
       toast.success("MFA enabled successfully");
       window.location.href = "/admin";
     }

@@ -1,5 +1,6 @@
 import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import {
   SidebarInset,
@@ -32,15 +33,15 @@ export default async function AdminLayout({
     select: { mfaEnabled: true },
   });
 
-  const mfaPending = (session as unknown as Record<string, unknown>).mfaPending;
-  const mfaVerified = (session as unknown as Record<string, unknown>).mfaVerified;
-
   if (!dbUser?.mfaEnabled) {
     // MFA not set up — force setup
     redirect("/admin/mfa/setup");
   }
 
-  if (mfaPending && !mfaVerified) {
+  // Check cookie-based MFA verification
+  const cookieStore = await cookies();
+  const mfaCookie = cookieStore.get("admin-mfa-verified");
+  if (mfaCookie?.value !== session.user.id) {
     // MFA enabled but not verified this session
     redirect("/admin/mfa/verify");
   }

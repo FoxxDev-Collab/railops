@@ -1,5 +1,6 @@
 import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { MfaVerifyForm } from "@/components/admin/mfa-verify-form";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,8 +21,10 @@ export default async function MfaVerifyPage() {
     redirect("/admin/mfa/setup");
   }
 
-  const mfaVerified = (session as unknown as Record<string, unknown>).mfaVerified;
-  if (mfaVerified) {
+  // Check cookie-based MFA verification
+  const cookieStore = await cookies();
+  const mfaCookie = cookieStore.get("admin-mfa-verified");
+  if (mfaCookie?.value === session.user.id) {
     redirect("/admin");
   }
 
