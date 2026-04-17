@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
   schedule:
     # Weekly full scan — catches new CVEs against unchanged code
     - cron: '0 6 * * 1'

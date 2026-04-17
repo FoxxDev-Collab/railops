@@ -4,11 +4,9 @@ on:
   push:
     branches-ignore:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 concurrency:
   group: vibesecops-preview-${{ github.ref }}
