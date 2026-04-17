@@ -31,6 +31,18 @@ export function LandingFooter() {
             >
               Pricing
             </Link>
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-foreground"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-foreground"
+            >
+              Privacy
+            </Link>
           </nav>
           <div className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Railroad Ops. Keeping the
