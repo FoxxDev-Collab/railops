@@ -53,7 +53,7 @@ export function MfaVerifyForm() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); handleVerify(); }} className="space-y-4">
         {useBackupCode ? (
           <Input
             type="text"
@@ -83,7 +83,7 @@ export function MfaVerifyForm() {
         )}
 
         <Button
-          onClick={handleVerify}
+          type="submit"
           className="w-full"
           disabled={isLoading || !code.trim()}
         >
@@ -109,7 +109,7 @@ export function MfaVerifyForm() {
             ? "Use authenticator code instead"
             : "Lost your device? Use a backup code"}
         </button>
-      </div>
+      </form>
     </div>
   );
 }

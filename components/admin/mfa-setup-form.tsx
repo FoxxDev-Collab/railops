@@ -260,7 +260,7 @@ export function MfaSetupForm() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); handleConfirm(); }} className="space-y-4">
         <div>
           <Input
             type="text"
@@ -279,7 +279,7 @@ export function MfaSetupForm() {
         </div>
 
         <Button
-          onClick={handleConfirm}
+          type="submit"
           className="w-full"
           disabled={isLoading || confirmCode.length !== 6}
         >
@@ -292,7 +292,7 @@ export function MfaSetupForm() {
             "Enable MFA"
           )}
         </Button>
-      </div>
+      </form>
     </div>
   );
 }
