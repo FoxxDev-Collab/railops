@@ -1,23 +1,25 @@
 import { db } from "@/lib/db";
 import { Plan } from "@prisma/client";
 
+// ─── Seat constants ─────────────────────────────────────────────────────
+export const BASE_SEATS_PRO = 1;
+export const MAX_TOTAL_CREW = 10;
+export const MAX_EXTRA_SEATS = MAX_TOTAL_CREW - BASE_SEATS_PRO; // 9
+
 const PLAN_LIMITS: Record<Plan, {
   maxLayouts: number;
   maxTotalItems: number;
   canExport: boolean;
-  maxCrew: number;
 }> = {
   FREE: {
     maxLayouts: 1,
     maxTotalItems: 50,
     canExport: false,
-    maxCrew: 0,
   },
   PRO: {
     maxLayouts: 5,
     maxTotalItems: Infinity,
     canExport: true,
-    maxCrew: Infinity, // 1 included, additional paid per seat via Stripe
   },
 };
 
@@ -26,9 +28,8 @@ export function getPlanLimits(plan: Plan) {
 }
 
 /**
- * Checks the total item limit across all countable categories for a user.
- * Free plan: 50 total items (locations + all rolling stock + trains).
- * Pro plan: unlimited.
+ * Total item limit across countable categories for a user.
+ * Free: 50 total. Pro: unlimited.
  */
 export async function checkTotalItemLimit(
   userId: string
@@ -39,8 +40,7 @@ export async function checkTotalItemLimit(
   });
 
   const plan = user?.plan ?? "FREE";
-  const limits = getPlanLimits(plan);
-  const limit = limits.maxTotalItems;
+  const limit = getPlanLimits(plan).maxTotalItems;
 
   if (limit === Infinity) {
     return { allowed: true, current: 0, limit };
@@ -70,8 +70,7 @@ export async function checkRailroadLimit(
   });
 
   const plan = user?.plan ?? "FREE";
-  const limits = getPlanLimits(plan);
-  const limit = limits.maxLayouts;
+  const limit = getPlanLimits(plan).maxLayouts;
 
   if (limit === Infinity) {
     return { allowed: true, current: 0, limit };
@@ -89,30 +88,42 @@ export async function canExport(userId: string): Promise<boolean> {
   return getPlanLimits(user?.plan ?? "FREE").canExport;
 }
 
+/**
+ * Seat-based crew limit.
+ * Counts distinct userIds across ALL of the layout owner's layouts that are
+ * either pending (acceptedAt null, removedAt null) or active (acceptedAt set,
+ * removedAt null). Free users have 0 seats. Pro users have 1 + purchasedSeats,
+ * capped at MAX_TOTAL_CREW (10).
+ *
+ * Signature preserved: takes layoutId; resolves to owner internally.
+ */
 export async function checkCrewLimit(
   layoutId: string
 ): Promise<{ allowed: boolean; current: number; limit: number }> {
   const layout = await db.layout.findUnique({
     where: { id: layoutId },
-    include: { user: { select: { plan: true } } },
+    select: { userId: true, user: { select: { plan: true, purchasedSeats: true } } },
   });
 
   if (!layout) return { allowed: false, current: 0, limit: 0 };
 
-  const limits = getPlanLimits(layout.user.plan);
-  const limit = limits.maxCrew;
-
-  if (limit === Infinity) {
-    return { allowed: true, current: 0, limit };
+  if (layout.user.plan !== "PRO") {
+    return { allowed: false, current: 0, limit: 0 };
   }
 
-  const current = await db.crewMember.count({
+  const limit = Math.min(
+    BASE_SEATS_PRO + layout.user.purchasedSeats,
+    MAX_TOTAL_CREW
+  );
+
+  const used = await db.crewMember.findMany({
     where: {
-      layoutId,
-      acceptedAt: { not: null },
+      layout: { userId: layout.userId },
       removedAt: null,
     },
+    distinct: ["userId"],
+    select: { userId: true },
   });
 
-  return { allowed: current < limit, current, limit };
+  return { allowed: used.length < limit, current: used.length, limit };
 }
