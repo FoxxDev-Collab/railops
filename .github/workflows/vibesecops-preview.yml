@@ -205,25 +205,6 @@ jobs:
           exit-code: '1'
           skip-dirs: node_modules,.next
 
-  # ── 8. Deploy to Vercel (preview) — gates must pass ──────────────────────
-  deploy-preview:
-    name: Deploy preview
-    runs-on: ubuntu-latest
-    needs: [gitleaks, ci, codeql, trivy-fs]
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel environment
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build project artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Vercel (preview)
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+  # ── 8. Deploy ─────────────────────────────────────────────────────────────
+  # Vercel's GitHub integration handles preview deploys on push/PR.
+  # No manual CLI steps needed — just let the gates pass.
