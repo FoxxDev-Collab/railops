@@ -128,7 +128,12 @@ export async function joinViaInviteLink(code: string) {
 
   const limit = await checkCrewLimit(link.layoutId);
   if (!limit.allowed) {
-    return { error: "This railroad has reached its crew member limit" };
+    return {
+      error: "SEAT_LIMIT",
+      message: "This railroad is out of crew seats. Ask the owner to add a seat.",
+      current: limit.current,
+      limit: limit.limit,
+    };
   }
 
   if (existing) {

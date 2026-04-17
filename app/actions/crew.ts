@@ -59,7 +59,13 @@ export async function inviteCrewMember(values: z.infer<typeof inviteSchema>) {
   // Check crew limit
   const limit = await checkCrewLimit(layoutId);
   if (!limit.allowed) {
-    return { error: "Crew limit reached. Upgrade your plan to add more members." };
+    return {
+      error: "SEAT_LIMIT",
+      message: `You're out of crew seats (${limit.current} of ${limit.limit} used). Add a seat to invite.`,
+      current: limit.current,
+      limit: limit.limit,
+      upgradeUrl: "/dashboard/billing/seats/add",
+    };
   }
 
   // Can't invite yourself
@@ -203,6 +209,14 @@ export async function acceptEmailInvite(token: string) {
 
     if (existing?.acceptedAt && !existing?.removedAt) {
       return { error: "You're already a member of this railroad" };
+    }
+
+    const limit = await checkCrewLimit(layoutId);
+    if (!limit.allowed) {
+      return {
+        error: "SEAT_LIMIT",
+        message: "This railroad is out of crew seats. Ask the owner to add a seat before you can accept.",
+      };
     }
 
     if (existing) {
