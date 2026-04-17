@@ -37,8 +37,12 @@ export default async function PricingPage() {
       a: "You'll see a notice when you approach the cap. Nothing gets deleted — you just can't add new items until you upgrade or remove existing ones.",
     },
     {
-      q: "How do crew seats and extra layouts work?",
-      a: `Pro includes 1 crew member and 5 layouts. Need more? Each additional crew seat or 5-layout pack is $${pro.crewSeatPrice || "5"}/month.`,
+      q: "How do crew seats work?",
+      a: `Pro includes 1 crew member. Need more? Each additional crew seat is $${pro.crewSeatPrice || "5"}/month. You can have up to 10 total crew members (1 included + up to 9 purchased).`,
+    },
+    {
+      q: "Is there a maximum number of crew members?",
+      a: "Yes — 10 total (1 included with Pro plus up to 9 purchased seats). If you need more, contact support.",
     },
     {
       q: "Can I switch plans anytime?",
@@ -175,8 +179,7 @@ export default async function PricingPage() {
                 All accounts start on the free tier. Upgrade or downgrade at any
                 time. Need more?{" "}
                 <span className="font-medium text-foreground">
-                  +${pro.crewSeatPrice || "5"}/mo per additional crew seat or
-                  5-layout pack.
+                  +${pro.crewSeatPrice || "5"}/mo per additional crew seat.
                 </span>
               </p>
             </div>
@@ -266,11 +269,6 @@ export default async function PricingPage() {
                       feature="Additional Crew Seats"
                       free="—"
                       pro="$5/mo each"
-                    />
-                    <ComparisonRow
-                      feature="Additional Layout Packs"
-                      free="—"
-                      pro="$5/mo per 5"
                     />
                   </tbody>
                 </table>
