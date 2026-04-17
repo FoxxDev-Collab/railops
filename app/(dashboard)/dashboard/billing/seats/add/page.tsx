@@ -6,11 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 
-async function handlePurchaseSeat(): Promise<void> {
-  "use server";
-  await purchaseSeat();
-}
-
 export default async function AddSeatPage() {
   const session = await auth();
   if (!session?.user) redirect("/auth/login");
@@ -80,7 +75,7 @@ export default async function AddSeatPage() {
               </li>
             </ul>
 
-            <form action={handlePurchaseSeat} className="flex gap-2 pt-2">
+            <form action={purchaseSeat} className="flex gap-2 pt-2">
               <Button type="submit">Confirm — Add Seat</Button>
               <Button asChild variant="ghost">
                 <Link href="/dashboard/billing">Cancel</Link>

@@ -66,16 +66,13 @@ export async function purchaseSeat() {
 
   if (!user) throw new Error("User not found");
   if (user.plan !== "PRO") {
-    return { error: "PLAN_REQUIRED", message: "Upgrade to Pro before adding seats." };
+    throw new Error("Upgrade to Pro before adding seats.");
   }
   if (!user.stripeSubId) {
-    return { error: "NO_SUBSCRIPTION", message: "No active subscription found." };
+    throw new Error("No active subscription found.");
   }
   if (user.purchasedSeats >= MAX_EXTRA_SEATS) {
-    return {
-      error: "SEAT_CAP_EXCEEDED",
-      message: `Crew capped at ${MAX_TOTAL_CREW}. Contact support if you need more.`,
-    };
+    throw new Error(`Crew capped at ${MAX_TOTAL_CREW}. Contact support if you need more.`);
   }
 
   await updateSeatQuantity(
@@ -109,13 +106,13 @@ export async function removeSeat() {
 
   if (!user) throw new Error("User not found");
   if (user.plan !== "PRO") {
-    return { error: "PLAN_REQUIRED", message: "Not on Pro plan." };
+    throw new Error("Not on Pro plan.");
   }
   if (!user.stripeSubId) {
-    return { error: "NO_SUBSCRIPTION", message: "No active subscription found." };
+    throw new Error("No active subscription found.");
   }
   if (user.purchasedSeats <= 0) {
-    return { error: "NO_SEATS", message: "No purchased seats to remove." };
+    throw new Error("No purchased seats to remove.");
   }
 
   // Guard: don't allow removing a seat if all seats are currently occupied.
@@ -129,10 +126,7 @@ export async function removeSeat() {
     select: { userId: true },
   });
   if (used.length > newLimit) {
-    return {
-      error: "SEATS_OCCUPIED",
-      message: "Remove a crew member first — all seats are currently occupied.",
-    };
+    throw new Error("Remove a crew member first — all seats are currently occupied.");
   }
 
   await updateSeatQuantity(
