@@ -32,6 +32,7 @@ export async function getStripeClient(): Promise<Stripe> {
 
 /**
  * Creates a Stripe Checkout session for the Pro plan.
+ * Includes both the base Pro line item and the seat add-on (initial quantity 0).
  */
 export async function createCheckoutSession(
   userId: string,
@@ -39,19 +40,30 @@ export async function createCheckoutSession(
   customerId?: string | null
 ): Promise<string> {
   const stripe = await getStripeClient();
-  const priceId = await getSetting("stripe.proPriceId");
-  const appUrl = await getSetting("app.url") ?? "http://localhost:3000";
+  const [priceId, seatPriceId, appUrl] = await Promise.all([
+    getSetting("stripe.proPriceId"),
+    getSetting("stripe.seatPriceId"),
+    getSetting("app.url"),
+  ]);
 
   if (!priceId) {
     throw new Error("Stripe Pro price ID not configured.");
   }
+  if (!seatPriceId) {
+    throw new Error("Stripe Seat price ID not configured.");
+  }
+
+  const resolvedAppUrl = appUrl ?? "http://localhost:3000";
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: "subscription",
     payment_method_types: ["card"],
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${appUrl}/dashboard/billing?success=true`,
-    cancel_url: `${appUrl}/dashboard/billing?canceled=true`,
+    line_items: [
+      { price: priceId, quantity: 1 },
+      { price: seatPriceId, quantity: 0, adjustable_quantity: { enabled: false } },
+    ],
+    success_url: `${resolvedAppUrl}/dashboard/billing?success=true`,
+    cancel_url: `${resolvedAppUrl}/dashboard/billing?canceled=true`,
     client_reference_id: userId,
     metadata: { userId },
   };
