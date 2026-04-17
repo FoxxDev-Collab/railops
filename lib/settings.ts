@@ -9,6 +9,7 @@ export const SETTING_KEYS = {
   "stripe.secretKey": { envFallback: "STRIPE_SECRET_KEY", sensitive: true },
   "stripe.webhookSecret": { envFallback: "STRIPE_WEBHOOK_SECRET", sensitive: true },
   "stripe.proPriceId": { envFallback: "STRIPE_PRO_PRICE_ID", sensitive: false },
+  "stripe.seatPriceId": { envFallback: "STRIPE_SEAT_PRICE_ID", sensitive: false },
 
   // SMTP
   "smtp.host": { envFallback: "SMTP_HOST", sensitive: false },

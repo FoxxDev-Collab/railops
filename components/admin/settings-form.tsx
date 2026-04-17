@@ -123,6 +123,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         "stripe.secretKey",
         "stripe.webhookSecret",
         "stripe.proPriceId",
+        "stripe.seatPriceId",
       ];
       const toSave = stripeKeys
         .filter((k) => values[k])
@@ -254,6 +255,14 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             value={values["stripe.proPriceId"]}
             onChange={(v) => updateValue("stripe.proPriceId", v)}
             placeholder="price_..."
+          />
+          <SettingField
+            settingKey="stripe.seatPriceId"
+            label="Seat Price ID"
+            setting={settings["stripe.seatPriceId"]}
+            value={values["stripe.seatPriceId"]}
+            onChange={(v) => updateValue("stripe.seatPriceId", v)}
+            placeholder="price_1234..."
           />
           <div className="flex items-center gap-2 pt-2">
             <Button onClick={handleSaveStripe} disabled={isPending} size="sm">
