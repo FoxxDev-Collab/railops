@@ -35,7 +35,8 @@ export function InviteMemberForm({ layoutId, roles }: InviteMemberFormProps) {
     setLoading(false);
 
     if (result.error) {
-      toast.error(result.error);
+      const msg = "message" in result && result.message ? result.message : result.error;
+      toast.error(msg);
     } else {
       toast.success(`Invitation sent to ${email}`);
       router.push(`/dashboard/railroad/${layoutId}/crew`);

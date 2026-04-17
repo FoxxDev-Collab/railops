@@ -10,6 +10,8 @@ import { getInviteLinks } from "@/app/actions/invite-links";
 import { getCrewContext } from "@/lib/crew/context";
 import { CrewMembersTable } from "@/components/crew/crew-members-table";
 import { InviteLinksList } from "@/components/crew/invite-links-list";
+import { SeatLimitCallout } from "@/components/billing/seat-limit-callout";
+import { checkCrewLimit } from "@/lib/limits";
 
 export default async function CrewPage({
   params,
@@ -24,10 +26,11 @@ export default async function CrewPage({
   const ctx = await getCrewContext(id);
   if (!ctx) redirect("/dashboard");
 
-  const [{ owner, members }, roles, inviteLinks] = await Promise.all([
+  const [{ owner, members }, roles, inviteLinks, seatLimit] = await Promise.all([
     getCrewMembers(id),
     getRoles(id),
     getInviteLinks(id),
+    checkCrewLimit(id),
   ]);
 
   const canEditCrew = ctx.isOwner || !!ctx.permissions.crew?.canEdit;
@@ -65,6 +68,12 @@ export default async function CrewPage({
           </div>
         )}
       </div>
+
+      <SeatLimitCallout
+        current={seatLimit.current}
+        limit={seatLimit.limit}
+        canManage={ctx.isOwner}
+      />
 
       <CrewMembersTable
         members={members}

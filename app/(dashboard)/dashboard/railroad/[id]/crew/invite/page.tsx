@@ -5,8 +5,10 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getLayout } from "@/app/actions/layouts";
 import { getRoles } from "@/app/actions/roles";
-import { requirePermission } from "@/lib/crew/context";
+import { requirePermission, getCrewContext } from "@/lib/crew/context";
 import { InviteMemberForm } from "@/components/crew/invite-member-form";
+import { SeatLimitCallout } from "@/components/billing/seat-limit-callout";
+import { checkCrewLimit } from "@/lib/limits";
 
 export default async function InviteMemberPage({
   params,
@@ -18,8 +20,12 @@ export default async function InviteMemberPage({
 
   const { id } = await params;
   await requirePermission(id, "crew", "edit");
-  const layout = await getLayout(id);
-  const roles = await getRoles(id);
+  const [layout, roles, seatLimit, ctx] = await Promise.all([
+    getLayout(id),
+    getRoles(id),
+    checkCrewLimit(id),
+    getCrewContext(id),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -34,6 +40,11 @@ export default async function InviteMemberPage({
           <p className="text-sm text-muted-foreground">{layout.name}</p>
         </div>
       </div>
+      <SeatLimitCallout
+        current={seatLimit.current}
+        limit={seatLimit.limit}
+        canManage={!!ctx?.isOwner}
+      />
       <InviteMemberForm layoutId={id} roles={roles.map((r) => ({ id: r.id, name: r.name }))} />
     </div>
   );
