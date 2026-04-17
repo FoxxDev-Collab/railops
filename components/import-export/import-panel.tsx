@@ -103,7 +103,7 @@ export function ImportPanel({ layoutId }: ImportPanelProps) {
   function handleDownloadTemplate() {
     if (!resourceType) return;
     const template = getTemplateHeaders(resourceType);
-    triggerDownload(template, `railops-${resourceType}-template.csv`);
+    triggerDownload(template, `railroadops-${resourceType}-template.csv`);
   }
 
   return (

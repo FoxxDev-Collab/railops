@@ -81,3 +81,10 @@ pids
 
 .vercel
 .env*.local
+VibeSecOps/Foxx_Cyber_VibeSecOps_SDLC_Plan_v2.1.docx
+VibeSecOps/README.md
+
+# Claude Code
+.claude/skills/
+.claude/worktrees/
+.superpowers/

@@ -2,7 +2,7 @@ import { TOTP, Secret } from "otpauth";
 import QRCode from "qrcode";
 import { encrypt, decrypt } from "./crypto";
 
-const ISSUER = "RailOps Admin";
+const ISSUER = "Railroad Ops Admin";
 
 interface TOTPSetup {
   /** The raw base32 secret (shown to user as manual entry fallback) */

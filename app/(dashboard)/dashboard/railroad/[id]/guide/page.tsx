@@ -216,7 +216,7 @@ export default async function OperationsGuidePage({
         <div className="space-y-2 text-sm text-muted-foreground pl-11">
           <p>
             A waybill is a shipping order — it says &ldquo;take this type of car
-            from Industry A to Industry B, carrying commodity C.&rdquo; Model Rail Ops
+            from Industry A to Industry B, carrying commodity C.&rdquo; Railroad Ops
             uses a <strong className="text-foreground">4-panel waybill system</strong>:
             each panel represents one leg of a car&apos;s journey (loaded move,
             empty return, or a different load). The waybill&apos;s current panel
@@ -341,7 +341,7 @@ export default async function OperationsGuidePage({
             A switch list is the crew&apos;s work order — it tells the conductor
             which cars to <strong className="text-foreground">pick up</strong>{" "}
             and <strong className="text-foreground">set out</strong> at each stop
-            along the train&apos;s route. Model Rail Ops generates switch lists
+            along the train&apos;s route. Railroad Ops generates switch lists
             automatically by looking at each freight car in the consist, reading
             its waybill, and matching the waybill&apos;s origin/destination
             against the train&apos;s stops.

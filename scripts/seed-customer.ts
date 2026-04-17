@@ -5,7 +5,7 @@ import "dotenv/config";
 const db = new PrismaClient({});
 
 async function main() {
-  const email = "demo@railops.com";
+  const email = "demo@railroadops.com";
   const password = "Demo1234!";
 
   console.log("Seeding demo customer...");

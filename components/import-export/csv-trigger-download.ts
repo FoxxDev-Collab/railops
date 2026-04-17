@@ -12,5 +12,5 @@ export function triggerDownload(csvString: string, filename: string) {
 
 export function makeFilename(type: string): string {
   const date = new Date().toISOString().split("T")[0];
-  return `railops-${type}-${date}.csv`;
+  return `railroadops-${type}-${date}.csv`;
 }

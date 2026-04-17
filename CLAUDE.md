@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RailOps is a cloud-native model railroad operations platform built with Next.js 16 (App Router). It generates waybills and manifests for model railroad hobbyists, replacing spreadsheets and physical car cards.
+Railroad Ops is a cloud-native model railroad operations platform built with Next.js 16 (App Router). It generates waybills and manifests for model railroad hobbyists, replacing spreadsheets and physical car cards.
 
 ## Commands
 
@@ -85,6 +85,12 @@ Always proactively apply the following skills when working on this project — d
 - **Server actions/APIs:** api-design-principles + error-handling-patterns + nextjs-best-practices
 - **After completing any task:** simplify + performance-optimizer
 
+## gstack
+
+Use the `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+
+Available gstack skills: `/office-hours`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/design-consultation`, `/design-shotgun`, `/design-html`, `/review`, `/ship`, `/land-and-deploy`, `/canary`, `/benchmark`, `/browse`, `/connect-chrome`, `/qa`, `/qa-only`, `/design-review`, `/setup-browser-cookies`, `/setup-deploy`, `/retro`, `/investigate`, `/document-release`, `/codex`, `/cso`, `/autoplan`, `/plan-devex-review`, `/devex-review`, `/careful`, `/freeze`, `/guard`, `/unfreeze`, `/gstack-upgrade`, `/learn`.
+
 ## Environment Variables
 
 Required in `.env.local`:
@@ -92,5 +98,5 @@ Required in `.env.local`:
 - `AUTH_SECRET` — NextAuth secret (generate with `openssl rand -base64 32`)
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — SMTP server for transactional email
 - `SMTP_SECURE` — Set to `"true"` for TLS (port 465)
-- `EMAIL_FROM` — Sender address (e.g. `"RailOps <noreply@railops.app>"`)
+- `EMAIL_FROM` — Sender address (e.g. `"Railroad Ops <noreply@railroadops.com>"`)
 - `NEXT_PUBLIC_APP_URL` — Base URL (e.g. `http://localhost:3000`)

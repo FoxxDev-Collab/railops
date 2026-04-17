@@ -171,14 +171,14 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
         <div className="px-4 py-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
             <Image
-              src="/modelrailops-logo.png"
-              alt="Model Rail Ops"
+              src="/railroadops-logo.png"
+              alt="Railroad Ops"
               width={36}
               height={36}
               className="h-9 w-9 object-contain"
             />
             <div>
-              <h2 className="font-display text-base font-bold leading-tight">Model Rail Ops</h2>
+              <h2 className="font-display text-base font-bold leading-tight">Railroad Ops</h2>
               {variant === "admin" && (
                 <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Admin Panel</p>
               )}

@@ -101,7 +101,7 @@ export default async function Home() {
     {
       step: "02",
       title: "Generate Waybills",
-      desc: "Model Rail Ops creates four-panel waybills that route cars between industries based on commodity demand.",
+      desc: "Railroad Ops creates four-panel waybills that route cars between industries based on commodity demand.",
       icon: FileText,
     },
     {
@@ -155,7 +155,7 @@ export default async function Home() {
               </h1>
 
               <p className="mx-auto mb-12 max-w-2xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                Model Rail Ops replaces spreadsheets, car cards, and JMRI
+                Railroad Ops replaces spreadsheets, car cards, and JMRI
                 paperwork with a cloud platform purpose-built for model
                 railroad operations. Inventory your equipment, generate
                 waybills, build consists, and run sessions — all from your
@@ -378,8 +378,8 @@ export default async function Home() {
             <div className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-12 text-center shadow-xl">
               <div className="mb-6">
                 <Image
-                  src="/modelrailops-logo.png"
-                  alt="Model Rail Ops"
+                  src="/railroadops-logo.png"
+                  alt="Railroad Ops"
                   width={80}
                   height={80}
                   className="mx-auto h-20 w-20 object-contain"

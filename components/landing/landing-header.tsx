@@ -11,8 +11,8 @@ export function LandingHeader() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
           <Image
-            src="/modelrailops-logo.png"
-            alt="Model Rail Ops"
+            src="/railroadops-logo.png"
+            alt="Railroad Ops"
             width={48}
             height={48}
             className="h-12 w-12 object-contain"
@@ -20,10 +20,10 @@ export function LandingHeader() {
           />
           <div>
             <span className="block font-display text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Model Rail Ops
+              Railroad Ops
             </span>
             <span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              modelrailops.com
+              railroadops.com
             </span>
           </div>
         </Link>

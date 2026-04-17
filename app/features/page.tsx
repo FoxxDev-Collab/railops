@@ -25,7 +25,7 @@ import { LandingFooter } from "@/components/landing/landing-footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Features — Model Rail Ops",
+  title: "Features — Railroad Ops",
   description:
     "Everything you need to run authentic model railroad operating sessions. Nine core modules replace spreadsheets, car cards, and JMRI paperwork.",
 };
@@ -72,7 +72,7 @@ export default function FeaturesPage() {
       icon: FileText,
       title: "Four-Panel Waybills",
       subtitle: "Authentic Car Card System",
-      desc: "Model Rail Ops generates four-panel waybills that cycle cars through load and empty moves just like the NMRA OpSIG standard. Each panel specifies origin, destination, shipper, consignee, commodity, and load status. Car cards link a freight car to its current waybill and physical position.",
+      desc: "Railroad Ops generates four-panel waybills that cycle cars through load and empty moves just like the NMRA OpSIG standard. Each panel specifies origin, destination, shipper, consignee, commodity, and load status. Car cards link a freight car to its current waybill and physical position.",
       details: [
         "4 panels per waybill: loaded and empty routing",
         "Shipper and consignee industry assignments",
@@ -311,7 +311,7 @@ export default function FeaturesPage() {
                   {
                     step: "02",
                     title: "Generate Waybills",
-                    desc: "Model Rail Ops creates four-panel waybills that route cars between industries based on commodity demand.",
+                    desc: "Railroad Ops creates four-panel waybills that route cars between industries based on commodity demand.",
                     icon: FileText,
                   },
                   {

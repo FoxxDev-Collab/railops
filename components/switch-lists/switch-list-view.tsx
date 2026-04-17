@@ -79,7 +79,7 @@ export function SwitchListView({
       <div className="hidden print:block mb-6">
         <div className="border-b-2 border-black pb-3 mb-4">
           <p className="text-xs font-bold tracking-[0.25em] uppercase text-gray-500 mb-1">
-            Model Rail Ops Operations
+            Railroad Ops Operations
           </p>
           <h1 className="text-3xl font-bold tracking-tight text-black">
             Switch List
@@ -287,7 +287,7 @@ export function SwitchListView({
 
       {/* ── Print footer ── */}
       <div className="hidden print:block mt-8 pt-4 border-t border-gray-300 text-xs text-gray-400 flex justify-between">
-        <span>Model Rail Ops · modelrailops.com</span>
+        <span>Railroad Ops · railroadops.com</span>
         <span>Generated {printDateFormatted}</span>
       </div>
     </>

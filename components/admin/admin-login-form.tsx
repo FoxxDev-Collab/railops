@@ -60,7 +60,7 @@ export function AdminLoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="admin@railops.app" {...field} />
+                <Input type="email" placeholder="admin@railroadops.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

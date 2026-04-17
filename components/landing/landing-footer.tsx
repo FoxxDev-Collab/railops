@@ -8,14 +8,14 @@ export function LandingFooter() {
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
             <Image
-              src="/modelrailops-logo.png"
-              alt="Model Rail Ops"
+              src="/railroadops-logo.png"
+              alt="Railroad Ops"
               width={32}
               height={32}
               className="h-8 w-8 object-contain"
             />
             <span className="font-display font-semibold text-foreground">
-              Model Rail Ops
+              Railroad Ops
             </span>
           </Link>
           <nav className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -33,7 +33,7 @@ export function LandingFooter() {
             </Link>
           </nav>
           <div className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Model Rail Ops. Keeping the
+            &copy; {new Date().getFullYear()} Railroad Ops. Keeping the
             rails running since 2024.
           </div>
         </div>

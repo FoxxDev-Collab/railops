@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Model Rail Ops - Model Railroad Operations Management",
+  title: "Railroad Ops - Model Railroad Operations Management",
   description:
     "Cloud-native operations platform for model railroads. Generate waybills, build consists, and run sessions from your browser.",
 };

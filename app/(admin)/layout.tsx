@@ -56,7 +56,7 @@ export default async function AdminLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded bg-primary" />
-              <span className="font-semibold">Model Rail Ops Admin</span>
+              <span className="font-semibold">Railroad Ops Admin</span>
             </div>
           </div>
         </header>

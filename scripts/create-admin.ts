@@ -5,7 +5,7 @@ import "dotenv/config";
 const db = new PrismaClient({});
 
 async function main() {
-  const email = process.env.ADMIN_EMAIL || "admin@railops.com";
+  const email = process.env.ADMIN_EMAIL || "admin@railroadops.com";
   const password = process.env.ADMIN_PASSWORD;
 
   if (!password) {
