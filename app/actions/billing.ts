@@ -193,7 +193,7 @@ export async function getBillingOverview() {
     seatsUsed,
     seatsAvailable: Math.max(0, totalSeats - seatsUsed),
     canAddSeat: user.plan === "PRO" && user.purchasedSeats < MAX_EXTRA_SEATS,
-    canRemoveSeat: user.plan === "PRO" && user.purchasedSeats > 0,
+    canRemoveSeat: user.plan === "PRO" && user.purchasedSeats > 0 && seatsUsed < totalSeats,
     usage: {
       layouts: { current: layoutsCheck.current, limit: layoutsCheck.limit },
       items: { current: itemsCheck.current, limit: itemsCheck.limit },
