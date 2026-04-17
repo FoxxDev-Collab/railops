@@ -88,3 +88,8 @@ VibeSecOps/README.md
 .claude/skills/
 .claude/worktrees/
 .superpowers/
+mfa.txt
+VibeSecOps/workflows/preview.yml
+VibeSecOps/vibesecops-setup.sh
+VibeSecOps/workflows/production.yml
+.gstack/
