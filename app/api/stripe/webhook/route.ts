@@ -29,12 +29,26 @@ export async function POST(request: Request) {
         const userId = session.client_reference_id ?? session.metadata?.userId;
         if (!userId) break;
 
+        // Retrieve the subscription with items to capture initial seat quantity (should be 0)
+        let purchasedSeats = 0;
+        if (session.subscription) {
+          const stripeClient = await getStripeClient();
+          const sub = await stripeClient.subscriptions.retrieve(
+            session.subscription as string,
+            { expand: ["items.data"] }
+          );
+          const seatPriceId = await getSetting("stripe.seatPriceId");
+          const seatItem = sub.items.data.find((i) => i.price.id === seatPriceId);
+          purchasedSeats = seatItem?.quantity ?? 0;
+        }
+
         await db.user.update({
           where: { id: userId },
           data: {
             plan: "PRO",
             stripeCustomerId: session.customer as string,
             stripeSubId: session.subscription as string,
+            purchasedSeats,
           },
         });
 
@@ -44,7 +58,7 @@ export async function POST(request: Request) {
           adminEmail: "stripe-webhook",
           entityType: "User",
           entityId: userId,
-          metadata: { plan: "PRO", subscriptionId: session.subscription },
+          metadata: { plan: "PRO", subscriptionId: session.subscription, purchasedSeats },
         });
         break;
       }
@@ -56,8 +70,12 @@ export async function POST(request: Request) {
         });
         if (!user) break;
 
-        // Get period end from subscription items (new Stripe API structure)
         const periodEnd = subscription.items?.data?.[0]?.current_period_end;
+        const seatPriceId = await getSetting("stripe.seatPriceId");
+        const seatItem = subscription.items.data.find(
+          (i) => i.price.id === seatPriceId
+        );
+        const purchasedSeats = seatItem?.quantity ?? 0;
 
         if (subscription.status === "active") {
           await db.user.update({
@@ -65,6 +83,7 @@ export async function POST(request: Request) {
             data: {
               plan: "PRO",
               planExpiresAt: periodEnd ? new Date(periodEnd * 1000) : null,
+              purchasedSeats,
             },
           });
         } else if (subscription.status === "canceled" || subscription.status === "past_due") {
@@ -74,6 +93,7 @@ export async function POST(request: Request) {
               plan: "FREE",
               stripeSubId: null,
               planExpiresAt: null,
+              purchasedSeats: 0,
             },
           });
         }
@@ -93,6 +113,7 @@ export async function POST(request: Request) {
             plan: "FREE",
             stripeSubId: null,
             planExpiresAt: null,
+            purchasedSeats: 0,
           },
         });
 
