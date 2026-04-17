@@ -14,12 +14,10 @@ import { ShieldCheck } from "lucide-react";
 export default async function MfaSetupPage() {
   const session = await adminAuth();
 
-  // Must be authenticated as admin with mfaPending
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/admin/auth");
   }
 
-  // If MFA is already enabled and verified, go to admin
   const dbUser = await db.user.findUnique({
     where: { id: session.user.id },
     select: { mfaEnabled: true },
@@ -30,13 +28,15 @@ export default async function MfaSetupPage() {
   }
 
   return (
-    <Card className="border-border/50">
-      <CardHeader className="text-center space-y-3">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+    <Card className="border-border/50 shadow-lg">
+      <CardHeader className="text-center space-y-3 pb-2">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 ring-4 ring-primary/5">
           <ShieldCheck className="h-6 w-6 text-primary" />
         </div>
-        <div>
-          <CardTitle className="text-xl">Set Up Two-Factor Authentication</CardTitle>
+        <div className="space-y-1">
+          <CardTitle className="font-display text-xl font-bold tracking-tight">
+            Set Up Two-Factor Authentication
+          </CardTitle>
           <CardDescription>
             Secure your admin account with an authenticator app.
           </CardDescription>
