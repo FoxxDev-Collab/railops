@@ -94,3 +94,68 @@ export async function createCustomerPortalSession(
 
   return session.url;
 }
+
+/**
+ * Updates the seat line-item quantity on an existing Pro subscription.
+ *
+ * Proration behavior:
+ *   - 'always_invoice' (use on add): Stripe generates and pays a prorated invoice
+ *     immediately for the remaining days in the current period.
+ *   - 'create_prorations' (use on remove): Stripe credits unused time as a proration
+ *     item that reduces the next invoice; quantity drops immediately.
+ */
+export async function updateSeatQuantity(
+  stripeSubId: string,
+  newQuantity: number,
+  prorationBehavior: "always_invoice" | "create_prorations"
+): Promise<void> {
+  const stripe = await getStripeClient();
+  const seatPriceId = await getSetting("stripe.seatPriceId");
+  if (!seatPriceId) throw new Error("Stripe Seat price ID not configured.");
+
+  const subscription = await stripe.subscriptions.retrieve(stripeSubId, {
+    expand: ["items.data"],
+  });
+
+  const seatItem = subscription.items.data.find(
+    (item) => item.price.id === seatPriceId
+  );
+
+  if (!seatItem) {
+    // Create the line item if it doesn't exist yet (handles the quantity:0 checkout fallback)
+    await stripe.subscriptionItems.create({
+      subscription: stripeSubId,
+      price: seatPriceId,
+      quantity: newQuantity,
+      proration_behavior: prorationBehavior,
+    });
+    return;
+  }
+
+  await stripe.subscriptionItems.update(seatItem.id, {
+    quantity: newQuantity,
+    proration_behavior: prorationBehavior,
+  });
+}
+
+/**
+ * Reads the current seat line-item quantity from the live subscription.
+ * Returns 0 if no seat line item exists.
+ */
+export async function getSubscriptionSeatQuantity(
+  stripeSubId: string
+): Promise<number> {
+  const stripe = await getStripeClient();
+  const seatPriceId = await getSetting("stripe.seatPriceId");
+  if (!seatPriceId) return 0;
+
+  const subscription = await stripe.subscriptions.retrieve(stripeSubId, {
+    expand: ["items.data"],
+  });
+
+  const seatItem = subscription.items.data.find(
+    (item) => item.price.id === seatPriceId
+  );
+
+  return seatItem?.quantity ?? 0;
+}
