@@ -19,7 +19,6 @@ export interface PricingTier {
   description: string;
   features: string[];
   crewSeatPrice?: string;
-  layoutPackPrice?: string;
 }
 
 export interface PricingConfig {
@@ -53,10 +52,8 @@ const DEFAULTS: PricingConfig = {
       "CSV import / export",
       "Priority support",
       "Additional crew seats $5/mo each",
-      "Additional 5-layout packs $5/mo each",
     ],
     crewSeatPrice: "5",
-    layoutPackPrice: "5",
   },
 };
 
@@ -94,12 +91,8 @@ async function getTierFromDb(tier: "free" | "pro"): Promise<PricingTier> {
   };
 
   if (tier === "pro") {
-    const [crewSeatPrice, layoutPackPrice] = await Promise.all([
-      getSetting("pricing.pro.crewSeatPrice" as SettingKey),
-      getSetting("pricing.pro.layoutPackPrice" as SettingKey),
-    ]);
+    const crewSeatPrice = await getSetting("pricing.pro.crewSeatPrice" as SettingKey);
     result.crewSeatPrice = crewSeatPrice || defaults.crewSeatPrice;
-    result.layoutPackPrice = layoutPackPrice || defaults.layoutPackPrice;
   }
 
   return result;
@@ -127,9 +120,6 @@ export async function updatePricingTier(
     setSetting(`${prefix}.features` as SettingKey, JSON.stringify(data.features), session.user.id),
     ...(tier === "pro" && data.crewSeatPrice
       ? [setSetting("pricing.pro.crewSeatPrice" as SettingKey, data.crewSeatPrice, session.user.id)]
-      : []),
-    ...(tier === "pro" && data.layoutPackPrice
-      ? [setSetting("pricing.pro.layoutPackPrice" as SettingKey, data.layoutPackPrice, session.user.id)]
       : []),
   ]);
 
