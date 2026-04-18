@@ -231,16 +231,24 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex items-center gap-2 px-2">
-          <Button
-            variant="ghost"
-            className="flex-1 justify-start"
-            onClick={handleSignOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+        <div className="flex flex-col gap-1 px-2">
+          <Button variant="ghost" className="justify-start" asChild>
+            <Link href="/dashboard/account">
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </Link>
           </Button>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              className="flex-1 justify-start"
+              onClick={handleSignOut}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>
