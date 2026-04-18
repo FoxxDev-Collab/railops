@@ -26,12 +26,15 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { passwordSchema } from "@/lib/password-policy";
+import { PasswordStrength } from "@/components/auth/password-strength";
 
 const createUserSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: passwordSchema,
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
   role: z.enum(["USER", "ADMIN"]),
+  plan: z.enum(["FREE", "PRO"]),
 });
 
 export function CreateUserForm() {
@@ -45,6 +48,7 @@ export function CreateUserForm() {
       password: "",
       name: "",
       role: "USER",
+      plan: "FREE",
     },
   });
 
@@ -98,9 +102,7 @@ export function CreateUserForm() {
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Minimum 6 characters
-                  </FormDescription>
+                  <PasswordStrength password={field.value ?? ""} className="mt-2" />
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,6 +142,33 @@ export function CreateUserForm() {
                   </Select>
                   <FormDescription>
                     Admins have full access to user management
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="plan"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plan</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a plan" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="FREE">Free</SelectItem>
+                      <SelectItem value="PRO">Pro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Pro users bypass free-tier limits. Billing records (Stripe customer/subscription) are not created — link separately if needed.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { logAudit } from "@/lib/audit";
+import { passwordSchema } from "@/lib/password-policy";
 
 // Authorization helper
 async function requireAdmin() {
@@ -100,9 +101,10 @@ export async function getUserDetails(userId: string) {
 // Create new user (admin only)
 const createUserSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: passwordSchema,
   name: z.string().min(2).optional(),
   role: z.enum(["USER", "ADMIN"]).default("USER"),
+  plan: z.enum(["FREE", "PRO"]).default("FREE"),
 });
 
 export async function createUser(values: z.infer<typeof createUserSchema>) {
@@ -110,10 +112,10 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
 
   const validatedFields = createUserSchema.safeParse(values);
   if (!validatedFields.success) {
-    return { error: "Invalid fields" };
+    return { error: validatedFields.error.issues[0]?.message ?? "Invalid fields" };
   }
 
-  const { email, password, name, role } = validatedFields.data;
+  const { email, password, name, role, plan } = validatedFields.data;
 
   const existingUser = await db.user.findUnique({ where: { email } });
   if (existingUser) {
@@ -128,6 +130,7 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
       password: hashedPassword,
       name,
       role,
+      plan,
       emailVerified: new Date(), // Admin-created users are pre-verified
     },
   });
@@ -139,7 +142,7 @@ export async function createUser(values: z.infer<typeof createUserSchema>) {
     adminEmail: adminSession.user.email ?? "unknown",
     entityType: "User",
     entityId: user.id,
-    metadata: { email, role },
+    metadata: { email, role, plan },
   });
 
   revalidatePath("/admin/users");
