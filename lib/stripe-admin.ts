@@ -167,3 +167,57 @@ export async function listSubscriptionsForAdmin(opts: {
     };
   }
 }
+
+/**
+ * Lists recent Stripe events, optionally filtered by type.
+ * Stripe retains ~30 days of events.
+ */
+export async function listStripeEvents(opts: {
+  type?: string;
+  startingAfter?: string;
+  limit?: number;
+}): Promise<{
+  events: AdminEvent[];
+  hasMore: boolean;
+  nextCursor: string | null;
+  error?: string;
+}> {
+  try {
+    const stripe = await getStripeClient();
+    const params: Stripe.EventListParams = {
+      limit: opts.limit ?? 50,
+    };
+    if (opts.type) params.type = opts.type;
+    if (opts.startingAfter) params.starting_after = opts.startingAfter;
+
+    const page = await stripe.events.list(params);
+
+    const events: AdminEvent[] = page.data.map((event) => {
+      const obj = event.data.object as unknown as Record<string, unknown> | undefined;
+      const objectType = obj && typeof obj.object === "string" ? obj.object : null;
+      const objectId = obj && typeof obj.id === "string" ? obj.id : null;
+      return {
+        id: event.id,
+        type: event.type,
+        createdAt: new Date(event.created * 1000).toISOString(),
+        livemode: event.livemode,
+        objectType,
+        objectId,
+        payload: event.data.object,
+      };
+    });
+
+    return {
+      events,
+      hasMore: page.has_more,
+      nextCursor: page.has_more ? page.data[page.data.length - 1]?.id ?? null : null,
+    };
+  } catch (error) {
+    return {
+      events: [],
+      hasMore: false,
+      nextCursor: null,
+      error: error instanceof Error ? error.message : "Failed to list events",
+    };
+  }
+}
