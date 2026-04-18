@@ -297,3 +297,58 @@ export async function getRevenueByLineItem(): Promise<{
     };
   }
 }
+
+/**
+ * Lists all products and their prices. Single paginated call expanding prices.
+ * Used by the Products & Prices admin card.
+ */
+export async function listProductsWithPrices(): Promise<{
+  products: AdminProduct[];
+  error?: string;
+}> {
+  try {
+    const stripe = await getStripeClient();
+
+    const products: AdminProduct[] = [];
+    let startingAfter: string | undefined;
+
+    while (true) {
+      const page: Stripe.ApiList<Stripe.Product> = await stripe.products.list({
+        limit: 100,
+        ...(startingAfter ? { starting_after: startingAfter } : {}),
+      });
+
+      for (const product of page.data) {
+        const pricesPage = await stripe.prices.list({
+          product: product.id,
+          limit: 100,
+        });
+        products.push({
+          id: product.id,
+          name: product.name,
+          active: product.active,
+          description: product.description,
+          prices: pricesPage.data.map((price) => ({
+            id: price.id,
+            nickname: price.nickname,
+            unitAmount: centsToDollars(price.unit_amount),
+            currency: price.currency,
+            interval: (price.recurring?.interval as "month" | "year" | null) ?? null,
+            active: price.active,
+          })),
+        });
+      }
+
+      if (!page.has_more) break;
+      startingAfter = page.data[page.data.length - 1]?.id;
+      if (!startingAfter) break;
+    }
+
+    return { products };
+  } catch (error) {
+    return {
+      products: [],
+      error: error instanceof Error ? error.message : "Failed to list products",
+    };
+  }
+}
