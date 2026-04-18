@@ -25,6 +25,10 @@ jobs:
   zizmor:
     name: Workflow audit (zizmor)
     runs-on: ubuntu-latest
+    permissions:
+      actions: read          # upload-sarif reads workflow-run metadata for fingerprints
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v6
 
