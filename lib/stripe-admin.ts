@@ -221,3 +221,79 @@ export async function listStripeEvents(opts: {
     };
   }
 }
+
+/**
+ * Computes MRR breakdown by Pro-base vs seat add-on price IDs.
+ * Reads the configured stripe.proPriceId and stripe.seatPriceId settings
+ * to classify line items.
+ */
+export async function getRevenueByLineItem(): Promise<{
+  basePro: { mrr: number; subscriptionCount: number };
+  seatAddOn: { mrr: number; totalSeats: number };
+  error?: string;
+}> {
+  try {
+    const stripe = await getStripeClient();
+    const [proPriceId, seatPriceId] = await Promise.all([
+      getSetting("stripe.proPriceId"),
+      getSetting("stripe.seatPriceId"),
+    ]);
+
+    let baseCents = 0;
+    let baseSubscriptions = 0;
+    let seatCents = 0;
+    let totalSeats = 0;
+
+    let startingAfter: string | undefined;
+    // Paginate through all active subscriptions
+    while (true) {
+      const page: Stripe.ApiList<Stripe.Subscription> = await stripe.subscriptions.list({
+        status: "active",
+        limit: 100,
+        expand: ["data.items.data.price"],
+        ...(startingAfter ? { starting_after: startingAfter } : {}),
+      });
+
+      for (const sub of page.data) {
+        let hasBase = false;
+        for (const item of sub.items.data) {
+          const priceId = item.price.id;
+          const amount = item.price.unit_amount ?? 0;
+          const qty = item.quantity ?? 0;
+          const interval = item.price.recurring?.interval ?? "month";
+          const monthly = interval === "year" ? (amount * qty) / 12 : amount * qty;
+
+          if (priceId === proPriceId) {
+            baseCents += monthly;
+            hasBase = true;
+          } else if (priceId === seatPriceId) {
+            seatCents += monthly;
+            totalSeats += qty;
+          }
+        }
+        if (hasBase) baseSubscriptions += 1;
+      }
+
+      if (!page.has_more) break;
+      startingAfter = page.data[page.data.length - 1]?.id;
+      if (!startingAfter) break;
+    }
+
+    return {
+      basePro: {
+        mrr: Math.round(baseCents) / 100,
+        subscriptionCount: baseSubscriptions,
+      },
+      seatAddOn: {
+        mrr: Math.round(seatCents) / 100,
+        totalSeats,
+      },
+    };
+  } catch (error) {
+    return {
+      basePro: { mrr: 0, subscriptionCount: 0 },
+      seatAddOn: { mrr: 0, totalSeats: 0 },
+      error: error instanceof Error ? error.message : "Failed to compute line-item revenue",
+    };
+  }
+}
