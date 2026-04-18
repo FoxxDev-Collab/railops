@@ -352,3 +352,96 @@ export async function listProductsWithPrices(): Promise<{
     };
   }
 }
+
+/**
+ * Fetches all Stripe data for a single customer: active subscription,
+ * recent invoices, payment methods, recent charges.
+ */
+export async function getUserStripeDeepDive(
+  stripeCustomerId: string
+): Promise<{
+  subscription: AdminSubscription | null;
+  invoices: AdminInvoice[];
+  paymentMethods: AdminPaymentMethod[];
+  charges: AdminCharge[];
+  error?: string;
+}> {
+  try {
+    const stripe = await getStripeClient();
+
+    const [subs, invoices, customer, charges] = await Promise.all([
+      stripe.subscriptions.list({
+        customer: stripeCustomerId,
+        status: "all",
+        limit: 1,
+        expand: ["data.customer", "data.items.data.price"],
+      }),
+      stripe.invoices.list({ customer: stripeCustomerId, limit: 10 }),
+      stripe.customers.retrieve(stripeCustomerId, {
+        expand: ["invoice_settings.default_payment_method"],
+      }),
+      stripe.charges.list({ customer: stripeCustomerId, limit: 20 }),
+    ]);
+
+    const sub = subs.data[0] ?? null;
+
+    const customerResolved = customer as Stripe.Customer | Stripe.DeletedCustomer;
+    const defaultPmId =
+      "invoice_settings" in customerResolved
+        ? (typeof customerResolved.invoice_settings.default_payment_method === "string"
+            ? customerResolved.invoice_settings.default_payment_method
+            : customerResolved.invoice_settings.default_payment_method?.id ?? null)
+        : null;
+
+    const pmList = await stripe.paymentMethods.list({
+      customer: stripeCustomerId,
+      type: "card",
+      limit: 10,
+    });
+
+    return {
+      subscription: sub ? mapSubscription(sub) : null,
+      invoices: invoices.data.map((inv) => ({
+        id: inv.id ?? "",
+        number: inv.number,
+        status: inv.status ?? "unknown",
+        amountPaid: centsToDollars(inv.amount_paid),
+        amountDue: centsToDollars(inv.amount_due),
+        currency: inv.currency.toUpperCase(),
+        created: new Date(inv.created * 1000).toISOString(),
+        hostedInvoiceUrl: inv.hosted_invoice_url ?? null,
+        invoicePdf: inv.invoice_pdf ?? null,
+      })),
+      paymentMethods: pmList.data.map((pm) => ({
+        id: pm.id,
+        type: pm.type,
+        card: pm.card
+          ? {
+              brand: pm.card.brand,
+              last4: pm.card.last4,
+              expMonth: pm.card.exp_month,
+              expYear: pm.card.exp_year,
+            }
+          : null,
+        isDefault: pm.id === defaultPmId,
+      })),
+      charges: charges.data.map((c) => ({
+        id: c.id,
+        amount: centsToDollars(c.amount),
+        currency: c.currency.toUpperCase(),
+        status: c.status,
+        refunded: c.refunded,
+        refundedAmount: centsToDollars(c.amount_refunded),
+        created: new Date(c.created * 1000).toISOString(),
+      })),
+    };
+  } catch (error) {
+    return {
+      subscription: null,
+      invoices: [],
+      paymentMethods: [],
+      charges: [],
+      error: error instanceof Error ? error.message : "Failed to load Stripe data",
+    };
+  }
+}
