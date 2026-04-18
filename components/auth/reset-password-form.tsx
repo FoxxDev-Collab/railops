@@ -17,14 +17,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { passwordSchema } from "@/lib/password-policy";
+import { PasswordStrength } from "@/components/auth/password-strength";
 
 const schema = z
   .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -76,6 +74,7 @@ export function ResetPasswordForm() {
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
+              <PasswordStrength password={field.value ?? ""} className="mt-2" />
               <FormMessage />
             </FormItem>
           )}

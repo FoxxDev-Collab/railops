@@ -1,18 +1,12 @@
 "use server";
 
-import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { generateToken, verifyToken } from "@/lib/tokens";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { rateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
-
-const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number");
+import { passwordSchema } from "@/lib/password-policy";
 
 export async function requestPasswordReset(email: string) {
   const hdrs = await headers();

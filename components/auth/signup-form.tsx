@@ -18,16 +18,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
+import { passwordSchema } from "@/lib/password-policy";
+import { PasswordStrength } from "@/components/auth/password-strength";
 
 const signupSchema = z
   .object({
     name: z.string().min(2).optional(),
     email: z.string().email(),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -102,6 +100,7 @@ export function SignupForm() {
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
+              <PasswordStrength password={field.value ?? ""} className="mt-2" />
               <FormMessage />
             </FormItem>
           )}
