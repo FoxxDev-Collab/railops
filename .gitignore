@@ -93,3 +93,7 @@ VibeSecOps/workflows/preview.yml
 VibeSecOps/vibesecops-setup.sh
 VibeSecOps/workflows/production.yml
 .gstack/
+./windsurf 
+.windsurf/
+.agents
+.claude
