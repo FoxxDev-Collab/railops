@@ -34,14 +34,12 @@ export default async function RailroadSettingsPage({
         </div>
       </div>
 
-      <div className="max-w-2xl">
+      <div className="grid gap-6 lg:grid-cols-2">
         <LayoutForm initialData={layout} />
-        <div className="mt-6">
-          <TrackPlanImageUpload
-            layoutId={id}
-            currentImageUrl={layout.imageUrl}
-          />
-        </div>
+        <TrackPlanImageUpload
+          layoutId={id}
+          currentImageUrl={layout.imageUrl}
+        />
       </div>
     </div>
   );

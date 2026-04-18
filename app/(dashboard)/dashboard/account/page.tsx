@@ -21,7 +21,7 @@ export default async function AccountPage() {
   if (!user) redirect("/auth/login");
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-sm text-muted-foreground">
@@ -29,54 +29,60 @@ export default async function AccountPage() {
         </p>
       </div>
 
-      <ProfileForm email={user.email} initialName={user.name} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <ProfileForm email={user.email} initialName={user.name} />
 
-      <ChangePasswordForm />
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Two-factor authentication</CardTitle>
+              </div>
+              <CardDescription>
+                Add an extra layer of security to your account with an authenticator app.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-between">
+              <Badge variant={user.mfaEnabled ? "default" : "secondary"}>
+                {user.mfaEnabled ? "Enabled" : "Not enabled"}
+              </Badge>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/auth/mfa-setup">
+                  {user.mfaEnabled ? "Manage" : "Enable"} 2FA
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-            <CardTitle>Two-factor authentication</CardTitle>
-          </div>
-          <CardDescription>
-            Add an extra layer of security to your account with an authenticator app.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <Badge variant={user.mfaEnabled ? "default" : "secondary"}>
-            {user.mfaEnabled ? "Enabled" : "Not enabled"}
-          </Badge>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/auth/mfa-setup">
-              {user.mfaEnabled ? "Manage" : "Enable"} 2FA
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Billing</CardTitle>
+              </div>
+              <CardDescription>
+                Manage your subscription, seats, and invoices.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-between">
+              <Badge variant={user.plan === "PRO" ? "default" : "secondary"}>
+                {user.plan === "PRO" ? "Pro" : "Free"}
+              </Badge>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/billing">
+                  Go to billing
+                  <ExternalLink className="ml-1 h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-            <CardTitle>Billing</CardTitle>
-          </div>
-          <CardDescription>
-            Manage your subscription, seats, and invoices.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <Badge variant={user.plan === "PRO" ? "default" : "secondary"}>
-            {user.plan === "PRO" ? "Pro" : "Free"}
-          </Badge>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/dashboard/billing">
-              Go to billing
-              <ExternalLink className="ml-1 h-3.5 w-3.5" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+        <div>
+          <ChangePasswordForm />
+        </div>
+      </div>
     </div>
   );
 }

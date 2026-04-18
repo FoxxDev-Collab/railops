@@ -235,7 +235,7 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
           <Button variant="ghost" className="justify-start" asChild>
             <Link href="/dashboard/account">
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              Account Settings
             </Link>
           </Button>
           <div className="flex items-center gap-2">
