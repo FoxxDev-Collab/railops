@@ -26,6 +26,8 @@ import {
   Activity,
   HeartPulse,
   AlertCircle,
+  TrainTrack,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,6 +59,12 @@ const adminMenuItems = [
   { href: "/admin/billing", label: "Billing", icon: CreditCard },
   { href: "/admin/audit", label: "Audit Log", icon: ShieldCheck },
   { href: "/admin/system", label: "System Settings", icon: Settings },
+];
+
+const accountMenuItems = [
+  { href: "/dashboard", label: "My Railroads", icon: TrainTrack, exact: true },
+  { href: "/dashboard/account", label: "Account Settings", icon: User },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
 
 function getRailroadMenuItems(railroadId: string) {
@@ -148,7 +156,7 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
     ? adminMenuItems
     : isInRailroad
       ? getRailroadMenuItems(railroadId)
-      : [];
+      : accountMenuItems;
 
   async function handleSignOut() {
     if (variant === "admin") {
@@ -232,12 +240,14 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
       </SidebarContent>
       <SidebarFooter>
         <div className="flex flex-col gap-1 px-2">
-          <Button variant="ghost" className="justify-start" asChild>
-            <Link href="/dashboard/account">
-              <Settings className="mr-2 h-4 w-4" />
-              Account Settings
-            </Link>
-          </Button>
+          {variant !== "admin" && isInRailroad && (
+            <Button variant="ghost" className="justify-start" asChild>
+              <Link href="/dashboard/account">
+                <User className="mr-2 h-4 w-4" />
+                Account Settings
+              </Link>
+            </Button>
+          )}
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
