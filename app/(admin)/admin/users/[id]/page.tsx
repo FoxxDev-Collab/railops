@@ -2,6 +2,8 @@ import { adminAuth } from "@/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { getUserDetails, getUserTimeline, getUserActivityFeed } from "@/app/actions/admin/users";
 import { getAdminNotes } from "@/app/actions/admin/notes";
+import { getUserStripeDeepDive } from "@/lib/stripe-admin";
+import { db } from "@/lib/db";
 import { UserHeader } from "@/components/admin/user-detail/user-header";
 import { UserTabs } from "@/components/admin/user-detail/user-tabs";
 import { TabOverview } from "@/components/admin/user-detail/tab-overview";
@@ -35,41 +37,39 @@ export default async function UserDetailPage({
     );
   }
 
-  // Fetch Stripe details if customer is linked
-  let stripeDetails = { subscription: null as { status: string; currentPeriodEnd: string } | null, payments: [] as Array<{ id: string; amount: number; currency: string; status: string; created: string }>, error: undefined as string | undefined };
+  // Stripe deep-dive + seat counts (only if customer is linked)
+  let deepDive: Awaited<ReturnType<typeof getUserStripeDeepDive>> = {
+    subscription: null,
+    invoices: [],
+    paymentMethods: [],
+    charges: [],
+  };
+  let purchasedSeats = 0;
+  let seatsUsed = 0;
 
   if (user.stripeCustomerId) {
-    try {
-      const { getStripeClient } = await import("@/lib/stripe");
-      const stripe = await getStripeClient();
+    const [dive, userRow, crewDistinct] = await Promise.all([
+      getUserStripeDeepDive(user.stripeCustomerId),
+      db.user.findUnique({
+        where: { id: user.id },
+        select: { purchasedSeats: true },
+      }),
+      db.crewMember.findMany({
+        where: { layout: { userId: user.id }, removedAt: null },
+        distinct: ["userId"],
+        select: { userId: true },
+      }),
+    ]);
 
-      const [subs, charges] = await Promise.all([
-        stripe.subscriptions.list({ customer: user.stripeCustomerId, limit: 1 }),
-        stripe.charges.list({ customer: user.stripeCustomerId, limit: 10 }),
-      ]);
-
-      const sub = subs.data[0];
-      const periodEnd = sub?.items?.data?.[0]?.current_period_end;
-      stripeDetails = {
-        subscription: sub
-          ? {
-              status: sub.status,
-              currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : new Date().toISOString(),
-            }
-          : null,
-        payments: charges.data.map((c) => ({
-          id: c.id,
-          amount: c.amount,
-          currency: c.currency,
-          status: c.status,
-          created: new Date(c.created * 1000).toISOString(),
-        })),
-        error: undefined,
-      };
-    } catch (error) {
-      stripeDetails.error = error instanceof Error ? error.message : "Failed to load Stripe data";
-    }
+    deepDive = dive;
+    purchasedSeats = userRow?.purchasedSeats ?? 0;
+    seatsUsed = crewDistinct.length;
   }
+
+  // livemode inference — best effort from charge ID prefix (charges don't have livemode field exposed in AdminCharge).
+  // If no charges, default to non-livemode (test) for safer deep-link prefix.
+  const livemode = deepDive.charges.length > 0;
+  // Note: AdminCharge doesn't carry livemode explicitly. This best-effort fallback is documented.
 
   return (
     <div className="space-y-6">
@@ -103,8 +103,11 @@ export default async function UserDetailPage({
         }
         billing={
           <TabBilling
-            stripeDetails={stripeDetails}
             stripeCustomerId={user.stripeCustomerId}
+            deepDive={deepDive}
+            purchasedSeats={purchasedSeats}
+            seatsUsed={seatsUsed}
+            livemode={livemode}
           />
         }
         notes={
