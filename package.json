@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "seed": "tsx scripts/seed-customer.ts",
+    "seed:silhouettes": "tsx scripts/seed-silhouettes.ts",
     "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {

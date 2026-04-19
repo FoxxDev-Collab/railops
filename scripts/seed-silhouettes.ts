@@ -3,6 +3,7 @@
  * Run with: npx tsx scripts/seed-silhouettes.ts
  */
 
+import "dotenv/config";
 import { PrismaClient, SilhouetteCategory } from "@prisma/client";
 import * as fs from "fs";
 import * as path from "path";
